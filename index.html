@@ -77,16 +77,34 @@
 </div></section>
 
 <section><div class="wrap">
-  <h2><span>03 · Approach</span>From data to warning</h2>
+  <h2><span>03 · Forecast</span>One day ahead, not just today</h2>
+  <p class="lead">A gradient-boosted spatiotemporal model predicts tomorrow's hazard risk from today's indicators (train on Jan–Jun 2025, test on unseen Jul–Dec) — genuine forecasting, not same-day detection. Verified with threshold-independent metrics, known-event checks, and negative controls; a spatial neighbour-context feature and a graph-neural-network variant were also tested and are reported honestly below.</p>
+  <div class="fig">
+    <img src="img/forecast_vs_actual.png" alt="Forecast probability vs actual outcome, one day ahead">
+    <div class="cap"><b>One-day-ahead forecast vs actual outcome.</b> Top row: predicted risk from the day before; bottom row: what actually happened. Heatwave forecasts (right two columns) show strong spatial correspondence. Flash-flood forecasting (left two columns) is harder — the 23&nbsp;Aug Jizan hotspot is correctly located but under-confident, and the 19&nbsp;Aug moisture-surge event is missed entirely, consistent with the rarity and localised, convective nature of flash floods.</div>
+  </div>
+  <div class="stats" style="justify-content:flex-start;margin-top:0 0 22px">
+    <div class="stat"><div class="n">0.971</div><div class="l">heatwave ROC-AUC</div></div>
+    <div class="stat"><div class="n">0.873</div><div class="l">flash-flood ROC-AUC</div></div>
+  </div>
+  <ul class="pts">
+    <li><b>Heatwave:</b> strong, well-calibrated one-day-ahead skill (ROC-AUC 0.971, PR-AUC 0.795 with a spatial-context feature) — calm days stay near-zero risk.</li>
+    <li><b>Flash flood:</b> real but modest skill (ROC-AUC 0.873) given extreme rarity (0.5% of grid-days) and one year of training data; correctly ranks CAPE as the dominant driver.</li>
+    <li><b>Also tested, disclosed honestly:</b> a spatiotemporal GNN improved flash-flood spatial recall on one event but degraded calibration overall — kept as a documented research direction, not deployed.</li>
+  </ul>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span>04 · Approach</span>From data to warning</h2>
   <div class="flow">
     <div class="step done"><div class="num">✓</div><h3>Indicator data</h3><p>365 daily files, 10 km grid, 20 core reliable indicators.</p><span class="tag d">done</span></div>
     <div class="step done"><div class="num">✓</div><h3>Knowledge graph</h3><p>Causal, mechanism-aware, data-grounded events.</p><span class="tag d">done</span></div>
     <div class="step done"><div class="num">✓</div><h3>Detection</h3><p>Weighted rules + spatial clustering, verified.</p><span class="tag d">done</span></div>
-    <div class="step next"><div class="num">→</div><h3>Forecast</h3><p>Spatiotemporal model — predict tomorrow's risk.</p><span class="tag n">next</span></div>
+    <div class="step done"><div class="num">✓</div><h3>Forecast</h3><p>t→t+1 spatiotemporal model, verified against known events.</p><span class="tag d">done</span></div>
     <div class="step next"><div class="num">→</div><h3>Agent</h3><p>Explainable natural-language warnings.</p><span class="tag n">next</span></div>
   </div>
   <ul class="pts">
-    <li><b>Beyond detection.</b> Current systems flag today's conditions; the next stage forecasts tomorrow's extreme risk.</li>
+    <li><b>Beyond detection.</b> The forecast layer predicts tomorrow's extreme risk, not just today's conditions — the competitor system only detects.</li>
     <li><b>Causal, not just statistical.</b> The knowledge graph encodes mechanisms and physics, not only co-occurrence.</li>
     <li><b>Explainable.</b> Every alert traces back to its driving indicators and mechanism.</li>
   </ul>
