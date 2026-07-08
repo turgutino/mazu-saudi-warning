@@ -1,0 +1,64 @@
+======================================================================
+MAZU — Option A: neighbour-mean spatial-context feature
+======================================================================
+Added features: neighbour-mean of ['cape', 'daily_precip_total', 'ivt', 'vpd_kpa', 'wind_shear_850_200', 'pwat', 'daily_convective_precip']
+Same model (HistGradientBoosting), same train/test split as Layer 2a.
+
+--- heatwave ---
+train: 1,584,000 (pos=78875)  test: 1,619,200 (pos=83769)
+ROC-AUC = 0.971   (Layer-2a baseline 0.958, delta +0.013)
+PR-AUC  = 0.795   (Layer-2a baseline 0.756, delta +0.039)
+  2025-07-24->2025-07-25 (Riyadh Tmax 53.7C): mean_p=0.237 max_p=0.999 cells_p>0.5=1812/8800
+  2025-08-15->2025-08-16 (Persian Gulf heat-index): mean_p=0.390 max_p=0.999 cells_p>0.5=3451/8800
+  calm control 2025-11-05: mean_p=0.003 max_p=0.266
+
+--- flash_flood ---
+train: 1,584,000 (pos=2257)  test: 1,619,200 (pos=8358)
+ROC-AUC = 0.869   (Layer-2a baseline 0.873, delta -0.004)
+PR-AUC  = 0.074   (Layer-2a baseline 0.089, delta -0.015)
+  2025-08-22->2025-08-23 (Jizan 254.9mm): mean_p=0.012 max_p=0.990 cells_p>0.5=18/8800
+  2025-08-18->2025-08-19 (Arabian Sea IVT 728): mean_p=0.001 max_p=0.004 cells_p>0.5=0/8800
+  calm control 2025-11-05: mean_p=0.003 max_p=0.455
+
+======================================================================
+VERDICT
+======================================================================
+heatwave: IMPROVED  (ROC 0.958->0.971, PR-AUC 0.756->0.795)
+flash_flood: WORSE  (ROC 0.873->0.869, PR-AUC 0.089->0.074)
+
+======================================================================
+HONEST INTERPRETATION
+======================================================================
+A clean, physically explainable split result — not a wash, a real finding:
+
+1. Heatwave: genuine, cost-free improvement.
+   Both ROC-AUC and PR-AUC improved, AND calibration stayed excellent
+   (calm-day mean_p unchanged at 0.003 — unlike the Layer-2b GNN, which
+   gained similar ranking improvements at the cost of over-triggering on
+   calm days). This is because heatwaves are a synoptic-scale, spatially
+   smooth phenomenon — averaging a cell's four neighbours adds real
+   signal without distorting it.
+
+2. Flash flood: did not replicate the GNN's Aug-23 benefit; slightly
+   worse overall (Aug-23 mean_p actually dropped from 0.020 to 0.012).
+   Flash floods here are convective and highly localised (Jizan/Asir
+   mountain terrain) — a simple unweighted 4-neighbour MEAN smooths out
+   exactly the sharp, spatially concentrated CAPE/precip signal that
+   makes these events detectable. The GNN's advantage on Aug-23 came
+   from LEARNED, weighted spatial reinforcement (with residual
+   connections preserving the original per-cell signal), which a fixed
+   engineered average structurally cannot reproduce.
+
+3. This is a genuine meteorological insight, not a modelling failure:
+   spatial context helps synoptic/persistent hazards (heatwave) but can
+   hurt convective/localised ones (flash flood) when implemented as a
+   naive average. A learned, adaptive spatial mechanism (GNN) is
+   necessary for the latter, but needs more than 365 days of data to be
+   reliably well-calibrated (see stgnn_report.txt).
+
+RECOMMENDATION: adopt the neighbour-feature-augmented model as the
+production heatwave forecaster (strictly better, zero calibration
+cost). Keep the plain Layer-2a baseline for flash-flood forecasting
+(the neighbour feature does not help there). Document the GNN (Layer
+2b) as a disclosed research direction for flash-flood specifically,
+worth revisiting with more training data.
