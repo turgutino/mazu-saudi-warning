@@ -1,0 +1,212 @@
+[
+  {
+    "subject": "eastward-migrating Mediterranean cyclone",
+    "relation": "joins",
+    "object": "extension of the Sudan low-pressure zone (the Red Sea Trough)",
+    "evidence_quote": "an eastward-migrating Mediterranean cyclone joined an extension of the Sudan low-pressure zone (the Red Sea Trough)",
+    "source_id": "ref_devries2013",
+    "citation": "de Vries et al. (2013), Journal of Geophysical Research: Atmospheres",
+    "url": "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/jgrd.50569",
+    "mechanism": "ARST"
+  },
+  {
+    "subject": "stationary anticyclone over the southeastern Arabian Peninsula (the Arabian Anticyclone)",
+    "relation": "produces",
+    "object": "clockwise flow that supplied moisture from the Arabian Sea and the Red Sea",
+    "evidence_quote": "a stationary anticyclone over the southeastern Arabian Peninsula (the Arabian Anticyclone) produced a clockwise flow that supplied moisture from the Arabian Sea and the Red Sea",
+    "source_id": "ref_devries2013",
+    "citation": "de Vries et al. (2013), Journal of Geophysical Research: Atmospheres",
+    "url": "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/jgrd.50569",
+    "mechanism": "ARST"
+  },
+  {
+    "subject": "upper-level tropospheric instability combined with this moisture supply",
+    "relation": "produces",
+    "object": "deep moist convection",
+    "evidence_quote": "upper-level tropospheric instability combined with this moisture supply to produce deep moist convection",
+    "source_id": "ref_devries2013",
+    "citation": "de Vries et al. (2013), Journal of Geophysical Research: Atmospheres",
+    "url": "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/jgrd.50569",
+    "mechanism": "ARST"
+  },
+  {
+    "subject": "deep moist convection",
+    "relation": "results in",
+    "object": "a quasi-stationary mesoscale convective system and heavy rainfall over Jeddah",
+    "evidence_quote": "resulting in a quasi-stationary mesoscale convective system and heavy rainfall over Jeddah",
+    "source_id": "ref_devries2013",
+    "citation": "de Vries et al. (2013), Journal of Geophysical Research: Atmospheres",
+    "url": "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/jgrd.50569",
+    "mechanism": "ARST"
+  },
+  {
+    "subject": "The Red Sea Trough",
+    "relation": "enhances",
+    "object": "low-level moisture transport and convergence",
+    "evidence_quote": "The Red Sea Trough enhances low-level moisture transport and convergence",
+    "source_id": "ref_devries2013",
+    "citation": "de Vries et al. (2013), Journal of Geophysical Research: Atmospheres",
+    "url": "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/jgrd.50569",
+    "mechanism": "ARST"
+  },
+  {
+    "subject": "The Red Sea Trough",
+    "relation": "precedes",
+    "object": "deep convection and mesoscale convective system development",
+    "evidence_quote": "often acting as a precursor to deep convection and mesoscale convective system development",
+    "source_id": "ref_devries2013",
+    "citation": "de Vries et al. (2013), Journal of Geophysical Research: Atmospheres",
+    "url": "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/jgrd.50569",
+    "mechanism": "ARST"
+  },
+  {
+    "subject": "Surface fluxes over the Red Sea",
+    "relation": "regulates",
+    "object": "low-level moist-air convergence prior to convection initiation and development",
+    "evidence_quote": "Surface fluxes over the Red Sea play an important role in regulating low-level moist-air convergence prior to convection initiation and development",
+    "source_id": "ref_redsea_topo",
+    "citation": "ResearchGate (peer-reviewed case study)",
+    "url": "https://www.researchgate.net/publication/336928573",
+    "mechanism": "moisture_transport"
+  },
+  {
+    "subject": "Red Sea water",
+    "relation": "affects",
+    "object": "regional rainfall",
+    "evidence_quote": "Red Sea water is estimated to affect regional rainfall by about 30 to 40 percent",
+    "source_id": "ref_redsea_topo",
+    "citation": "ResearchGate (peer-reviewed case study)",
+    "url": "https://www.researchgate.net/publication/336928573",
+    "mechanism": "moisture_transport"
+  },
+  {
+    "subject": "strong convergence areas over the Red Sea",
+    "relation": "enhances",
+    "object": "uplift motion",
+    "evidence_quote": "strong convergence areas form over the Red Sea that enhance uplift motion",
+    "source_id": "ref_redsea_topo",
+    "citation": "ResearchGate (peer-reviewed case study)",
+    "url": "https://www.researchgate.net/publication/336928573",
+    "mechanism": "moisture_transport"
+  },
+  {
+    "subject": "strong convergence areas over the Red Sea",
+    "relation": "strengthens",
+    "object": "low-level jets",
+    "evidence_quote": "strengthen low-level jets",
+    "source_id": "ref_redsea_topo",
+    "citation": "ResearchGate (peer-reviewed case study)",
+    "url": "https://www.researchgate.net/publication/336928573",
+    "mechanism": "moisture_transport"
+  },
+  {
+    "subject": "strong convergence areas over the Red Sea",
+    "relation": "creates",
+    "object": "a conditionally unstable atmosphere that favours cyclonic system development",
+    "evidence_quote": "create a conditionally unstable atmosphere that favours cyclonic system development",
+    "source_id": "ref_redsea_topo",
+    "citation": "ResearchGate (peer-reviewed case study)",
+    "url": "https://www.researchgate.net/publication/336928573",
+    "mechanism": "moisture_transport"
+  },
+  {
+    "subject": "stronger winds combined with drier air",
+    "relation": "produces",
+    "object": "latent heat losses of up to 410 watts per square metre",
+    "evidence_quote": "stronger winds combined with drier air produce latent heat losses of up to 410 watts per square metre",
+    "source_id": "ref_heatflux_era5",
+    "citation": "MDPI Atmosphere (2019)",
+    "url": "https://www.mdpi.com/2073-4433/10/9/504",
+    "mechanism": "moisture_transport"
+  },
+  {
+    "subject": "powerful solar radiation and persistent high-pressure systems",
+    "relation": "causes",
+    "object": "intense surface heating",
+    "evidence_quote": "Saudi Arabia experiences powerful solar radiation and persistent high-pressure systems that contribute to intense surface heating",
+    "source_id": "ref_heatwave_circulation",
+    "citation": "ScienceDirect (peer-reviewed)",
+    "url": "https://www.sciencedirect.com/science/article/abs/pii/S0169809519301747",
+    "mechanism": "subtropical_high"
+  },
+  {
+    "subject": "subtropical high-pressure system over the Arabian Peninsula",
+    "relation": "causes",
+    "object": "extreme summer temperature variation",
+    "evidence_quote": "The influence of a subtropical high-pressure system over the Arabian Peninsula is associated with extreme summer temperature variation",
+    "source_id": "ref_heatwave_circulation",
+    "citation": "ScienceDirect (peer-reviewed)",
+    "url": "https://www.sciencedirect.com/science/article/abs/pii/S0169809519301747",
+    "mechanism": "subtropical_high"
+  },
+  {
+    "subject": "subtropical high-pressure system, combined with the region's geographic location and solar radiation exposure",
+    "relation": "drives",
+    "object": "extreme summer heat in Saudi Arabia",
+    "evidence_quote": "This subtropical high-pressure system, combined with the region's geographic location and solar radiation exposure, is identified as a primary driver of extreme summer heat in Saudi Arabia",
+    "source_id": "ref_heatwave_circulation",
+    "citation": "ScienceDirect (peer-reviewed)",
+    "url": "https://www.sciencedirect.com/science/article/abs/pii/S0169809519301747",
+    "mechanism": "subtropical_high"
+  },
+  {
+    "subject": "the adjacent sea",
+    "relation": "moderates",
+    "object": "temperature extremes",
+    "evidence_quote": "the adjacent sea moderates temperature extremes compared to the interior",
+    "source_id": "ref_heatwave_variability",
+    "citation": "Springer, Meteorology and Atmospheric Physics (2024)",
+    "url": "https://link.springer.com/article/10.1007/s00703-024-01010-6",
+    "mechanism": "subtropical_high"
+  },
+  {
+    "subject": "high pressure over eastern Africa and thermal low-pressure centres over Iran and Pakistan",
+    "relation": "drives",
+    "object": "summer Shamal",
+    "evidence_quote": "The summer Shamal, occurring from May to August, is a persistent north-northwesterly wind regime driven by high pressure over eastern Africa and thermal low-pressure centres over Iran and Pakistan.",
+    "source_id": "ref_shamal_yu2016",
+    "citation": "Yu et al. (2016), Journal of Geophysical Research: Atmospheres",
+    "url": "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015jd024063",
+    "mechanism": "thermal_low"
+  },
+  {
+    "subject": "steep pressure gradient between the heat low over Pakistan, Afghanistan and Iran and the high-pressure system over the eastern Mediterranean and northern Saudi Arabia",
+    "relation": "causes",
+    "object": "summer Shamal",
+    "evidence_quote": "It forms due to the steep pressure gradient between the heat low over Pakistan, Afghanistan and Iran and the high-pressure system over the eastern Mediterranean and northern Saudi Arabia.",
+    "source_id": "ref_shamal_yu2016",
+    "citation": "Yu et al. (2016), Journal of Geophysical Research: Atmospheres",
+    "url": "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015jd024063",
+    "mechanism": "thermal_low"
+  },
+  {
+    "subject": "summer Shamal",
+    "relation": "causes",
+    "object": "dust storm activity across the Arabian Peninsula",
+    "evidence_quote": "The summer Shamal is the major driver of dust storm activity across the Arabian Peninsula",
+    "source_id": "ref_shamal_yu2016",
+    "citation": "Yu et al. (2016), Journal of Geophysical Research: Atmospheres",
+    "url": "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015jd024063",
+    "mechanism": "thermal_low"
+  },
+  {
+    "subject": "summer Shamal",
+    "relation": "produces",
+    "object": "lifting dust and transporting it to the Persian Gulf and the Arabian Peninsula",
+    "evidence_quote": "capable of lifting dust and transporting it to the Persian Gulf and the Arabian Peninsula",
+    "source_id": "ref_shamal_yu2016",
+    "citation": "Yu et al. (2016), Journal of Geophysical Research: Atmospheres",
+    "url": "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015jd024063",
+    "mechanism": "thermal_low"
+  },
+  {
+    "subject": "warming, drying coastal atmosphere",
+    "relation": "causes",
+    "object": "significant positive trends in surface air temperature and wind speed, alongside significant negative trends in relative humidity and sea-level pressure",
+    "evidence_quote": "Data for the Saudi Arabian Red Sea coast from 1979 to 2020 show significant positive trends in surface air temperature and wind speed, alongside significant negative trends in relative humidity and sea-level pressure, consistent with a warming, drying coastal atmosphere over this period.",
+    "source_id": "ref_redsea_coast_trends",
+    "citation": "Nature Scientific Reports (2021)",
+    "url": "https://www.nature.com/articles/s41598-021-04200-z",
+    "mechanism": "moisture_transport"
+  }
+]

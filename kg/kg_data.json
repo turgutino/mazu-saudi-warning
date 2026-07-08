@@ -387,6 +387,186 @@
    "value": "heat_index_c 54.7 C",
    "location": "Persian Gulf (25.0N,51.9E)",
    "id": "E_20250816_heat_index_c"
+  },
+  {
+   "id": "cite_ref_devries2013",
+   "ntype": "Citation",
+   "label": "de Vries et al. (2013), J. Geophys. Res. Atmos.",
+   "desc": "Extreme precipitation events in the Middle East: Dynamics of the Active Red Sea Trough",
+   "url": "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/jgrd.50569",
+   "evidence": [
+    {
+     "subject": "eastward-migrating Mediterranean cyclone",
+     "relation": "joins",
+     "object": "extension of the Sudan low-pressure zone (the Red Sea Trough)",
+     "quote": "an eastward-migrating Mediterranean cyclone joined an extension of the Sudan low-pressure zone (the Red Sea Trough)"
+    },
+    {
+     "subject": "stationary anticyclone over the southeastern Arabian Peninsula (the Arabian Anticyclone)",
+     "relation": "produces",
+     "object": "clockwise flow that supplied moisture from the Arabian Sea and the Red Sea",
+     "quote": "a stationary anticyclone over the southeastern Arabian Peninsula (the Arabian Anticyclone) produced a clockwise flow that supplied moisture from the Arabian Sea and the Red Sea"
+    },
+    {
+     "subject": "upper-level tropospheric instability combined with this moisture supply",
+     "relation": "produces",
+     "object": "deep moist convection",
+     "quote": "upper-level tropospheric instability combined with this moisture supply to produce deep moist convection"
+    },
+    {
+     "subject": "deep moist convection",
+     "relation": "results in",
+     "object": "a quasi-stationary mesoscale convective system and heavy rainfall over Jeddah",
+     "quote": "resulting in a quasi-stationary mesoscale convective system and heavy rainfall over Jeddah"
+    },
+    {
+     "subject": "The Red Sea Trough",
+     "relation": "enhances",
+     "object": "low-level moisture transport and convergence",
+     "quote": "The Red Sea Trough enhances low-level moisture transport and convergence"
+    },
+    {
+     "subject": "The Red Sea Trough",
+     "relation": "precedes",
+     "object": "deep convection and mesoscale convective system development",
+     "quote": "often acting as a precursor to deep convection and mesoscale convective system development"
+    }
+   ],
+   "n_triples": 6
+  },
+  {
+   "id": "cite_ref_redsea_topo",
+   "ntype": "Citation",
+   "label": "ResearchGate case study",
+   "desc": "On the Effect of Red Sea and Topography on Rainfall over Saudi Arabia",
+   "url": "https://www.researchgate.net/publication/336928573",
+   "evidence": [
+    {
+     "subject": "Surface fluxes over the Red Sea",
+     "relation": "regulates",
+     "object": "low-level moist-air convergence prior to convection initiation and development",
+     "quote": "Surface fluxes over the Red Sea play an important role in regulating low-level moist-air convergence prior to convection initiation and development"
+    },
+    {
+     "subject": "Red Sea water",
+     "relation": "affects",
+     "object": "regional rainfall",
+     "quote": "Red Sea water is estimated to affect regional rainfall by about 30 to 40 percent"
+    },
+    {
+     "subject": "strong convergence areas over the Red Sea",
+     "relation": "enhances",
+     "object": "uplift motion",
+     "quote": "strong convergence areas form over the Red Sea that enhance uplift motion"
+    },
+    {
+     "subject": "strong convergence areas over the Red Sea",
+     "relation": "strengthens",
+     "object": "low-level jets",
+     "quote": "strengthen low-level jets"
+    },
+    {
+     "subject": "strong convergence areas over the Red Sea",
+     "relation": "creates",
+     "object": "a conditionally unstable atmosphere that favours cyclonic system development",
+     "quote": "create a conditionally unstable atmosphere that favours cyclonic system development"
+    }
+   ],
+   "n_triples": 5
+  },
+  {
+   "id": "cite_ref_heatflux_era5",
+   "ntype": "Citation",
+   "label": "MDPI Atmosphere (2019)",
+   "desc": "Surface Heat Fluxes over the Northern Arabian Gulf and Red Sea (ERA5/MERRA2)",
+   "url": "https://www.mdpi.com/2073-4433/10/9/504",
+   "evidence": [
+    {
+     "subject": "stronger winds combined with drier air",
+     "relation": "produces",
+     "object": "latent heat losses of up to 410 watts per square metre",
+     "quote": "stronger winds combined with drier air produce latent heat losses of up to 410 watts per square metre"
+    }
+   ],
+   "n_triples": 1
+  },
+  {
+   "id": "cite_ref_heatwave_circulation",
+   "ntype": "Citation",
+   "label": "ScienceDirect, Atmospheric Research",
+   "desc": "Extreme summer temperatures in Saudi Arabia and large-scale circulation",
+   "url": "https://www.sciencedirect.com/science/article/abs/pii/S0169809519301747",
+   "evidence": [
+    {
+     "subject": "powerful solar radiation and persistent high-pressure systems",
+     "relation": "causes",
+     "object": "intense surface heating",
+     "quote": "Saudi Arabia experiences powerful solar radiation and persistent high-pressure systems that contribute to intense surface heating"
+    },
+    {
+     "subject": "subtropical high-pressure system over the Arabian Peninsula",
+     "relation": "causes",
+     "object": "extreme summer temperature variation",
+     "quote": "The influence of a subtropical high-pressure system over the Arabian Peninsula is associated with extreme summer temperature variation"
+    },
+    {
+     "subject": "subtropical high-pressure system, combined with the region's geographic location and solar radiation exposure",
+     "relation": "drives",
+     "object": "extreme summer heat in Saudi Arabia",
+     "quote": "This subtropical high-pressure system, combined with the region's geographic location and solar radiation exposure, is identified as a primary driver of extreme summer heat in Saudi Arabia"
+    }
+   ],
+   "n_triples": 3
+  },
+  {
+   "id": "cite_ref_heatwave_variability",
+   "ntype": "Citation",
+   "label": "Springer, Meteorology and Atmospheric Physics (2024)",
+   "desc": "Observed heatwaves characteristics and variability over Saudi Arabia",
+   "url": "https://link.springer.com/article/10.1007/s00703-024-01010-6",
+   "evidence": [
+    {
+     "subject": "the adjacent sea",
+     "relation": "moderates",
+     "object": "temperature extremes",
+     "quote": "the adjacent sea moderates temperature extremes compared to the interior"
+    }
+   ],
+   "n_triples": 1
+  },
+  {
+   "id": "cite_ref_shamal_yu2016",
+   "ntype": "Citation",
+   "label": "Yu et al. (2016), J. Geophys. Res. Atmos.",
+   "desc": "Climatology of summer Shamal wind in the Middle East",
+   "url": "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015jd024063",
+   "evidence": [
+    {
+     "subject": "high pressure over eastern Africa and thermal low-pressure centres over Iran and Pakistan",
+     "relation": "drives",
+     "object": "summer Shamal",
+     "quote": "The summer Shamal, occurring from May to August, is a persistent north-northwesterly wind regime driven by high pressure over eastern Africa and thermal low-pressure centres over Iran and Pakistan."
+    },
+    {
+     "subject": "steep pressure gradient between the heat low over Pakistan, Afghanistan and Iran and the high-pressure system over the eastern Mediterranean and northern Saudi Arabia",
+     "relation": "causes",
+     "object": "summer Shamal",
+     "quote": "It forms due to the steep pressure gradient between the heat low over Pakistan, Afghanistan and Iran and the high-pressure system over the eastern Mediterranean and northern Saudi Arabia."
+    },
+    {
+     "subject": "summer Shamal",
+     "relation": "causes",
+     "object": "dust storm activity across the Arabian Peninsula",
+     "quote": "The summer Shamal is the major driver of dust storm activity across the Arabian Peninsula"
+    },
+    {
+     "subject": "summer Shamal",
+     "relation": "produces",
+     "object": "lifting dust and transporting it to the Persian Gulf and the Arabian Peninsula",
+     "quote": "capable of lifting dust and transporting it to the Persian Gulf and the Arabian Peninsula"
+    }
+   ],
+   "n_triples": 4
   }
  ],
  "links": [
@@ -1301,6 +1481,36 @@
    "value": 35.2,
    "source": "E_20250816_heat_index_c",
    "target": "tmax_c"
+  },
+  {
+   "etype": "grounded_by",
+   "source": "ARST",
+   "target": "cite_ref_devries2013"
+  },
+  {
+   "etype": "grounded_by",
+   "source": "moisture_transport",
+   "target": "cite_ref_redsea_topo"
+  },
+  {
+   "etype": "grounded_by",
+   "source": "moisture_transport",
+   "target": "cite_ref_heatflux_era5"
+  },
+  {
+   "etype": "grounded_by",
+   "source": "subtropical_high",
+   "target": "cite_ref_heatwave_circulation"
+  },
+  {
+   "etype": "grounded_by",
+   "source": "subtropical_high",
+   "target": "cite_ref_heatwave_variability"
+  },
+  {
+   "etype": "grounded_by",
+   "source": "thermal_low",
+   "target": "cite_ref_shamal_yu2016"
   }
  ]
 }

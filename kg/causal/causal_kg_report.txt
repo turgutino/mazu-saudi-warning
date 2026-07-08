@@ -1,0 +1,21 @@
+======================================================================
+MAZU Layer 3 — Causal KG merge report
+======================================================================
+Input triples: 21 (all passed verbatim-quote verification)
+Manually excluded after quality review: 1
+  Reason: circular/descriptive framing (trend statistics relabelled as causal),
+          not a genuine mechanistic claim, despite passing the quote check.
+Kept and merged: 20
+
+KG before: 51 nodes, 170 edges
+KG after:  57 nodes, 176 edges
+Added: 6 Citation nodes, 6 grounded_by edges
+
+Mechanisms now literature-grounded (4/5):
+  - ARST  (6 verified triples)
+  - moisture_transport  (6 verified triples)
+  - subtropical_high  (4 verified triples)
+  - thermal_low  (4 verified triples)
+
+Mechanisms WITHOUT literature grounding (honest disclosure, 1):
+  - orographic_lift  (remains hand-coded domain knowledge; no corpus source found this round)

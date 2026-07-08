@@ -1,0 +1,85 @@
+======================================================================
+MAZU Layer 3 — Causal triple extraction (DeepSeek + CoT)
+======================================================================
+Corpus entries: 7
+
+--- ref_devries2013 (de Vries et al. (2013), Journal of Geophysical Research: Atmospheres) ---
+Source: Extreme precipitation events in the Middle East: Dynamics of the Active Red Sea Trough
+URL: https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/jgrd.50569
+Raw extracted: 6 candidate triples
+  [ACCEPTED] eastward-migrating Mediterranean cyclone --joins--> extension of the Sudan low-pressure zone (the Red Sea Trough)
+             quote: "an eastward-migrating Mediterranean cyclone joined an extension of the Sudan low-pressure zone (the Red Sea Trough)"
+  [ACCEPTED] stationary anticyclone over the southeastern Arabian Peninsula (the Arabian Anticyclone) --produces--> clockwise flow that supplied moisture from the Arabian Sea and the Red Sea
+             quote: "a stationary anticyclone over the southeastern Arabian Peninsula (the Arabian Anticyclone) produced a clockwise flow that supplied moisture from the Arabian Sea and the Red Sea"
+  [ACCEPTED] upper-level tropospheric instability combined with this moisture supply --produces--> deep moist convection
+             quote: "upper-level tropospheric instability combined with this moisture supply to produce deep moist convection"
+  [ACCEPTED] deep moist convection --results in--> a quasi-stationary mesoscale convective system and heavy rainfall over Jeddah
+             quote: "resulting in a quasi-stationary mesoscale convective system and heavy rainfall over Jeddah"
+  [ACCEPTED] The Red Sea Trough --enhances--> low-level moisture transport and convergence
+             quote: "The Red Sea Trough enhances low-level moisture transport and convergence"
+  [ACCEPTED] The Red Sea Trough --precedes--> deep convection and mesoscale convective system development
+             quote: "often acting as a precursor to deep convection and mesoscale convective system development"
+
+--- ref_redsea_topo (ResearchGate (peer-reviewed case study)) ---
+Source: On the Effect of Red Sea and Topography on Rainfall over Saudi Arabia: Case Study
+URL: https://www.researchgate.net/publication/336928573
+Raw extracted: 5 candidate triples
+  [ACCEPTED] Surface fluxes over the Red Sea --regulates--> low-level moist-air convergence prior to convection initiation and development
+             quote: "Surface fluxes over the Red Sea play an important role in regulating low-level moist-air convergence prior to convection initiation and development"
+  [ACCEPTED] Red Sea water --affects--> regional rainfall
+             quote: "Red Sea water is estimated to affect regional rainfall by about 30 to 40 percent"
+  [ACCEPTED] strong convergence areas over the Red Sea --enhances--> uplift motion
+             quote: "strong convergence areas form over the Red Sea that enhance uplift motion"
+  [ACCEPTED] strong convergence areas over the Red Sea --strengthens--> low-level jets
+             quote: "strengthen low-level jets"
+  [ACCEPTED] strong convergence areas over the Red Sea --creates--> a conditionally unstable atmosphere that favours cyclonic system development
+             quote: "create a conditionally unstable atmosphere that favours cyclonic system development"
+
+--- ref_heatflux_era5 (MDPI Atmosphere (2019)) ---
+Source: Surface Heat Fluxes over the Northern Arabian Gulf and the Northern Red Sea: Evaluation of ECMWF-ERA5 and NASA-MERRA2 Reanalyses
+URL: https://www.mdpi.com/2073-4433/10/9/504
+Raw extracted: 1 candidate triples
+  [ACCEPTED] stronger winds combined with drier air --produces--> latent heat losses of up to 410 watts per square metre
+             quote: "stronger winds combined with drier air produce latent heat losses of up to 410 watts per square metre"
+
+--- ref_heatwave_circulation (ScienceDirect (peer-reviewed)) ---
+Source: Analysis of extreme summer temperatures in Saudi Arabia and the association with large-scale atmospheric circulation
+URL: https://www.sciencedirect.com/science/article/abs/pii/S0169809519301747
+Raw extracted: 3 candidate triples
+  [ACCEPTED] powerful solar radiation and persistent high-pressure systems --causes--> intense surface heating
+             quote: "Saudi Arabia experiences powerful solar radiation and persistent high-pressure systems that contribute to intense surface heating"
+  [ACCEPTED] subtropical high-pressure system over the Arabian Peninsula --causes--> extreme summer temperature variation
+             quote: "The influence of a subtropical high-pressure system over the Arabian Peninsula is associated with extreme summer temperature variation"
+  [ACCEPTED] subtropical high-pressure system, combined with the region's geographic location and solar radiation exposure --drives--> extreme summer heat in Saudi Arabia
+             quote: "This subtropical high-pressure system, combined with the region's geographic location and solar radiation exposure, is identified as a primary driver of extreme summer heat in Saudi Arabia"
+
+--- ref_heatwave_variability (Springer, Meteorology and Atmospheric Physics (2024)) ---
+Source: Observed heatwaves characteristics and variability over Saudi Arabia
+URL: https://link.springer.com/article/10.1007/s00703-024-01010-6
+Raw extracted: 1 candidate triples
+  [ACCEPTED] the adjacent sea --moderates--> temperature extremes
+             quote: "the adjacent sea moderates temperature extremes compared to the interior"
+
+--- ref_shamal_yu2016 (Yu et al. (2016), Journal of Geophysical Research: Atmospheres) ---
+Source: Climatology of summer Shamal wind in the Middle East
+URL: https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015jd024063
+Raw extracted: 4 candidate triples
+  [ACCEPTED] high pressure over eastern Africa and thermal low-pressure centres over Iran and Pakistan --drives--> summer Shamal
+             quote: "The summer Shamal, occurring from May to August, is a persistent north-northwesterly wind regime driven by high pressure over eastern Africa and thermal low-pressure centres over Iran and Pakistan."
+  [ACCEPTED] steep pressure gradient between the heat low over Pakistan, Afghanistan and Iran and the high-pressure system over the eastern Mediterranean and northern Saudi Arabia --causes--> summer Shamal
+             quote: "It forms due to the steep pressure gradient between the heat low over Pakistan, Afghanistan and Iran and the high-pressure system over the eastern Mediterranean and northern Saudi Arabia."
+  [ACCEPTED] summer Shamal --causes--> dust storm activity across the Arabian Peninsula
+             quote: "The summer Shamal is the major driver of dust storm activity across the Arabian Peninsula"
+  [ACCEPTED] summer Shamal --produces--> lifting dust and transporting it to the Persian Gulf and the Arabian Peninsula
+             quote: "capable of lifting dust and transporting it to the Persian Gulf and the Arabian Peninsula"
+
+--- ref_redsea_coast_trends (Nature Scientific Reports (2021)) ---
+Source: Recent atmospheric changes and future projections along the Saudi Arabian Red Sea Coast
+URL: https://www.nature.com/articles/s41598-021-04200-z
+Raw extracted: 1 candidate triples
+  [ACCEPTED] warming, drying coastal atmosphere --causes--> significant positive trends in surface air temperature and wind speed, alongside significant negative trends in relative humidity and sea-level pressure
+             quote: "Data for the Saudi Arabian Red Sea coast from 1979 to 2020 show significant positive trends in surface air temperature and wind speed, alongside significant negative trends in relative humidity and sea-level pressure, consistent with a warming, drying coastal atmosphere over this period."
+
+======================================================================
+TOTAL: 21 accepted, 0 rejected (21 candidates)
+Verbatim-quote verification pass rate: 100.0%
