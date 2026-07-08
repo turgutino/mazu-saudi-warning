@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MAZU · Saudi Arabia — Multi-Hazard Early Warning</title>
+<style>
+  :root{--bg:#0E1B2A;--panel:#16283C;--line:#243B54;--txt:#E6EEF6;--mut:#8AA0B4;--cyan:#2BC8E2;--orange:#FF7D45;--green:#1DDBA0;--gold:#FFD166}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 24px}
+  header{padding:60px 0 40px;border-bottom:1px solid var(--line);text-align:center}
+  header .kicker{color:var(--cyan);letter-spacing:.18em;font-size:13px;font-weight:700;text-transform:uppercase}
+  header h1{font-size:40px;margin:10px 0 6px;font-weight:800;letter-spacing:-.5px}
+  header h1 b{color:var(--cyan)}
+  header p{color:var(--mut);font-size:17px;max-width:640px;margin:0 auto}
+  .stats{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin:34px 0 0}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 22px;min-width:130px;text-align:center}
+  .stat .n{font-size:26px;font-weight:800;color:var(--cyan)}
+  .stat .l{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.05em}
+  section{padding:48px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:24px;margin-bottom:6px;font-weight:700}
+  h2 span{color:var(--mut);font-size:14px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:4px}
+  .lead{color:var(--mut);max-width:760px;margin-bottom:26px}
+  .fig{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:22px}
+  .fig img{width:100%;display:block}
+  .fig .cap{padding:12px 18px;font-size:13px;color:var(--mut);border-top:1px solid var(--line)}
+  .fig .cap b{color:var(--txt)}
+  .cta{display:inline-flex;align-items:center;gap:10px;background:var(--cyan);color:#08131f;font-weight:700;padding:14px 26px;border-radius:10px;text-decoration:none;font-size:15px;transition:transform .1s}
+  .cta:hover{transform:translateY(-2px)}
+  .flow{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px}
+  .step{flex:1;min-width:170px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .step .num{width:26px;height:26px;border-radius:50%;background:var(--cyan);color:#08131f;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:13px;margin-bottom:10px}
+  .step h3{font-size:15px;margin-bottom:4px}
+  .step p{font-size:13px;color:var(--mut)}
+  .step.done .num{background:var(--green)}
+  .step.next .num{background:var(--gold)}
+  .tag{display:inline-block;font-size:11px;padding:2px 9px;border-radius:9px;margin-top:8px;font-weight:700}
+  .tag.d{background:rgba(29,219,160,.15);color:var(--green)}
+  .tag.n{background:rgba(255,209,102,.15);color:var(--gold)}
+  ul.pts{list-style:none;margin-top:8px}
+  ul.pts li{padding:6px 0 6px 26px;position:relative;color:var(--mut)}
+  ul.pts li:before{content:"▸";position:absolute;left:0;color:var(--cyan)}
+  ul.pts li b{color:var(--txt)}
+  footer{padding:34px 0;text-align:center;color:var(--mut);font-size:13px}
+</style></head>
+<body>
+
+<header><div class="wrap">
+  <div class="kicker">Multi-hazard · Alert · Zero-gap · Universal</div>
+  <h1><b>MAZU</b> · Saudi Arabia</h1>
+  <p>Extreme-weather early-warning system for flash floods and heatwaves — built on CMA 10&nbsp;km meteorological indicators, a causal knowledge graph, and data-grounded detection.</p>
+  <div class="stats">
+    <div class="stat"><div class="n">365</div><div class="l">days · 2025</div></div>
+    <div class="stat"><div class="n">10 km</div><div class="l">resolution</div></div>
+    <div class="stat"><div class="n">20</div><div class="l">core indicators</div></div>
+    <div class="stat"><div class="n">51 / 170</div><div class="l">KG nodes / edges</div></div>
+    <div class="stat"><div class="n">2</div><div class="l">hazards</div></div>
+  </div>
+</div></header>
+
+<section><div class="wrap">
+  <h2><span>01 · Detection</span>Where and when hazards strike</h2>
+  <p class="lead">A weighted, spatially-clustered detection engine flags flash-flood and heatwave events across the Saudi grid. Validated against known 2025 events and a spatial-climatology check.</p>
+  <div class="fig">
+    <img src="img/risk_annual_hotspots.png" alt="Annual hazard hotspots">
+    <div class="cap"><b>Annual hazard hotspots (2025).</b> Flash-flood risk concentrates over the south-western Asir mountains and Red Sea coast; heatwave risk over the low, hot interior — the mountains stay cool. The pattern emerges from the data alone and matches Saudi Arabia's real hazard geography.</div>
+  </div>
+  <div class="fig">
+    <img src="img/risk_known_events.png" alt="Known 2025 extreme events">
+    <div class="cap"><b>Known 2025 extreme events.</b> The engine reproduces the 23 Aug Jizan extreme rain (254.9 mm), the 19 Aug moisture surge, and the July–August interior heatwaves — red rings mark extreme-severity clusters.</div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span>02 · Knowledge Graph</span>Why hazards form</h2>
+  <p class="lead">An interactive causal knowledge graph links indicators, hazards, driving mechanisms (Red Sea Trough, moisture transport, orographic lifting) and real events — with data-driven correlations that recover known physics (e.g. sea-surface temperature ↔ convective instability).</p>
+  <a class="cta" href="kg_view.html">Open the interactive knowledge graph →</a>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span>03 · Approach</span>From data to warning</h2>
+  <div class="flow">
+    <div class="step done"><div class="num">✓</div><h3>Indicator data</h3><p>365 daily files, 10 km grid, 20 core reliable indicators.</p><span class="tag d">done</span></div>
+    <div class="step done"><div class="num">✓</div><h3>Knowledge graph</h3><p>Causal, mechanism-aware, data-grounded events.</p><span class="tag d">done</span></div>
+    <div class="step done"><div class="num">✓</div><h3>Detection</h3><p>Weighted rules + spatial clustering, verified.</p><span class="tag d">done</span></div>
+    <div class="step next"><div class="num">→</div><h3>Forecast</h3><p>Spatiotemporal model — predict tomorrow's risk.</p><span class="tag n">next</span></div>
+    <div class="step next"><div class="num">→</div><h3>Agent</h3><p>Explainable natural-language warnings.</p><span class="tag n">next</span></div>
+  </div>
+  <ul class="pts">
+    <li><b>Beyond detection.</b> Current systems flag today's conditions; the next stage forecasts tomorrow's extreme risk.</li>
+    <li><b>Causal, not just statistical.</b> The knowledge graph encodes mechanisms and physics, not only co-occurrence.</li>
+    <li><b>Explainable.</b> Every alert traces back to its driving indicators and mechanism.</li>
+  </ul>
+</div></section>
+
+<footer><div class="wrap">MAZU · Saudi Arabia — 2026 MAZU Global Intelligence Innovation Application Challenge</div></footer>
+
+</body></html>
