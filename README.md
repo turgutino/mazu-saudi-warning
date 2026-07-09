@@ -73,7 +73,7 @@ tested — see `agent/EXTENSIONS_REPORT.md` for full methodology and results:
   thresholds missed entirely — real evidence the ML model adds value beyond
   simple thresholding. See `agent/REFLEXIVE_CHECK_REPORT.md`.
 
-All 55 unit tests pass (`agent/02_test_tools.py`, up from 32).
+All 58 unit tests pass (`agent/02_test_tools.py`, up from 32).
 
 ---
 

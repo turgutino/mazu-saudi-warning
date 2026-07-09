@@ -170,6 +170,26 @@ check("Mecca: detection engine found zero fired conditions (absolute thresholds 
      rm is not None and rm["detection_engine_risk_score"] == 0.0 and len(rm["detection_engine_conditions_fired"]) == 0,
      rm)
 
+# The 4th consistency branch (consistent_elevated -- both signals agree risk
+# IS elevated) had NOT been covered by a concrete example above. Found via a
+# sampled search across all cities/hazards/dates, then independently
+# verified against the raw source file BEFORE being hardcoded here (per the
+# session's rule: never trust a found case without re-deriving it):
+# Mecca 2025-05-17 heatwave, features from 2025-05-16 --
+# raw tmax_c=43.39 (<45, does NOT fire), heat_index_c=35.17 (<40, does NOT
+# fire), heatwave_day_flag=1.0 (fires, w=0.25), heatwave_duration_days=6.0
+# (fires, w=0.20) -> independently hand-computed score = 0.25+0.20 = 0.45,
+# matching the tool's own output exactly.
+r_both = tools.forecast_tool("Mecca", "2025-05-17", "heatwave")
+rb = r_both.get("reflexive_check")
+print(" ", "Mecca 05-17 heatwave (consistent_elevated case):", rb)
+check("Mecca 05-17: consistency = consistent_elevated (4th branch, found + independently verified)",
+     rb is not None and rb["consistency"] == "consistent_elevated", rb)
+check("Mecca 05-17: model probability actually elevated (>=0.3)",
+     r_both["probability"] >= 0.3, r_both["probability"])
+check("Mecca 05-17: detection score matches independent hand-computation from raw values (0.45)",
+     rb is not None and abs(rb["detection_engine_risk_score"] - 0.45) < 0.01, rb)
+
 # Bypass test: independently re-derive the detection risk score for the Jizan
 # case directly from the DetectionEngine class (bypassing forecast_tool
 # entirely) to confirm _reflexive_check() isn't silently drifting from the
