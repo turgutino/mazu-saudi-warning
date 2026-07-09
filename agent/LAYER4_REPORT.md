@@ -45,6 +45,11 @@ ROC-AUC/PR-AUC drift from the previously reported numbers by more than
 0.01. Result: heatwave 0.9706 (expected 0.971), flash_flood 0.8732
 (expected 0.873) — both matched, saved.
 
+> **Update:** this section reflects Layer 4 as originally shipped (27/27
+> tests). Three further extensions (terrain context, an A/B causal-KG
+> ablation test, impact-based population context) were added afterward —
+> the suite now stands at 45/45. See `EXTENSIONS_REPORT.md` for that work.
+
 ### Step 2 — each tool tested independently before LLM wiring (27/27 passed)
 `02_test_tools.py` — known events, negative controls, and error handling for
 all three tools. Two real bugs were found and fixed during this step (not
