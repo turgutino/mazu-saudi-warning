@@ -13,14 +13,15 @@ and an **explainable warning agent** (DeepSeek function calling).
 
 ## Full system audit
 
-`FULL_SYSTEM_AUDIT.py` independently traces 56 numbers — from the consolidated
+`FULL_SYSTEM_AUDIT.py` independently traces 63 numbers — from the consolidated
 dataset, the knowledge graph's event values, the causal citations, an
-agent tool's output, and the three post-Layer-4 extensions (terrain
-elevation, population context, and the A/B ablation test's headline
-claims, re-derived from raw saved transcripts rather than trusted from the
-report's own summary) — back to the raw 5GB source data (365 daily NetCDF
-files), plus checks the deployed GitHub site matches the local repo exactly.
-**Result: 56/56 passed, zero fabricated values found.** Full log in
+agent tool's output, and four post-Layer-4 extensions (terrain elevation,
+population context, an A/B ablation test re-derived from raw saved
+transcripts, and a reflexive self-check whose two headline findings are
+independently re-derived a third time directly from the raw source files)
+— back to the raw 5GB source data (365 daily NetCDF files), plus checks the
+deployed GitHub site matches the local repo exactly.
+**Result: 63/63 passed, zero fabricated values found.** Full log in
 [`AUDIT_RESULTS.txt`](AUDIT_RESULTS.txt).
 
 ---
@@ -60,8 +61,19 @@ tested — see `agent/EXTENSIONS_REPORT.md` for full methodology and results:
   population (Saudi Census 2022, GASTAT), explicitly labelled as reference
   context only — not an exposure estimate — per WMO's impact-based warning
   guidance.
+- **Reflexive self-check.** `forecast_tool` now cross-checks the ML
+  probability against Layer 1's independent rule-based detection engine on
+  the same day's indicators (a Reflexion-style consistency check, per
+  MAESTRO). This surfaced two genuine, independently-verified findings: on
+  23 Aug (Jizan), the physical preconditions for flash flooding (CAPE, IVT,
+  PWAT) were already elevated the day before, while the model gave only a
+  12.5% probability — a real precursor signal the model underweighted; on
+  25 Jul (Mecca), the model correctly flagged an anomalous heatwave (+3.68°C
+  above local climatology) that the detection engine's fixed absolute
+  thresholds missed entirely — real evidence the ML model adds value beyond
+  simple thresholding. See `agent/REFLEXIVE_CHECK_REPORT.md`.
 
-All 45 unit tests pass (`agent/02_test_tools.py`, up from 32).
+All 55 unit tests pass (`agent/02_test_tools.py`, up from 32).
 
 ---
 

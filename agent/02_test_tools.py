@@ -120,6 +120,72 @@ check("Taif: elevated terrain, mountain flag present",
 
 print()
 print("=" * 70)
+print("EXTENSION: reflexive_check (model vs. independent rule-based detection)")
+print("=" * 70)
+
+# Negative control: calm day should show BOTH signals low and agreeing.
+r_calm = tools.forecast_tool("Riyadh", "2025-11-06", "heatwave")
+rc = r_calm.get("reflexive_check")
+print(" ", "Riyadh calm day:", rc)
+check("calm day: reflexive_check present", rc is not None)
+check("calm day: consistency = consistent_low",
+     rc is not None and rc["consistency"] == "consistent_low", rc)
+check("calm day: detection_engine_risk_score is low", rc is not None and rc["detection_engine_risk_score"] < 0.3)
+
+# Jizan 2025-08-23 flash-flood: investigated in depth (see conversation) --
+# the precursor day (08-22) had elevated CAPE/IVT/PWAT/composite risk but NOT
+# yet observed rain (that started the 23rd), so the rule engine's supporting
+# conditions fire (0.20+0.15+0.15+0.10=0.60) while its primary "actual rain"
+# condition (weight 0.40) correctly does not. The model gave only 12.5%,
+# which is LOWER than the physical preconditions would suggest -- a genuine,
+# independently-confirmed finding (re-verified against raw indicator values
+# directly, not just this tool's own output), not a bug in this check.
+r_jizan = tools.forecast_tool("Jizan", "2025-08-23", "flash_flood")
+rj = r_jizan.get("reflexive_check")
+print(" ", "Jizan 08-23 flash_flood:", rj)
+check("Jizan: reflexive_check present", rj is not None)
+check("Jizan: consistency = detection_higher_than_model (known, investigated precursor-day case)",
+     rj is not None and rj["consistency"] == "detection_higher_than_model", rj)
+check("Jizan: detection score matches independently-verified raw-value computation "
+     "(0.20 flash_flood_risk + 0.15 cape + 0.15 ivt + 0.10 pwat = 0.60, rain NOT yet fired)",
+     rj is not None and abs(rj["detection_engine_risk_score"] - 0.60) < 0.01, rj)
+check("Jizan: daily_precip_total did NOT fire (rain hadn't started on the precursor day)",
+     rj is not None and not any(c.startswith("daily_precip_total") for c in rj["detection_engine_conditions_fired"]),
+     rj.get("detection_engine_conditions_fired") if rj else None)
+
+# Mecca 2025-07-25 heatwave: also investigated -- the precursor day (07-24)
+# was anomalously hot for MECCA specifically (+3.68C above its own
+# climatology) but did not cross the rule engine's ABSOLUTE thresholds
+# (tmax_c>=45, heat_index_c>=40 -- actual values were 42.98C/37.0C). The ML
+# model (trained on the anomaly-aware heatwave_day_flag label) correctly
+# flags this as elevated risk (62.8%) where the simpler absolute-threshold
+# rule engine sees nothing -- a real demonstration of the ML model adding
+# value beyond fixed-threshold detection, not a flaw in either component.
+r_mecca = tools.forecast_tool("Mecca", "2025-07-25", "heatwave")
+rm = r_mecca.get("reflexive_check")
+print(" ", "Mecca 07-25 heatwave:", rm)
+check("Mecca: consistency = model_higher_than_detection (known, investigated anomaly-vs-absolute case)",
+     rm is not None and rm["consistency"] == "model_higher_than_detection", rm)
+check("Mecca: detection engine found zero fired conditions (absolute thresholds not met)",
+     rm is not None and rm["detection_engine_risk_score"] == 0.0 and len(rm["detection_engine_conditions_fired"]) == 0,
+     rm)
+
+# Bypass test: independently re-derive the detection risk score for the Jizan
+# case directly from the DetectionEngine class (bypassing forecast_tool
+# entirely) to confirm _reflexive_check() isn't silently drifting from the
+# same rule engine Layer 1 already validated.
+de_direct = tools.DetectionEngine(dataset=tools.DATASET)
+direct_field = de_direct.risk_field("2025-08-22", "flash_flood")
+yi_d = int((abs(de_direct.lat - 16.9)).argmin())
+xi_d = int((abs(de_direct.lon - 42.6)).argmin())
+direct_score = float(direct_field[yi_d, xi_d])
+check("Jizan: reflexive_check score matches an independent, direct DetectionEngine call (bypass test)",
+     rj is not None and abs(rj["detection_engine_risk_score"] - direct_score) < 1e-6,
+     f"tool={rj['detection_engine_risk_score']} direct={direct_score}")
+de_direct.close()
+
+print()
+print("=" * 70)
 print("EXTENSION: impact_context (population reference) on forecast_tool")
 print("=" * 70)
 

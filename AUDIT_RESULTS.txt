@@ -84,7 +84,18 @@ SECTION G — post-Layer-4 extensions (terrain, population, A/B ablation)
   [PASS] causal_kg_tool never appears in any 'without_kg' trace (ablation was real)
 
 ==========================================================================
-TOTAL: 56 passed, 0 failed
+SECTION H — reflexive_check (model vs. independent rule-based detection)
+==========================================================================
+  [PASS] reflexive_check present on forecast_tool output
+  [PASS] Jizan precursor-day (08-22) rain had NOT started yet, per raw source
+  [PASS] Jizan detection score independently re-derived from RAW file matches tool output
+  [PASS] Jizan: consistency label correctly reflects model < 0.3 <= detection (independent re-check)
+  [PASS] Mecca precursor-day (07-24) tmax was below the 45C absolute threshold, per raw source
+  [PASS] Mecca detection score independently re-derived from RAW file matches tool output (both 0.0)
+  [PASS] Mecca: consistency label correctly reflects model >= 0.3 > detection (independent re-check)
+
+==========================================================================
+TOTAL: 63 passed, 0 failed
 ==========================================================================
 
 Every checked number traces back to the raw 5GB source data. No fabrication found.

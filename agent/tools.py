@@ -41,6 +41,18 @@ exec(compile(_bn_src, "bn", "exec"), _bn.__dict__)
 neighbor_mean = _bn.neighbor_mean
 NEIGHBOR_VARS = _bn.NEIGHBOR_VARS
 
+# Layer 1's rule-based detection engine (RULES: data-grounded percentile
+# thresholds per hazard, verified in 01_detection_engine.py's own test suite)
+# is reused here as an INDEPENDENT cross-check signal for the ML forecast --
+# see _reflexive_check() below.
+_de_spec = importlib.util.spec_from_file_location("de", os.path.join(MODEL_DIR, "01_detection_engine.py"))
+_de = importlib.util.module_from_spec(_de_spec)
+_de_src = open(os.path.join(MODEL_DIR, "01_detection_engine.py"), encoding="utf-8").read()
+_de_src = _de_src.split('if __name__ == "__main__":')[0]
+exec(compile(_de_src, "de", "exec"), _de.__dict__)
+DetectionEngine = _de.DetectionEngine
+DETECTION_RULES = _de.RULES
+
 FEATURE_VARS = [
     "daily_precip_total", "daily_convective_precip", "daily_large_scale_precip",
     "t2m_c", "tmax_c", "tmin_c", "heat_index_c", "vpd_kpa",
@@ -52,6 +64,7 @@ _MODELS = {}
 _META = None
 _DS = None
 _POP = None
+_DE = None
 
 
 def _load_resources():
@@ -76,6 +89,88 @@ def _get_model(hazard):
     if hazard not in _MODELS:
         _MODELS[hazard] = joblib.load(os.path.join(SAVED_DIR, f"{hazard}_model.joblib"))
     return _MODELS[hazard]
+
+
+def _get_detection_engine():
+    global _DE
+    if _DE is None:
+        _DE = DetectionEngine(dataset=DATASET)
+    return _DE
+
+
+# Threshold at which each independent signal (ML probability, rule-based
+# detection risk score) counts as "elevated". Both are 0..1 scores but are NOT
+# directly comparable in a calibrated sense (one is a trained classifier's
+# probability, the other a weighted-condition score) -- 0.3 is a deliberately
+# moderate, round cutoff chosen to sit clearly above typical rare-event base
+# rates (~0.5-5%) while staying below the detection engine's own event-cluster
+# threshold (0.5-0.55, see RULES in 01_detection_engine.py), so this flags
+# meaningful signal without requiring a full clustered event. It is a fixed,
+# documented choice, not tuned to produce any particular result.
+_REFLEXIVE_THRESHOLD = 0.3
+
+
+def _reflexive_check(city_lat, city_lon, features_date, hazard, model_proba):
+    """Cross-check the ML model's probability against Layer 1's INDEPENDENT
+    rule-based detection engine, evaluated on the SAME day's raw indicators
+    the model used as input (features_date). This is a Reflexion-style
+    self-consistency check (cf. Shinn et al. 2023; used in the same spirit by
+    MAESTRO, npj Artificial Intelligence 2026, to validate agent outputs
+    against independent domain constraints) -- two independently-built
+    signals (a trained classifier vs. hand-set, data-grounded physical
+    thresholds) should broadly agree; when they don't, that disagreement is
+    itself useful information, not something to hide.
+    """
+    eng = _get_detection_engine()
+    if features_date not in eng.times:
+        return None
+    risk_field = eng.risk_field(features_date, hazard)
+    yi = int(np.argmin(np.abs(eng.lat - city_lat)))
+    xi = int(np.argmin(np.abs(eng.lon - city_lon)))
+    detection_risk = float(risk_field[yi, xi])
+
+    rule = DETECTION_RULES[hazard]
+    ti = int(np.where(eng.times == features_date)[0][0])
+    fired = []
+    for c in rule["conditions"]:
+        if c["ind"] in eng.ds:
+            v = float(eng.ds[c["ind"]].values[ti, yi, xi])
+            op = _de._OPS[c["op"]]
+            if np.isfinite(v) and op(v, c["thr"]):
+                fired.append(f"{c['ind']}={v:.1f}")
+
+    model_elevated = model_proba >= _REFLEXIVE_THRESHOLD
+    detection_elevated = detection_risk >= _REFLEXIVE_THRESHOLD
+
+    if model_elevated and detection_elevated:
+        consistency = "consistent_elevated"
+        note = ("Model risk and independent rule-based physical indicators AGREE this is "
+                "an elevated-risk situation.")
+    elif not model_elevated and not detection_elevated:
+        consistency = "consistent_low"
+        note = ("Model risk and independent rule-based physical indicators AGREE this is "
+                "a low-risk situation.")
+    elif model_elevated and not detection_elevated:
+        consistency = "model_higher_than_detection"
+        note = ("Model flags elevated risk, but the classic physical drivers for this "
+                "hazard (per Layer 1's data-grounded thresholds) were NOT present in that "
+                "day's indicators at this location -- treat with added caution, the model "
+                "may be picking up a signal the rule-based check doesn't capture, or may "
+                "be over-confident.")
+    else:
+        consistency = "detection_higher_than_model"
+        note = ("The classic physical drivers for this hazard WERE present that day, but "
+                "the model assigned low probability -- also worth caution, this is the "
+                "riskier mismatch direction for a genuine miss.")
+
+    return {
+        "model_probability": round(model_proba, 4),
+        "detection_engine_risk_score": round(detection_risk, 4),
+        "detection_engine_conditions_fired": fired,
+        "threshold_used": _REFLEXIVE_THRESHOLD,
+        "consistency": consistency,
+        "note": note,
+    }
 
 
 def _nearest_stride2_index(lat_arr_s, lon_arr_s, lat, lon):
@@ -171,6 +266,8 @@ def forecast_tool(city: str, target_date: str, hazard: str) -> dict:
                 f"probability with added caution."
             )
 
+    reflexive_check = _reflexive_check(city_lat, city_lon, times[ti], hazard, proba)
+
     pop = _load_population()
     city_pop = pop["cities"].get(city)
     impact_context = None
@@ -192,6 +289,7 @@ def forecast_tool(city: str, target_date: str, hazard: str) -> dict:
         "elevation_m": round(elevation_m, 1) if elevation_m is not None else None,
         "terrain_note": terrain_note,
         "impact_context": impact_context,
+        "reflexive_check": reflexive_check,
         "model_verified_roc_auc": meta[hazard]["roc_auc"],
     }
 

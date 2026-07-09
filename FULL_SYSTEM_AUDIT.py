@@ -301,6 +301,75 @@ if os.path.exists(ABLATION_JSON):
     check("G", "causal_kg_tool never appears in any 'without_kg' trace (ablation was real)",
          len(leaked) == 0, leaked)
 
+# =============================================================================
+print()
+print("=" * 74)
+print("SECTION H — reflexive_check (model vs. independent rule-based detection)")
+print("=" * 74)
+
+# H1 -- re-derive the Jizan precursor-day detection score directly from the
+# RAW source file (bypassing mazu_dataset.nc entirely, unlike tools.py which
+# reads the consolidated dataset), then compare against forecast_tool's output.
+raw_822 = xr.open_dataset(os.path.join(RAW_DIR, "saudi_indicators_20250822.nc"))
+jyi = int(np.argmin(np.abs(raw_822.latitude.values - 16.9)))
+jxi = int(np.argmin(np.abs(raw_822.longitude.values - 42.6)))
+raw_precip = float(raw_822["daily_precip_total"].values[jyi, jxi])
+raw_ffr = float(raw_822["flash_flood_risk"].values[jyi, jxi])
+raw_cape = float(raw_822["cape"].values[jyi, jxi])
+raw_ivt = float(raw_822["ivt"].values[jyi, jxi])
+raw_pwat = float(raw_822["pwat"].values[jyi, jxi])
+raw_822.close()
+
+indep_score = 0.0
+indep_score += 0.40 if raw_precip >= 10 else 0.0
+indep_score += 0.20 if raw_ffr >= 2 else 0.0
+indep_score += 0.15 if raw_cape >= 1000 else 0.0
+indep_score += 0.15 if raw_ivt >= 200 else 0.0
+indep_score += 0.10 if raw_pwat >= 40 else 0.0
+
+r_jizan = agent_tools.forecast_tool("Jizan", "2025-08-23", "flash_flood")
+rj = r_jizan.get("reflexive_check")
+check("H", "reflexive_check present on forecast_tool output", rj is not None)
+check("H", "Jizan precursor-day (08-22) rain had NOT started yet, per raw source",
+     raw_precip < 10, f"raw_precip={raw_precip}")
+check("H", "Jizan detection score independently re-derived from RAW file matches tool output",
+     rj is not None and abs(rj["detection_engine_risk_score"] - indep_score) < 1e-6,
+     f"raw-derived={indep_score} tool={rj['detection_engine_risk_score'] if rj else None}")
+check("H", "Jizan: consistency label correctly reflects model < 0.3 <= detection (independent re-check)",
+     rj is not None and (r_jizan["probability"] < 0.3 <= indep_score)
+     and rj["consistency"] == "detection_higher_than_model",
+     f"model_proba={r_jizan['probability']} detection={indep_score} label={rj['consistency'] if rj else None}")
+
+# H2 -- re-derive the Mecca precursor-day case directly from the RAW file:
+# absolute heatwave thresholds should NOT fire despite the model's elevated
+# probability (the anomaly-vs-absolute-threshold finding).
+raw_724 = xr.open_dataset(os.path.join(RAW_DIR, "saudi_indicators_20250724.nc"))
+myi = int(np.argmin(np.abs(raw_724.latitude.values - 21.4)))
+mxi = int(np.argmin(np.abs(raw_724.longitude.values - 39.8)))
+raw_tmax = float(raw_724["tmax_c"].values[myi, mxi])
+raw_hidx = float(raw_724["heat_index_c"].values[myi, mxi])
+raw_hwflag = float(raw_724["heatwave_day_flag"].values[myi, mxi])
+raw_hwdur = float(raw_724["heatwave_duration_days"].values[myi, mxi])
+raw_724.close()
+
+indep_mecca_score = 0.0
+indep_mecca_score += 0.35 if raw_tmax >= 45 else 0.0
+indep_mecca_score += 0.25 if raw_hwflag >= 1 else 0.0
+indep_mecca_score += 0.20 if raw_hwdur >= 3 else 0.0
+indep_mecca_score += 0.20 if raw_hidx >= 40 else 0.0
+
+r_mecca = agent_tools.forecast_tool("Mecca", "2025-07-25", "heatwave")
+rm = r_mecca.get("reflexive_check")
+check("H", "Mecca precursor-day (07-24) tmax was below the 45C absolute threshold, per raw source",
+     raw_tmax < 45, f"raw_tmax={raw_tmax}")
+check("H", "Mecca detection score independently re-derived from RAW file matches tool output (both 0.0)",
+     rm is not None and abs(rm["detection_engine_risk_score"] - indep_mecca_score) < 1e-6,
+     f"raw-derived={indep_mecca_score} tool={rm['detection_engine_risk_score'] if rm else None}")
+check("H", "Mecca: consistency label correctly reflects model >= 0.3 > detection (independent re-check)",
+     rm is not None and (r_mecca["probability"] >= 0.3 > indep_mecca_score)
+     and rm["consistency"] == "model_higher_than_detection",
+     f"model_proba={r_mecca['probability']} detection={indep_mecca_score} label={rm['consistency'] if rm else None}")
+
 cons.close()
 
 # =============================================================================
