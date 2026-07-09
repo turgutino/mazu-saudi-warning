@@ -19,7 +19,7 @@ and (in progress) an **explainable warning agent**.
 | Knowledge graph | ✅ | 57 nodes / 176 edges — indicators, hazards, mechanisms, regions, **real 2025 events with observed values**, and **6 peer-reviewed citations** grounding 4 of 5 mechanisms in verbatim-verified literature text. Interactive. |
 | Detection engine | ✅ | Weighted multi-condition rules + spatial connected-component clustering. Validated against known 2025 events and a spatial-climatology check. |
 | Forecast (t→t+1) | ✅ | Gradient-boosted spatiotemporal model. Heatwave ROC-AUC 0.971 (PR-AUC 0.795); flash-flood ROC-AUC 0.873. A GNN variant was also tested and honestly reported (mixed result, not deployed). |
-| Explainable agent | 🔜 | Natural-language warnings tracing each alert to its drivers and mechanism. |
+| Explainable agent | ✅ | DeepSeek function-calling agent wiring the forecast model, causal KG and live conditions into grounded answers. 27 tool tests + 4 end-to-end scenarios, all passing. See `agent/LAYER4_REPORT.md` and the [worked examples](agent_view.html). |
 
 ---
 
@@ -40,6 +40,9 @@ and (in progress) an **explainable warning agent**.
 - **Genuine forecasting, not same-day detection.** The model predicts tomorrow's risk from
   today's indicators (trained on Jan–Jun 2025, tested on unseen Jul–Dec), verified against
   known events and negative controls — see `model/forecast_report.txt`.
+- **The knowledge graph is functional, not decorative.** The agent programmatically queries
+  it on every question (the same way a production detection system would), rather than it
+  being a browsable diagram nobody's code actually reads.
 
 ---
 
@@ -48,10 +51,12 @@ and (in progress) an **explainable warning agent**.
 ```
 index.html                 landing page (GitHub Pages)
 kg_view.html               interactive knowledge graph
+agent_view.html            real, verified agent transcripts
 img/                       risk maps + forecast visualisations
 pipeline/build_dataset.py  365 daily files -> consolidated dataset
 kg/                        knowledge-graph builder + dashboard generator
 kg/causal/                 literature-grounded causal extraction (DeepSeek + CoT)
+agent/                     forecast + causal-KG + conditions tools, DeepSeek agent
 model/                     detection engine, forecast models, risk-map visualisation
 ```
 

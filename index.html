@@ -96,18 +96,28 @@
 </div></section>
 
 <section><div class="wrap">
-  <h2><span>04 · Approach</span>From data to warning</h2>
+  <h2><span>04 · Agent</span>Ask it a question</h2>
+  <p class="lead">A DeepSeek function-calling agent wires the forecast model, the literature-grounded causal knowledge graph, and live conditions into one assistant. Every probability, mechanism and citation it states comes from an actual tool call — never invented. This is what makes the knowledge graph <i>functional</i> rather than just browsable: the agent queries it programmatically on every question, the same way a production detection system would.</p>
+  <a class="cta" href="agent_view.html">See real worked examples &rarr;</a>
+  <ul class="pts" style="margin-top:20px">
+    <li><b>Grounded, not generative.</b> The system prompt forbids stating any number or citation without a tool result backing it — verified across 4 end-to-end test scenarios, including honest refusal on out-of-range dates and unknown cities.</li>
+    <li><b>Static showcase, by design.</b> GitHub Pages can't run the Python backend or safely hold an API key client-side, so the linked page shows real, verified agent transcripts with their exact tool-call traces rather than a live chat.</li>
+  </ul>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span>05 · Approach</span>From data to warning</h2>
   <div class="flow">
     <div class="step done"><div class="num">✓</div><h3>Indicator data</h3><p>365 daily files, 10 km grid, 20 core reliable indicators.</p><span class="tag d">done</span></div>
     <div class="step done"><div class="num">✓</div><h3>Knowledge graph</h3><p>Causal, mechanism-aware, data-grounded events.</p><span class="tag d">done</span></div>
     <div class="step done"><div class="num">✓</div><h3>Detection</h3><p>Weighted rules + spatial clustering, verified.</p><span class="tag d">done</span></div>
     <div class="step done"><div class="num">✓</div><h3>Forecast</h3><p>t→t+1 spatiotemporal model, verified against known events.</p><span class="tag d">done</span></div>
-    <div class="step next"><div class="num">→</div><h3>Agent</h3><p>Explainable natural-language warnings.</p><span class="tag n">next</span></div>
+    <div class="step done"><div class="num">✓</div><h3>Agent</h3><p>DeepSeek function-calling, grounded in the model + KG.</p><span class="tag d">done</span></div>
   </div>
   <ul class="pts">
     <li><b>Beyond detection.</b> The forecast layer predicts tomorrow's extreme risk, not just today's conditions — the competitor system only detects.</li>
     <li><b>Causal, not just statistical.</b> The knowledge graph encodes mechanisms and physics, not only co-occurrence.</li>
-    <li><b>Explainable.</b> Every alert traces back to its driving indicators and mechanism.</li>
+    <li><b>Explainable.</b> Every alert traces back to its driving indicators and mechanism — and now, the agent generates that explanation automatically.</li>
   </ul>
 </div></section>
 

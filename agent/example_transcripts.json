@@ -1,0 +1,368 @@
+[
+  {
+    "question": "What is the flash-flood risk in Jizan for 2025-08-23, and why?",
+    "answer": "Here are the results:\n\n## Flash-Flood Risk for Jizan — 2025-08-23\n\n**Probability:** **12.53%** (low risk)\n- Model verified ROC-AUC: **0.873** (highly reliable model)\n\n### Why this risk exists\n\nThe physical mechanisms driving flash-flood risk in Jizan are:\n\n1. **Active Red Sea Trough (ARST)** — A low-pressure trough over the Red Sea that draws in moist air. When it interacts with eastward-moving Mediterranean cyclones and the Arabian Anticyclone, it can produce intense rainfall. *(de Vries et al., 2013)*\n\n2. **Moisture Transport** — Surface fluxes over the Red Sea supply low-level moist air, contributing ~30–40% of regional rainfall. Stronger winds can enhance latent heat fluxes, fueling convection. *(ResearchGate case study; MDPI Atmosphere, 2019)*\n\n3. **Orographic Lift** — The Hejaz/Asir mountains force moist air upward, enhancing rainfall on the windward side (where Jizan is located).\n\n### Recommendation\n\nThe risk on August 23 is **low (~12.5%)**, so no major concern. However, Jizan is climatologically prone to flash floods during the summer monsoon season (July–September) due to the Red Sea Trough and orographic effects. Keep an eye on short-term forecasts if you're planning activities in wadi (valley) areas.",
+    "trace": [
+      {
+        "tool": "forecast_tool",
+        "args": {
+          "city": "Jizan",
+          "target_date": "2025-08-23",
+          "hazard": "flash_flood"
+        },
+        "result": {
+          "city": "Jizan",
+          "target_date": "2025-08-23",
+          "features_from_date": "2025-08-22",
+          "hazard": "flash_flood",
+          "probability": 0.1253,
+          "grid_cell": {
+            "lat": 16.9,
+            "lon": 42.6
+          },
+          "model_verified_roc_auc": 0.8731742776960718
+        }
+      },
+      {
+        "tool": "causal_kg_tool",
+        "args": {
+          "hazard": "flash_flood"
+        },
+        "result": {
+          "hazard": "flash_flood",
+          "contributing_indicators": [
+            "daily_precip_total",
+            "daily_convective_precip",
+            "cape",
+            "pwat",
+            "ivt",
+            "wind850_speed",
+            "daily_precip_anomaly",
+            "flash_flood_risk"
+          ],
+          "mechanisms": [
+            {
+              "mechanism": "ARST",
+              "description": "Active Red Sea Trough - low-level convergence over the Red Sea",
+              "literature_grounded": true,
+              "citations": [
+                {
+                  "citation": "de Vries et al. (2013), J. Geophys. Res. Atmos.",
+                  "url": "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/jgrd.50569",
+                  "evidence": [
+                    {
+                      "subject": "eastward-migrating Mediterranean cyclone",
+                      "relation": "joins",
+                      "object": "extension of the Sudan low-pressure zone (the Red Sea Trough)",
+                      "quote": "an eastward-migrating Mediterranean cyclone joined an extension of the Sudan low-pressure zone (the Red Sea Trough)"
+                    },
+                    {
+                      "subject": "stationary anticyclone over the southeastern Arabian Peninsula (the Arabian Anticyclone)",
+                      "relation": "produces",
+                      "object": "clockwise flow that supplied moisture from the Arabian Sea and the Red Sea",
+                      "quote": "a stationary anticyclone over the southeastern Arabian Peninsula (the Arabian Anticyclone) produced a clockwise flow that supplied moisture from the Arabian Sea and the Red Sea"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "mechanism": "moisture_transport",
+              "description": "Red Sea / Arabian Sea moisture transport",
+              "literature_grounded": true,
+              "citations": [
+                {
+                  "citation": "ResearchGate case study",
+                  "url": "https://www.researchgate.net/publication/336928573",
+                  "evidence": [
+                    {
+                      "subject": "Surface fluxes over the Red Sea",
+                      "relation": "regulates",
+                      "object": "low-level moist-air convergence prior to convection initiation and development",
+                      "quote": "Surface fluxes over the Red Sea play an important role in regulating low-level moist-air convergence prior to convection initiation and development"
+                    },
+                    {
+                      "subject": "Red Sea water",
+                      "relation": "affects",
+                      "object": "regional rainfall",
+                      "quote": "Red Sea water is estimated to affect regional rainfall by about 30 to 40 percent"
+                    }
+                  ]
+                },
+                {
+                  "citation": "MDPI Atmosphere (2019)",
+                  "url": "https://www.mdpi.com/2073-4433/10/9/504",
+                  "evidence": [
+                    {
+                      "subject": "stronger winds combined with drier air",
+                      "relation": "produces",
+                      "object": "latent heat losses of up to 410 watts per square metre",
+                      "quote": "stronger winds combined with drier air produce latent heat losses of up to 410 watts per square metre"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "mechanism": "orographic_lift",
+              "description": "Orographic lifting over Hejaz / Asir mountains",
+              "literature_grounded": false,
+              "citations": []
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "question": "How hot will it be in Mecca on 2025-07-25? Is there a heatwave risk?",
+    "answer": "Here's the full picture for **Mecca on 2025-07-25**:\n\n---\n\n## 🌡️ Heatwave Risk: **62.8% probability**\n\n**Model confidence:** Very high (ROC-AUC = **0.971**)\n\n### Observed conditions on 2025-07-24 (the day before)\n| Indicator | Value |\n|---|---|\n| Max temperature (tmax) | **42.98°C** |\n| Mean temperature (t2m) | **37.03°C** |\n| Min temperature | 31.59°C |\n| Heat index | 37.03°C |\n| Vapor Pressure Deficit | **5.45 kPa** (very dry air) |\n| Tmax anomaly | **+3.68°C** above normal |\n\n### Why the risk is elevated\nTwo key mechanisms are driving this:\n\n1. **Subtropical High (Heat Dome)** – A persistent high-pressure system over the Arabian Peninsula traps intense solar radiation, causing extreme surface heating. *(ScienceDirect, Atmospheric Research)*\n2. **Arabian Thermal Low** – A desert heat low contributes to the summer Shamal winds and reinforces the extreme temperature regime. *(Yu et al., 2016, J. Geophys. Res. Atmos.)*\n\n### Recommendation\nWith max temps already near **43°C** and a 63% chance of heatwave conditions on July 25, take precautions: stay hydrated, avoid outdoor activity during peak hours (12–4 PM), and check on vulnerable individuals.",
+    "trace": [
+      {
+        "tool": "forecast_tool",
+        "args": {
+          "city": "Mecca",
+          "target_date": "2025-07-25",
+          "hazard": "heatwave"
+        },
+        "result": {
+          "city": "Mecca",
+          "target_date": "2025-07-25",
+          "features_from_date": "2025-07-24",
+          "hazard": "heatwave",
+          "probability": 0.628,
+          "grid_cell": {
+            "lat": 21.3,
+            "lon": 39.8
+          },
+          "model_verified_roc_auc": 0.9705939220629891
+        }
+      },
+      {
+        "tool": "causal_kg_tool",
+        "args": {
+          "hazard": "heatwave"
+        },
+        "result": {
+          "hazard": "heatwave",
+          "contributing_indicators": [
+            "t2m_c",
+            "tmax_c",
+            "heat_index_c",
+            "vpd_kpa",
+            "t2m_anomaly_c",
+            "tmax_anomaly_c",
+            "heatwave_day_flag",
+            "heatwave_duration_days"
+          ],
+          "mechanisms": [
+            {
+              "mechanism": "subtropical_high",
+              "description": "Subtropical / continental high (heat dome)",
+              "literature_grounded": true,
+              "citations": [
+                {
+                  "citation": "ScienceDirect, Atmospheric Research",
+                  "url": "https://www.sciencedirect.com/science/article/abs/pii/S0169809519301747",
+                  "evidence": [
+                    {
+                      "subject": "powerful solar radiation and persistent high-pressure systems",
+                      "relation": "causes",
+                      "object": "intense surface heating",
+                      "quote": "Saudi Arabia experiences powerful solar radiation and persistent high-pressure systems that contribute to intense surface heating"
+                    },
+                    {
+                      "subject": "subtropical high-pressure system over the Arabian Peninsula",
+                      "relation": "causes",
+                      "object": "extreme summer temperature variation",
+                      "quote": "The influence of a subtropical high-pressure system over the Arabian Peninsula is associated with extreme summer temperature variation"
+                    }
+                  ]
+                },
+                {
+                  "citation": "Springer, Meteorology and Atmospheric Physics (2024)",
+                  "url": "https://link.springer.com/article/10.1007/s00703-024-01010-6",
+                  "evidence": [
+                    {
+                      "subject": "the adjacent sea",
+                      "relation": "moderates",
+                      "object": "temperature extremes",
+                      "quote": "the adjacent sea moderates temperature extremes compared to the interior"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "mechanism": "thermal_low",
+              "description": "Arabian thermal low (desert heat low)",
+              "literature_grounded": true,
+              "citations": [
+                {
+                  "citation": "Yu et al. (2016), J. Geophys. Res. Atmos.",
+                  "url": "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015jd024063",
+                  "evidence": [
+                    {
+                      "subject": "high pressure over eastern Africa and thermal low-pressure centres over Iran and Pakistan",
+                      "relation": "drives",
+                      "object": "summer Shamal",
+                      "quote": "The summer Shamal, occurring from May to August, is a persistent north-northwesterly wind regime driven by high pressure over eastern Africa and thermal low-pressure centres over Iran and Pakistan."
+                    },
+                    {
+                      "subject": "steep pressure gradient between the heat low over Pakistan, Afghanistan and Iran and the high-pressure system over the eastern Mediterranean and northern Saudi Arabia",
+                      "relation": "causes",
+                      "object": "summer Shamal",
+                      "quote": "It forms due to the steep pressure gradient between the heat low over Pakistan, Afghanistan and Iran and the high-pressure system over the eastern Mediterranean and northern Saudi Arabia."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "tool": "conditions_tool",
+        "args": {
+          "city": "Mecca",
+          "date": "2025-07-24"
+        },
+        "result": {
+          "city": "Mecca",
+          "date": "2025-07-24",
+          "grid_cell": {
+            "lat": 21.4,
+            "lon": 39.8
+          },
+          "indicators": {
+            "daily_precip_total": 0.0,
+            "daily_convective_precip": 0.0,
+            "daily_large_scale_precip": 0.0,
+            "t2m_c": 37.03,
+            "tmax_c": 42.98,
+            "tmin_c": 31.59,
+            "heat_index_c": 37.03,
+            "vpd_kpa": 5.45,
+            "cape": 0.0,
+            "pwat": 22.61,
+            "ivt": 134.24,
+            "wind850_speed": 11.94,
+            "wind_shear_850_200": 21.07,
+            "daily_precip_anomaly": 0.0,
+            "t2m_anomaly_c": 1.03,
+            "tmax_anomaly_c": 3.68
+          }
+        }
+      }
+    ]
+  },
+  {
+    "question": "What is the heatwave risk in Riyadh on 2025-11-06?",
+    "answer": "## Heatwave Risk for Riyadh on 2025-11-06\n\n**Probability:** **0.06%** (extremely low)\n\n**Model Reliability:** The forecast model has a verified ROC-AUC of **0.971**, indicating excellent predictive performance.\n\n### Why So Low?\n\nNovember is late autumn in Riyadh, well outside the peak heat season. The key physical mechanisms behind Saudi heatwaves are:\n\n1. **Subtropical High (Heat Dome)** – A persistent high-pressure system over the Arabian Peninsula traps intense solar radiation, causing extreme surface heating. This is most active in summer months.\n2. **Arabian Thermal Low** – A desert heat low that drives hot, dry conditions, particularly during the May–August period.\n\nBy November 6th, these mechanisms are far less active, and the interior (like Riyadh) is already cooling significantly.\n\n### Recommendation\n\nNo heatwave precautions are needed for this date. Enjoy the mild late-autumn conditions in Riyadh!",
+    "trace": [
+      {
+        "tool": "forecast_tool",
+        "args": {
+          "city": "Riyadh",
+          "target_date": "2025-11-06",
+          "hazard": "heatwave"
+        },
+        "result": {
+          "city": "Riyadh",
+          "target_date": "2025-11-06",
+          "features_from_date": "2025-11-05",
+          "hazard": "heatwave",
+          "probability": 0.0006,
+          "grid_cell": {
+            "lat": 24.7,
+            "lon": 46.6
+          },
+          "model_verified_roc_auc": 0.9705939220629891
+        }
+      },
+      {
+        "tool": "causal_kg_tool",
+        "args": {
+          "hazard": "heatwave"
+        },
+        "result": {
+          "hazard": "heatwave",
+          "contributing_indicators": [
+            "t2m_c",
+            "tmax_c",
+            "heat_index_c",
+            "vpd_kpa",
+            "t2m_anomaly_c",
+            "tmax_anomaly_c",
+            "heatwave_day_flag",
+            "heatwave_duration_days"
+          ],
+          "mechanisms": [
+            {
+              "mechanism": "subtropical_high",
+              "description": "Subtropical / continental high (heat dome)",
+              "literature_grounded": true,
+              "citations": [
+                {
+                  "citation": "ScienceDirect, Atmospheric Research",
+                  "url": "https://www.sciencedirect.com/science/article/abs/pii/S0169809519301747",
+                  "evidence": [
+                    {
+                      "subject": "powerful solar radiation and persistent high-pressure systems",
+                      "relation": "causes",
+                      "object": "intense surface heating",
+                      "quote": "Saudi Arabia experiences powerful solar radiation and persistent high-pressure systems that contribute to intense surface heating"
+                    },
+                    {
+                      "subject": "subtropical high-pressure system over the Arabian Peninsula",
+                      "relation": "causes",
+                      "object": "extreme summer temperature variation",
+                      "quote": "The influence of a subtropical high-pressure system over the Arabian Peninsula is associated with extreme summer temperature variation"
+                    }
+                  ]
+                },
+                {
+                  "citation": "Springer, Meteorology and Atmospheric Physics (2024)",
+                  "url": "https://link.springer.com/article/10.1007/s00703-024-01010-6",
+                  "evidence": [
+                    {
+                      "subject": "the adjacent sea",
+                      "relation": "moderates",
+                      "object": "temperature extremes",
+                      "quote": "the adjacent sea moderates temperature extremes compared to the interior"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "mechanism": "thermal_low",
+              "description": "Arabian thermal low (desert heat low)",
+              "literature_grounded": true,
+              "citations": [
+                {
+                  "citation": "Yu et al. (2016), J. Geophys. Res. Atmos.",
+                  "url": "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015jd024063",
+                  "evidence": [
+                    {
+                      "subject": "high pressure over eastern Africa and thermal low-pressure centres over Iran and Pakistan",
+                      "relation": "drives",
+                      "object": "summer Shamal",
+                      "quote": "The summer Shamal, occurring from May to August, is a persistent north-northwesterly wind regime driven by high pressure over eastern Africa and thermal low-pressure centres over Iran and Pakistan."
+                    },
+                    {
+                      "subject": "steep pressure gradient between the heat low over Pakistan, Afghanistan and Iran and the high-pressure system over the eastern Mediterranean and northern Saudi Arabia",
+                      "relation": "causes",
+                      "object": "summer Shamal",
+                      "quote": "It forms due to the steep pressure gradient between the heat low over Pakistan, Afghanistan and Iran and the high-pressure system over the eastern Mediterranean and northern Saudi Arabia."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+]
