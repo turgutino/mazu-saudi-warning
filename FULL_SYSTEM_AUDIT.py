@@ -517,6 +517,59 @@ check("J", "dust_storm model reports its own distinct ROC-AUC (0.8866), not copi
      r_dammam_j.get("model_verified_roc_auc") != 0.8731742776960718,
      r_dammam_j.get("model_verified_roc_auc"))
 
+# =============================================================================
+print()
+print("=" * 74)
+print("SECTION K — region_risk_tool (5th agent tool, city-first KG query)")
+print("=" * 74)
+
+# K1 -- Jizan's hazard list is independently re-derived directly from the KG
+# JSON (bypassing region_risk_tool's own internals) and matches exactly.
+jizan_haz_direct = sorted(l["target"] for l in kg["links"]
+                          if l.get("etype") == "at_risk_of" and l["source"] == "Jizan")
+r_jizan_k = agent_tools.region_risk_tool("Jizan")
+check("K", "Jizan hazard list matches KG JSON read directly (fresh, independent re-check)",
+     sorted(h["hazard"] for h in r_jizan_k["hazards"]) == jizan_haz_direct,
+     (sorted(h["hazard"] for h in r_jizan_k["hazards"]), jizan_haz_direct))
+
+# K2 -- the "coastal" hazard (no trained model) is handled -- present in the
+# KG's at_risk_of edges for several cities but correctly flagged as having
+# no forecast, not silently dropped or given a fabricated probability.
+coastal_cities = sorted(set(l["source"] for l in kg["links"]
+                            if l.get("etype") == "at_risk_of" and l["target"] == "coastal"))
+check("K", "'coastal' hazard (no trained model) exists in the KG for >=1 city", len(coastal_cities) > 0, coastal_cities)
+if "Jizan" in coastal_cities:
+    jizan_coastal = next(h for h in r_jizan_k["hazards"] if h["hazard"] == "coastal")
+    check("K", "Jizan's coastal entry has has_forecast_model=False and no fabricated 'forecast' key",
+         jizan_coastal["has_forecast_model"] is False and "forecast" not in jizan_coastal, jizan_coastal)
+
+# K3 -- re-verify the disclosed Jeddah/heatwave KG gap (empty city-specific
+# mechanism list) is still present and is a genuine reflection of the KG
+# data, not a tool bug -- independently re-derived from the KG JSON directly.
+jeddah_exposed_direct = set(l["target"] for l in kg["links"]
+                            if l.get("etype") == "exposed_to" and l["source"] == "Jeddah")
+heatwave_mechs_direct = set(l["target"] for l in kg["links"]
+                            if l.get("etype") == "driven_by" and l["source"] == "heatwave")
+check("K", "Jeddah/heatwave mechanism gap independently confirmed from KG JSON "
+     "(Jeddah's exposed_to has no overlap with heatwave's driven_by mechanisms)",
+     len(jeddah_exposed_direct & heatwave_mechs_direct) == 0,
+     (jeddah_exposed_direct, heatwave_mechs_direct))
+
+# K4 -- forecast probabilities attached when a date is given match a direct,
+# independent forecast_tool call exactly (region_risk_tool must not
+# reimplement/duplicate the forecast logic and risk drifting from it).
+r_riyadh_k = agent_tools.region_risk_tool("Riyadh", "2025-07-06")
+riyadh_hw_direct_k = agent_tools.forecast_tool("Riyadh", "2025-07-06", "heatwave")
+riyadh_hw_entry_k = next(h for h in r_riyadh_k["hazards"] if h["hazard"] == "heatwave")
+check("K", "Riyadh+date region_risk_tool forecast matches a fresh, independent forecast_tool call exactly",
+     riyadh_hw_entry_k["forecast"]["probability"] == riyadh_hw_direct_k["probability"],
+     (riyadh_hw_entry_k["forecast"]["probability"], riyadh_hw_direct_k["probability"]))
+
+# K5 -- all 8 cities resolve (no silent KG coverage gap for any agent city).
+missing_coverage = [c for c in agent_tools.CITIES if agent_tools.region_risk_tool(c).get("hazard_count", 0) < 1]
+check("K", "all 8 known cities have >=1 at_risk_of hazard in the KG (no coverage gap)",
+     len(missing_coverage) == 0, missing_coverage)
+
 cons.close()
 
 # =============================================================================

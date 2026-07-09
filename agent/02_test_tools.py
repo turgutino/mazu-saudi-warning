@@ -456,6 +456,89 @@ check("dust_storm valid in causal_kg_tool's own hazard enum (no KeyError)", "err
 
 print()
 print("=" * 70)
+print("TOOL 5: region_risk_tool")
+print("=" * 70)
+
+# Jizan is at_risk_of exactly 2 hazards (flash_flood, coastal) per the KG's
+# hand-encoded REGION_HAZARD -- independently re-checked by reading the KG
+# JSON directly (bypassing the tool) rather than trusting its own count.
+with open(tools.KG_JSON, encoding="utf-8") as _f:
+    _kg = __import__("json").load(_f)
+_jizan_haz_direct = sorted(l["target"] for l in _kg["links"]
+                           if l.get("etype") == "at_risk_of" and l["source"] == "Jizan")
+
+r_jizan = tools.region_risk_tool("Jizan")
+print(" ", "Jizan region_risk (no date):", r_jizan)
+check("Jizan: no error", "error" not in r_jizan, r_jizan)
+check("Jizan: hazard list matches KG JSON read directly (bypass test)",
+     sorted(h["hazard"] for h in r_jizan["hazards"]) == _jizan_haz_direct,
+     (sorted(h["hazard"] for h in r_jizan["hazards"]), _jizan_haz_direct))
+check("Jizan: flash_flood entry has_forecast_model=True",
+     next(h for h in r_jizan["hazards"] if h["hazard"] == "flash_flood")["has_forecast_model"] is True)
+check("Jizan: coastal entry has_forecast_model=False (KG hazard with no trained model, "
+     "handled gracefully not errored)",
+     next(h for h in r_jizan["hazards"] if h["hazard"] == "coastal")["has_forecast_model"] is False)
+check("Jizan: flash_flood's city-specific mechanisms are a SUBSET of its full mechanism list "
+     "(moisture_transport+orographic_lift subset of ARST+moisture_transport+orographic_lift)",
+     set(next(h for h in r_jizan["hazards"] if h["hazard"] == "flash_flood")["mechanisms_affecting_this_city"])
+     <= set(next(h for h in r_jizan["hazards"] if h["hazard"] == "flash_flood")["all_mechanisms_for_this_hazard"]))
+check("Jizan: no 'date' key when date not requested (no accidental None-date pollution)",
+     "date" not in r_jizan, r_jizan)
+
+# Real finding (investigated, confirmed pre-existing, not introduced by this
+# tool): Jeddah's REGION_HAZARD (01_build_structural_kg.py) lists it at_risk_of
+# heatwave, but its REGION_MECH only lists moisture_transport/ARST (flash-
+# flood-relevant mechanisms) -- NOT subtropical_high/thermal_low (heatwave's
+# actual drivers). This is a genuine, disclosed minor KG data-quality gap
+# that predates this session; the tool's correct behavior is to report an
+# EMPTY mechanisms_affecting_this_city list for that hazard (honest, not a
+# crash or a fabricated mechanism), which is what this test locks in.
+r_jeddah = tools.region_risk_tool("Jeddah")
+jeddah_hw = next(h for h in r_jeddah["hazards"] if h["hazard"] == "heatwave")
+check("Jeddah/heatwave: mechanisms_affecting_this_city is empty (real, pre-existing KG gap, "
+     "correctly disclosed as empty rather than fabricated or crashing)",
+     jeddah_hw["mechanisms_affecting_this_city"] == [], jeddah_hw)
+check("Jeddah/heatwave: all_mechanisms_for_this_hazard is still correctly populated "
+     "(the gap is city-specific exposure, not the hazard's own mechanism data)",
+     set(jeddah_hw["all_mechanisms_for_this_hazard"]) == {"subtropical_high", "thermal_low"}, jeddah_hw)
+
+# Riyadh WITH a date: forecast should be attached for both its hazards
+# (heatwave, dust_storm -- both have trained models), matching independently
+# re-called forecast_tool outputs exactly (not just "present", but the EXACT
+# same probability -- confirms region_risk_tool isn't silently drifting from
+# forecast_tool's own logic by reimplementing it).
+r_riyadh = tools.region_risk_tool("Riyadh", "2025-07-06")
+riyadh_hw_direct = tools.forecast_tool("Riyadh", "2025-07-06", "heatwave")
+riyadh_dust_direct = tools.forecast_tool("Riyadh", "2025-07-06", "dust_storm")
+riyadh_hw_entry = next(h for h in r_riyadh["hazards"] if h["hazard"] == "heatwave")
+riyadh_dust_entry = next(h for h in r_riyadh["hazards"] if h["hazard"] == "dust_storm")
+check("Riyadh+date: heatwave forecast probability matches a direct forecast_tool call exactly",
+     riyadh_hw_entry["forecast"]["probability"] == riyadh_hw_direct["probability"],
+     (riyadh_hw_entry["forecast"]["probability"], riyadh_hw_direct["probability"]))
+check("Riyadh+date: dust_storm forecast probability matches a direct forecast_tool call exactly",
+     riyadh_dust_entry["forecast"]["probability"] == riyadh_dust_direct["probability"],
+     (riyadh_dust_entry["forecast"]["probability"], riyadh_dust_direct["probability"]))
+
+# Bad date: error must be surfaced (date_error), not silently dropped, and
+# hazards should still be listed (KG exposure info doesn't depend on date).
+r_baddate = tools.region_risk_tool("Jeddah", "2099-01-01")
+check("bad date: date_error field present and informative", "date_error" in r_baddate, r_baddate)
+check("bad date: hazards still listed despite the date error (KG info doesn't need a valid date)",
+     r_baddate["hazard_count"] == 3, r_baddate)
+check("bad date: no hazard has a spurious 'forecast' key when the date failed",
+     all("forecast" not in h for h in r_baddate["hazards"]), r_baddate)
+
+# Every one of the 8 known cities must resolve with at least 1 hazard (no
+# silent gaps in KG coverage for a city the agent otherwise fully supports).
+for c in tools.CITIES:
+    rc = tools.region_risk_tool(c)
+    check(f"{c}: region_risk_tool resolves with >=1 hazard (no KG coverage gap)",
+         "error" not in rc and rc.get("hazard_count", 0) >= 1, rc)
+
+check("unknown city -> error", "error" in tools.region_risk_tool("Atlantis"))
+
+print()
+print("=" * 70)
 print(f"TOTAL: {PASS} passed, {FAIL} failed")
 print("=" * 70)
 if FAIL > 0:

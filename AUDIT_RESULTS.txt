@@ -118,7 +118,17 @@ SECTION J — dust_storm: a 3rd hazard added across the whole stack
   [PASS] dust_storm model reports its own distinct ROC-AUC (0.8866), not copied from another hazard
 
 ==========================================================================
-TOTAL: 78 passed, 0 failed
+SECTION K — region_risk_tool (5th agent tool, city-first KG query)
+==========================================================================
+  [PASS] Jizan hazard list matches KG JSON read directly (fresh, independent re-check)
+  [PASS] 'coastal' hazard (no trained model) exists in the KG for >=1 city
+  [PASS] Jizan's coastal entry has has_forecast_model=False and no fabricated 'forecast' key
+  [PASS] Jeddah/heatwave mechanism gap independently confirmed from KG JSON (Jeddah's exposed_to has no overlap with heatwave's driven_by mechanisms)
+  [PASS] Riyadh+date region_risk_tool forecast matches a fresh, independent forecast_tool call exactly
+  [PASS] all 8 known cities have >=1 at_risk_of hazard in the KG (no coverage gap)
+
+==========================================================================
+TOTAL: 84 passed, 0 failed
 ==========================================================================
 
 Every checked number traces back to the raw 5GB source data. No fabrication found.

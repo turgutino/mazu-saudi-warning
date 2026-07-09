@@ -1,12 +1,12 @@
 # =============================================================================
 # MAZU — Layer 4: Agent orchestration (DeepSeek function calling)
 #
-# The LLM receives a natural-language question, decides which of the 4
+# The LLM receives a natural-language question, decides which of the 5
 # verified tools to call (forecast_tool, causal_kg_tool, conditions_tool,
-# similar_events_tool), and composes a final answer grounded in their real
-# outputs. The model is instructed to NEVER invent a probability or a
-# citation — every number and every mechanism/citation in its answer must
-# come from a tool call.
+# similar_events_tool, region_risk_tool), and composes a final answer
+# grounded in their real outputs. The model is instructed to NEVER invent a
+# probability or a citation — every number and every mechanism/citation in
+# its answer must come from a tool call.
 # =============================================================================
 
 import os
@@ -21,7 +21,7 @@ KEY_FILE = os.path.join(HERE, "..", "kg", "causal", ".deepseek_key")
 
 SYSTEM_PROMPT = """You are the MAZU early-warning assistant for Saudi Arabia extreme weather.
 
-You answer questions about flash-flood, heatwave, and dust-storm risk using FOUR tools:
+You answer questions about flash-flood, heatwave, and dust-storm risk using FIVE tools:
   - forecast_tool(city, target_date, hazard): risk probability ON target_date,
     from a trained, verified model (ROC-AUC reported with each call). It
     internally uses the PREVIOUS day's indicators -- always pass the exact
@@ -53,6 +53,15 @@ You answer questions about flash-flood, heatwave, and dust-storm risk using FOUR
     -- a same-city, same-day query can legitimately score LOW similarity to
     its own same-named event if the extreme was hyperlocal; state this
     plainly if it comes up, do not treat it as an error.
+  - region_risk_tool(city, date=optional): which hazards a CITY is exposed to
+    (city-first, unlike the hazard-first tools above) via the KG's
+    at_risk_of/exposed_to edges, e.g. "what should I worry about in Jizan".
+    Some hazards a city is at_risk_of (e.g. "coastal") have no trained
+    forecast model -- has_forecast_model will be False for those; do not call
+    forecast_tool for them. If a hazard's mechanisms_affecting_this_city list
+    is empty, say the KG doesn't have a specific city-mechanism link for that
+    combination rather than inventing one -- this is a known, disclosed gap
+    for a few city/hazard pairs, not an error to hide or guess around.
 
 Rules (strict):
 1. NEVER state a probability, indicator value, mechanism name, or citation that
@@ -131,6 +140,21 @@ TOOL_SCHEMAS = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "region_risk_tool",
+            "description": "Which hazards a city is exposed to and their driving mechanisms (city-first query, via the KG); optionally attaches live forecast probabilities if a date is given.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "city": {"type": "string", "enum": list(tools.CITIES.keys())},
+                    "date": {"type": "string", "description": "optional YYYY-MM-DD (2025 only) -- if given, attaches forecast probabilities"},
+                },
+                "required": ["city"],
+            },
+        },
+    },
 ]
 
 TOOL_FUNCS = {
@@ -138,6 +162,7 @@ TOOL_FUNCS = {
     "causal_kg_tool": tools.causal_kg_tool,
     "conditions_tool": tools.conditions_tool,
     "similar_events_tool": tools.similar_events_tool,
+    "region_risk_tool": tools.region_risk_tool,
 }
 
 

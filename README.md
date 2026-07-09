@@ -13,7 +13,7 @@ and an **explainable warning agent** (DeepSeek function calling).
 
 ## Full system audit
 
-`FULL_SYSTEM_AUDIT.py` independently traces 78 numbers — from the consolidated
+`FULL_SYSTEM_AUDIT.py` independently traces 84 numbers — from the consolidated
 dataset, the knowledge graph's event values, the causal citations, an
 agent tool's output, and four post-Layer-4 extensions (terrain elevation,
 population context, an A/B ablation test re-derived from raw saved
@@ -21,7 +21,7 @@ transcripts, and a reflexive self-check whose two headline findings are
 independently re-derived a third time directly from the raw source files)
 — back to the raw 5GB source data (365 daily NetCDF files), plus checks the
 deployed GitHub site matches the local repo exactly.
-**Result: 78/78 passed, zero fabricated values found.** Full log in
+**Result: 84/84 passed, zero fabricated values found.** Full log in
 [`AUDIT_RESULTS.txt`](AUDIT_RESULTS.txt).
 
 ---
@@ -97,8 +97,21 @@ tested — see `agent/EXTENSIONS_REPORT.md` for full methodology and results:
   known-event validation attempt accidentally used a training-period date;
   caught and corrected to a genuine out-of-sample test-period event before
   being reported. See `agent/DUST_STORM_REPORT.md`.
+- **region_risk_tool (5th agent tool) — closing a self-found KG utilization
+  gap.** An honest audit of edge-type usage found only 3 of 11 KG edge types
+  (~20% of edges) were ever queried by any tool; `at_risk_of`/`exposed_to`
+  (region-hazard exposure) existed in the graph but nothing read them. This
+  city-first tool ("what should I worry about in Jizan", vs. the other 4
+  tools' hazard-first "why does flash_flood happen") closes part of that gap
+  (~40% of edges now used) and surfaced two real findings along the way: not
+  every KG hazard has a trained model (`coastal` — handled gracefully, no
+  fabricated forecast), and a genuine pre-existing KG data-quality gap
+  (Jeddah is at_risk_of heatwave but its exposed_to mechanisms don't overlap
+  with heatwave's actual drivers — traced to the original hand-encoded
+  domain knowledge, disclosed rather than silently patched). See
+  `agent/REGION_RISK_REPORT.md`.
 
-All 90 unit tests pass (`agent/02_test_tools.py`, up from 32).
+All 112 unit tests pass (`agent/02_test_tools.py`, up from 32).
 
 ---
 

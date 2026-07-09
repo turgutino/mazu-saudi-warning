@@ -530,5 +530,79 @@ def similar_events_tool(city: str, date: str, hazard: str) -> dict:
     }
 
 
+# =============================================================================
+# TOOL 5: region risk profile
+# =============================================================================
+
+# Hazards with a trained forecast model. "coastal" exists as a KG Hazard node
+# (with a driven_by mechanism) but has no forecast model -- region_risk_tool
+# must handle that gracefully (report KG exposure, skip forecast) rather than
+# erroring or silently omitting the hazard.
+FORECASTABLE_HAZARDS = {"flash_flood", "heatwave", "dust_storm"}
+
+
+def region_risk_tool(city: str, date: str = None) -> dict:
+    """Which hazards and mechanisms a city is exposed to, per the KG's
+    at_risk_of/exposed_to edges (previously unused by any agent tool -- the
+    other 3 tools are hazard-first, "why does flash_flood happen"; this one
+    is city-first, "what should I worry about in this city"). If `date` is
+    given, also attaches a live forecast_tool probability for each hazard
+    that has a trained model.
+
+    Args:
+        city: one of CITIES keys
+        date: optional "YYYY-MM-DD" -- if given, forecast probabilities are
+            attached for the hazards that have a trained model
+    """
+    if city not in CITIES:
+        return {"error": f"Unknown city '{city}'. Known cities: {list(CITIES.keys())}"}
+
+    with open(KG_JSON, encoding="utf-8") as f:
+        kg = json.load(f)
+    node_by_id = {n["id"]: n for n in kg["nodes"]}
+
+    hazards = [l["target"] for l in kg["links"]
+              if l.get("etype") == "at_risk_of" and l["source"] == city]
+    city_mechs = [l["target"] for l in kg["links"]
+                 if l.get("etype") == "exposed_to" and l["source"] == city]
+
+    if not hazards:
+        return {"error": f"No at_risk_of data in the KG for '{city}' "
+                         f"(this would indicate a real KG gap, not expected for any of the 8 known cities)"}
+
+    profile = []
+    date_error = None
+    for hz in hazards:
+        # full mechanism list for this hazard (driven_by), not just the
+        # city-specific exposed_to subset -- exposed_to can be a partial
+        # list (e.g. Jizan is exposed_to moisture_transport+orographic_lift,
+        # both of flash_flood's 2 non-ARST mechanisms, but not ARST itself,
+        # since ARST is a basin-wide not city-specific driver)
+        hz_mechs = [l["target"] for l in kg["links"]
+                   if l.get("etype") == "driven_by" and l["source"] == hz]
+        entry = {
+            "hazard": hz,
+            "hazard_label": node_by_id.get(hz, {}).get("label", hz),
+            "mechanisms_affecting_this_city": [m for m in city_mechs if m in hz_mechs],
+            "all_mechanisms_for_this_hazard": hz_mechs,
+            "has_forecast_model": hz in FORECASTABLE_HAZARDS,
+        }
+        if date is not None and hz in FORECASTABLE_HAZARDS:
+            fr = forecast_tool(city, date, hz)
+            if "error" in fr:
+                date_error = fr["error"]   # same for every hazard (bad date/city), surface once
+            else:
+                entry["forecast"] = {"target_date": fr["target_date"], "probability": fr["probability"],
+                                     "model_verified_roc_auc": fr["model_verified_roc_auc"]}
+        profile.append(entry)
+
+    result = {"city": city, "hazard_count": len(hazards), "hazards": profile}
+    if date is not None:
+        result["date"] = date
+        if date_error:
+            result["date_error"] = date_error   # e.g. out-of-range date -- disclosed, not silently dropped
+    return result
+
+
 if __name__ == "__main__":
     print("tools.py loaded OK — run test_tools.py for verification.")
