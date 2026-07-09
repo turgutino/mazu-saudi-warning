@@ -1,0 +1,15 @@
+{
+  "_source": "Saudi Census 2022, General Authority for Statistics (GASTAT), https://www.stats.gov.sa/",
+  "_note": "City-proper population figures, for IMPACT-CONTEXT display only. NOT a model output and NOT an estimate of how many people would actually be exposed to a given hazard (that requires exposure/vulnerability modeling this system does not perform). Provided as reference context only, per WMO Impact-Based Forecast and Warning Services (IBFWS) guidance that warnings should be interpretable in terms of human impact, not just hazard probability.",
+  "_jizan_note": "Two public figures exist for Jizan city proper (173,919 per citypopulation.de vs 200,911 in another secondary source) -- likely a boundary-definition difference. We use the lower, more conservative figure and disclose the discrepancy.",
+  "cities": {
+    "Riyadh": 9060000,
+    "Jeddah": 5710000,
+    "Mecca": 2520000,
+    "Medina": 1850000,
+    "Dammam": 1570000,
+    "Taif": 730000,
+    "Abha": 422243,
+    "Jizan": 173919
+  }
+}

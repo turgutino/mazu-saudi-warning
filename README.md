@@ -34,6 +34,34 @@ files), plus checks the deployed GitHub site matches the local repo exactly.
 
 ---
 
+## Extensions: terrain context, impact framing, and a live A/B ablation test
+
+After reviewing other teams' project reports and a published multi-agent
+early-warning system (MAESTRO, *npj Artificial Intelligence*, 2026,
+Zhejiang University), three targeted extensions were added and independently
+tested — see `agent/EXTENSIONS_REPORT.md` for full methodology and results:
+
+- **Terrain/elevation context.** `forecast_tool` now flags mountain-city
+  forecasts (Abha, Taif, ≥1500 m) as lower-confidence. Building this
+  surfaced a genuine, previously-undocumented limitation of the existing
+  model: in the steep Asir range, the model's coarse feature grid can land
+  on a cell ~750 m lower than a city's true elevation — exactly the case
+  this feature exists to catch.
+- **A/B ablation test (live, 8 real DeepSeek calls).** The same 4 "why"
+  questions were run through the agent with vs. without `causal_kg_tool`.
+  With it: 4/4 answers cited a real driving mechanism and literature.
+  Without it: 0/4 did — and, critically, 0/4 hallucinated a mechanism
+  anyway; the agent correctly said it had no grounded explanation. Full
+  transcripts in `agent/ABLATION_REPORT.md`.
+- **Impact-based context.** `forecast_tool` now returns each city's
+  population (Saudi Census 2022, GASTAT), explicitly labelled as reference
+  context only — not an exposure estimate — per WMO's impact-based warning
+  guidance.
+
+All 45 unit tests pass (`agent/02_test_tools.py`, up from 32).
+
+---
+
 ## Highlights
 
 - **Data-grounded, not assumed.** Every event node carries its real observed indicator values

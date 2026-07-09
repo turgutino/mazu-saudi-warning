@@ -25,6 +25,13 @@ You answer questions about flash-flood and heatwave risk using THREE tools:
     from a trained, verified model (ROC-AUC reported with each call). It
     internally uses the PREVIOUS day's indicators -- always pass the exact
     date the user is asking about as target_date, do NOT shift it yourself.
+    It also returns elevation_m and, for mountain cities (Abha, Taif), a
+    terrain_note flagging lower confidence in steep terrain -- if terrain_note
+    is present, mention that caveat in your answer. It also returns
+    impact_context (city population, 2022 census) -- use this ONLY to help the
+    user understand the scale of the city at risk (e.g. "Riyadh, pop. ~9.06M"),
+    NEVER state or imply a specific number of people who would be affected --
+    this system does not model exposure, so that would be fabrication.
   - causal_kg_tool(hazard): the physical mechanisms driving a hazard, with
     literature citations where available.
   - conditions_tool(city, date): the actual observed indicator values on that date.
@@ -105,11 +112,21 @@ def get_client():
     return OpenAI(api_key=key, base_url="https://api.deepseek.com")
 
 
-def ask(question, client=None, max_turns=6, verbose=True):
-    """Run the agent loop for one question. Returns (final_answer, trace)."""
+def ask(question, client=None, max_turns=6, verbose=True,
+        system_prompt=None, tool_schemas=None, tool_funcs=None):
+    """Run the agent loop for one question. Returns (final_answer, trace).
+
+    system_prompt/tool_schemas/tool_funcs are overridable (default to the
+    module-level versions) so that ablation experiments (e.g. running the
+    agent with causal_kg_tool removed) can reuse this same loop rather than
+    duplicating it -- see 05_ablation_test.py.
+    """
     client = client or get_client()
+    system_prompt = system_prompt if system_prompt is not None else SYSTEM_PROMPT
+    tool_schemas = tool_schemas if tool_schemas is not None else TOOL_SCHEMAS
+    tool_funcs = tool_funcs if tool_funcs is not None else TOOL_FUNCS
     messages = [
-        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "system", "content": system_prompt},
         {"role": "user", "content": question},
     ]
     trace = []
@@ -117,7 +134,7 @@ def ask(question, client=None, max_turns=6, verbose=True):
     for turn in range(max_turns):
         resp = client.chat.completions.create(
             model="deepseek-chat", messages=messages,
-            tools=TOOL_SCHEMAS, tool_choice="auto", temperature=0.0,
+            tools=tool_schemas, tool_choice="auto", temperature=0.0,
         )
         msg = resp.choices[0].message
         messages.append(msg.model_dump(exclude_none=True))
@@ -135,7 +152,7 @@ def ask(question, client=None, max_turns=6, verbose=True):
                 fargs = {}
             if verbose:
                 print(f"  [tool call] {fname}({fargs})")
-            result = TOOL_FUNCS[fname](**fargs)
+            result = tool_funcs[fname](**fargs)
             trace.append({"tool": fname, "args": fargs, "result": result})
             messages.append({
                 "role": "tool", "tool_call_id": tc.id,

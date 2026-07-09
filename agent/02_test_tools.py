@@ -89,6 +89,68 @@ check("unknown hazard -> error", "error" in r7, r7)
 
 print()
 print("=" * 70)
+print("EXTENSION: terrain/elevation context on forecast_tool")
+print("=" * 70)
+
+# Abha sits in the Asir mountains (~2082m per raw orography grid, verified
+# against known real-world elevation ~2270m -- within grid-resolution error).
+r8 = tools.forecast_tool("Abha", "2025-08-23", "heatwave")
+print(" ", {k: v for k, v in r8.items() if k in ("elevation_m", "terrain_note")})
+check("Abha: elevation_m is a real, high value (mountain city)",
+     r8.get("elevation_m") is not None and r8["elevation_m"] > 1500, r8.get("elevation_m"))
+check("Abha: terrain_note present (mountain caution flag)", r8.get("terrain_note") is not None)
+
+# Jeddah and Dammam are coastal/near-sea-level -- should NOT get the mountain flag.
+r9 = tools.forecast_tool("Jeddah", "2025-08-23", "heatwave")
+r10 = tools.forecast_tool("Dammam", "2025-08-23", "heatwave")
+print(" ", "Jeddah elevation_m:", r9.get("elevation_m"), "terrain_note:", r9.get("terrain_note"))
+print(" ", "Dammam elevation_m:", r10.get("elevation_m"), "terrain_note:", r10.get("terrain_note"))
+check("Jeddah: low elevation, no mountain flag",
+     r9.get("elevation_m") is not None and r9["elevation_m"] < 500 and r9.get("terrain_note") is None,
+     r9.get("elevation_m"))
+check("Dammam: low elevation, no mountain flag",
+     r10.get("elevation_m") is not None and r10["elevation_m"] < 500 and r10.get("terrain_note") is None,
+     r10.get("elevation_m"))
+
+# Taif is also elevated (~1774m) -- should also get the flag.
+r11 = tools.forecast_tool("Taif", "2025-08-23", "heatwave")
+check("Taif: elevated terrain, mountain flag present",
+     r11.get("elevation_m") is not None and r11["elevation_m"] > 1500 and r11.get("terrain_note") is not None,
+     r11.get("elevation_m"))
+
+print()
+print("=" * 70)
+print("EXTENSION: impact_context (population reference) on forecast_tool")
+print("=" * 70)
+
+r12 = tools.forecast_tool("Riyadh", "2025-08-23", "heatwave")
+ic = r12.get("impact_context")
+print(" ", ic)
+check("Riyadh: impact_context present", ic is not None)
+check("Riyadh: population is the real 2022 census figure (~9.06M)",
+     ic is not None and 8_000_000 < ic["city_population_2022_census"] < 10_000_000,
+     ic.get("city_population_2022_census") if ic else None)
+check("Riyadh: impact_context sourced (GASTAT)", ic is not None and "GASTAT" in ic["source"])
+check("Riyadh: impact_context explicitly disclaims exposure modeling",
+     ic is not None and "NOT" in ic["note"] and "exposure" in ic["note"])
+
+r13 = tools.forecast_tool("Jizan", "2025-08-23", "flash_flood")
+ic2 = r13.get("impact_context")
+check("Jizan: population is real and plausible (~174k, smallest of the 8 cities)",
+     ic2 is not None and 100_000 < ic2["city_population_2022_census"] < 300_000,
+     ic2.get("city_population_2022_census") if ic2 else None)
+
+# All 8 cities must resolve to SOME population figure -- a silent None would
+# mean a city quietly loses this context with no error surfaced.
+for c in tools.CITIES:
+    rc = tools.forecast_tool(c, "2025-08-23", "heatwave")
+    check(f"{c}: impact_context resolves (no missing population data)",
+         rc.get("impact_context") is not None and
+         isinstance(rc["impact_context"]["city_population_2022_census"], int),
+         rc.get("impact_context"))
+
+print()
+print("=" * 70)
 print("TOOL 2: causal_kg_tool")
 print("=" * 70)
 

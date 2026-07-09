@@ -51,6 +51,7 @@ FEATURE_VARS = [
 _MODELS = {}
 _META = None
 _DS = None
+_POP = None
 
 
 def _load_resources():
@@ -61,6 +62,14 @@ def _load_resources():
     if _DS is None:
         _DS = xr.open_dataset(DATASET)
     return _META, _DS
+
+
+def _load_population():
+    global _POP
+    if _POP is None:
+        with open(os.path.join(HERE, "city_population.json"), encoding="utf-8") as f:
+            _POP = json.load(f)
+    return _POP
 
 
 def _get_model(hazard):
@@ -139,10 +148,50 @@ def forecast_tool(city: str, target_date: str, hazard: str) -> dict:
     model = _get_model(hazard)
     proba = float(model.predict_proba(X)[0, 1])
 
+    # Use FULL-resolution orography (not the model's stride-2 feature grid) for
+    # elevation context: terrain is a static geographic fact and should reflect
+    # the city's true elevation, not whichever coarse grid cell the model's
+    # subsampled features happen to land nearest to. Testing found these can
+    # diverge sharply in steep terrain (Abha: stride-2 cell = 1334m vs the
+    # city's true ~2082m one full-res cell away) -- using the coarse value here
+    # would understate exactly the mountain-terrain caution this field exists
+    # to raise.
+    elevation_m = None
+    terrain_note = None
+    if "orography" in ds:
+        fyi = int(np.argmin(np.abs(lat_full - city_lat)))
+        fxi = int(np.argmin(np.abs(lon_full - city_lon)))
+        elevation_m = float(ds["orography"].values[fyi, fxi])
+        if elevation_m >= 1500:
+            terrain_note = (
+                f"This city is at {round(elevation_m)} m elevation (mountain terrain, "
+                f"e.g. Asir range). Meteorological indicators and model training data are "
+                f"sparser here than in the low-elevation interior/coast, and the model's "
+                f"feature grid is coarser than local terrain relief, so treat this "
+                f"probability with added caution."
+            )
+
+    pop = _load_population()
+    city_pop = pop["cities"].get(city)
+    impact_context = None
+    if city_pop is not None:
+        impact_context = {
+            "city_population_2022_census": city_pop,
+            "source": "Saudi Census 2022, GASTAT",
+            "note": ("Reference population only, NOT a model output and NOT an estimate "
+                     "of how many people would actually be exposed to this hazard -- this "
+                     "system does not perform exposure/vulnerability modeling. Provided so "
+                     "risk can be discussed in human terms, per WMO impact-based warning "
+                     "guidance, not to imply a precise affected-population count."),
+        }
+
     return {
         "city": city, "target_date": date_predicted, "features_from_date": times[ti],
         "hazard": hazard, "probability": round(proba, 4),
         "grid_cell": {"lat": round(float(lat_s[cyi]), 2), "lon": round(float(lon_s[cxi]), 2)},
+        "elevation_m": round(elevation_m, 1) if elevation_m is not None else None,
+        "terrain_note": terrain_note,
+        "impact_context": impact_context,
         "model_verified_roc_auc": meta[hazard]["roc_auc"],
     }
 
