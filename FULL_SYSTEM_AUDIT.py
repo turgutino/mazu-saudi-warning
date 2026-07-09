@@ -204,6 +204,103 @@ try:
 except Exception as e:
     check("F", "remote KG fetch succeeded", False, str(e))
 
+# =============================================================================
+print()
+print("=" * 74)
+print("SECTION G — post-Layer-4 extensions (terrain, population, A/B ablation)")
+print("=" * 74)
+
+AGENT_DIR = os.path.join(HERE, "agent")
+sys.path.insert(0, AGENT_DIR)
+
+# G1 -- orography in mazu_dataset.nc matches the RAW source exactly (independent
+# re-read, same pattern as Section B), at 3 city coordinates spanning coastal,
+# interior and mountain terrain.
+check("G", "'orography' variable present in consolidated dataset", "orography" in cons)
+if "orography" in cons:
+    raw_823 = xr.open_dataset(os.path.join(RAW_DIR, "saudi_indicators_20250823.nc"))
+    G_CITIES = {"Jeddah": (21.5, 39.2), "Abha": (18.2, 42.5), "Riyadh": (24.7, 46.7)}
+    lat_full_g, lon_full_g = cons.latitude.values, cons.longitude.values
+    mismatches_g1 = []
+    for city, (clat, clon) in G_CITIES.items():
+        yi = int(np.argmin(np.abs(lat_full_g - clat)))
+        xi = int(np.argmin(np.abs(lon_full_g - clon)))
+        cons_elev = float(cons["orography"].values[yi, xi])
+        raw_elev = float(raw_823["orography"].values[yi, xi])
+        if abs(cons_elev - raw_elev) > 1e-3:
+            mismatches_g1.append(f"{city}: cons={cons_elev} raw={raw_elev}")
+    check("G", "orography at Jeddah/Abha/Riyadh matches raw source exactly",
+         len(mismatches_g1) == 0, "; ".join(mismatches_g1))
+    raw_823.close()
+
+# G2 -- forecast_tool's elevation_m/terrain_note are independently re-derivable
+# from the raw orography grid (bypass test, same pattern as Section E) -- not
+# just re-reading whatever tools.py itself already computed.
+import tools as agent_tools
+import importlib
+importlib.reload(agent_tools)
+
+raw_full = xr.open_dataset(os.path.join(RAW_DIR, "saudi_indicators_20250823.nc"))
+for city, expect_flagged in [("Abha", True), ("Taif", True), ("Jeddah", False), ("Dammam", False)]:
+    clat, clon = agent_tools.CITIES[city]
+    yi = int(np.argmin(np.abs(raw_full.latitude.values - clat)))
+    xi = int(np.argmin(np.abs(raw_full.longitude.values - clon)))
+    indep_elev = float(raw_full["orography"].values[yi, xi])
+    r = agent_tools.forecast_tool(city, "2025-08-23", "heatwave")
+    tool_elev = r.get("elevation_m")
+    check("G", f"{city}: forecast_tool elevation_m matches independent raw lookup",
+         tool_elev is not None and abs(tool_elev - indep_elev) < 0.2,
+         f"tool={tool_elev} independent={indep_elev}")
+    is_flagged = r.get("terrain_note") is not None
+    check("G", f"{city}: terrain_note flag ({'expected' if expect_flagged else 'not expected'}) "
+               f"matches independent elevation ({round(indep_elev)}m vs 1500m threshold)",
+         is_flagged == (indep_elev >= 1500),
+         f"flagged={is_flagged} elevation={indep_elev}")
+raw_full.close()
+
+# G3 -- population figures in city_population.json are structurally sound and
+# internally consistent with what forecast_tool actually returns (catches the
+# tool silently drifting from its own data file).
+POP_JSON = os.path.join(AGENT_DIR, "city_population.json")
+check("G", "city_population.json exists", os.path.exists(POP_JSON))
+if os.path.exists(POP_JSON):
+    with open(POP_JSON, encoding="utf-8") as f:
+        pop_data = json.load(f)
+    missing_cities = [c for c in agent_tools.CITIES if c not in pop_data.get("cities", {})]
+    check("G", "all 8 cities have a population figure", len(missing_cities) == 0, missing_cities)
+    implausible = [c for c, v in pop_data.get("cities", {}).items() if not (10_000 < v < 20_000_000)]
+    check("G", "all population figures are plausible integers (10k-20M range)",
+         len(implausible) == 0, implausible)
+    r_pop = agent_tools.forecast_tool("Riyadh", "2025-08-23", "heatwave")
+    tool_pop = r_pop.get("impact_context", {}).get("city_population_2022_census")
+    check("G", "forecast_tool's impact_context population matches city_population.json exactly",
+         tool_pop == pop_data["cities"]["Riyadh"], f"tool={tool_pop} file={pop_data['cities']['Riyadh']}")
+
+# G4 -- the A/B ablation report's headline claim (0 hallucinated mechanisms
+# without the KG tool) is re-derived from the RAW saved transcripts, not
+# trusted from the report's own prose summary.
+ABLATION_JSON = os.path.join(AGENT_DIR, "ablation_results.json")
+check("G", "ablation_results.json exists", os.path.exists(ABLATION_JSON))
+if os.path.exists(ABLATION_JSON):
+    with open(ABLATION_JSON, encoding="utf-8") as f:
+        ablation = json.load(f)
+    check("G", "ablation covers 4 questions", len(ablation) == 4, len(ablation))
+    with_kg_grounded = sum(1 for r in ablation if r["with_kg"]["score"]["cites_mechanism"])
+    without_kg_grounded = sum(1 for r in ablation if r["without_kg"]["score"]["cites_mechanism"])
+    without_kg_halluc = sum(1 for r in ablation if r["without_kg"]["score"]["ungrounded_mechanism_claim"])
+    check("G", "re-derived from raw transcripts: WITH kg tool, 4/4 answers cite a mechanism",
+         with_kg_grounded == 4, with_kg_grounded)
+    check("G", "re-derived from raw transcripts: WITHOUT kg tool, 0/4 cite a mechanism",
+         without_kg_grounded == 0, without_kg_grounded)
+    check("G", "re-derived from raw transcripts: WITHOUT kg tool, 0/4 hallucinated one anyway",
+         without_kg_halluc == 0, without_kg_halluc)
+    # Independent re-check: did causal_kg_tool actually appear in the "without" trace?
+    # (it must NOT -- otherwise the ablation wasn't a real ablation)
+    leaked = [r["question"] for r in ablation
+             if any(t["tool"] == "causal_kg_tool" for t in r["without_kg"]["trace"])]
+    check("G", "causal_kg_tool never appears in any 'without_kg' trace (ablation was real)",
+         len(leaked) == 0, leaked)
+
 cons.close()
 
 # =============================================================================

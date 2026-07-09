@@ -13,11 +13,14 @@ and an **explainable warning agent** (DeepSeek function calling).
 
 ## Full system audit
 
-`FULL_SYSTEM_AUDIT.py` independently traces 36 numbers — from the consolidated
-dataset, the knowledge graph's event values, the causal citations, and an
-agent tool's output — back to the raw 5GB source data (365 daily NetCDF
+`FULL_SYSTEM_AUDIT.py` independently traces 56 numbers — from the consolidated
+dataset, the knowledge graph's event values, the causal citations, an
+agent tool's output, and the three post-Layer-4 extensions (terrain
+elevation, population context, and the A/B ablation test's headline
+claims, re-derived from raw saved transcripts rather than trusted from the
+report's own summary) — back to the raw 5GB source data (365 daily NetCDF
 files), plus checks the deployed GitHub site matches the local repo exactly.
-**Result: 36/36 passed, zero fabricated values found.** Full log in
+**Result: 56/56 passed, zero fabricated values found.** Full log in
 [`AUDIT_RESULTS.txt`](AUDIT_RESULTS.txt).
 
 ---

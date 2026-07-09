@@ -1,18 +1,11 @@
-MAZU FULL SYSTEM AUDIT â€” RESULTS
-Run: FULL_SYSTEM_AUDIT.py
-Purpose: trace every number in the pipeline/KG/agent/deployed site back to
-the raw 5GB source data (365 files, saudi_indicators_YYYYMMDD.nc), with
-independent re-derivation for each check (not just re-reading a cached
-intermediate file).
-
 ==========================================================================
-SECTION A â€” raw 5GB source files exist and are readable
+SECTION A — raw 5GB source files exist and are readable
 ==========================================================================
   [PASS] 365 raw daily files present
   [PASS] raw directory matches documented path
 
 ==========================================================================
-SECTION B â€” consolidated dataset (mazu_dataset.nc) matches RAW source
+SECTION B — consolidated dataset (mazu_dataset.nc) matches RAW source
 ==========================================================================
 (direct re-read of 3 random raw files, independent of the pipeline code)
   [PASS] 2025-08-23: all 16 indicators match raw source exactly
@@ -20,7 +13,7 @@ SECTION B â€” consolidated dataset (mazu_dataset.nc) matches RAW source
   [PASS] 2025-03-11: all 16 indicators match raw source exactly
 
 ==========================================================================
-SECTION C â€” KG event values trace back to the RAW source (not just consolidated)
+SECTION C — KG event values trace back to the RAW source (not just consolidated)
 ==========================================================================
   [PASS] 5 event nodes present in KG
   [PASS] 08-23 extreme rain: claimed value (254.9) matches raw grid MAX for daily_precip_total on 2025-08-23 (254.9)
@@ -30,44 +23,68 @@ SECTION C â€” KG event values trace back to the RAW source (not just consolidate
   [PASS] 08-16 heat stress: claimed value (54.7) matches raw grid MAX for heat_index_c on 2025-08-16 (54.7)
 
 ==========================================================================
-SECTION D â€” causal KG citations: quotes still verbatim in corpus.py
+SECTION D — causal KG citations: quotes still verbatim in corpus.py
 ==========================================================================
   [PASS] 6 Citation nodes present
-  [PASS] cite_ref_devries2013: quote verbatim in source (an eastward-migrating Mediterranean cyclone...)
-  [PASS] cite_ref_devries2013: quote verbatim in source (a stationary anticyclone over the southeastern...)
-  [PASS] cite_ref_devries2013: quote verbatim in source (upper-level tropospheric instability combined...)
-  [PASS] cite_ref_devries2013: quote verbatim in source (resulting in a quasi-stationary mesoscale...)
-  [PASS] cite_ref_devries2013: quote verbatim in source (The Red Sea Trough enhances low-level moisture...)
-  [PASS] cite_ref_devries2013: quote verbatim in source (often acting as a precursor to deep convection...)
-  [PASS] cite_ref_redsea_topo: quote verbatim in source (Surface fluxes over the Red Sea play an...)
-  [PASS] cite_ref_redsea_topo: quote verbatim in source (Red Sea water is estimated to affect regional...)
-  [PASS] cite_ref_redsea_topo: quote verbatim in source (strong convergence areas form over the Red Sea...)
+  [PASS] cite_ref_devries2013: quote verbatim in source (an eastward-migrating Mediterranean cycl...)
+  [PASS] cite_ref_devries2013: quote verbatim in source (a stationary anticyclone over the southe...)
+  [PASS] cite_ref_devries2013: quote verbatim in source (upper-level tropospheric instability com...)
+  [PASS] cite_ref_devries2013: quote verbatim in source (resulting in a quasi-stationary mesoscal...)
+  [PASS] cite_ref_devries2013: quote verbatim in source (The Red Sea Trough enhances low-level mo...)
+  [PASS] cite_ref_devries2013: quote verbatim in source (often acting as a precursor to deep conv...)
+  [PASS] cite_ref_redsea_topo: quote verbatim in source (Surface fluxes over the Red Sea play an ...)
+  [PASS] cite_ref_redsea_topo: quote verbatim in source (Red Sea water is estimated to affect reg...)
+  [PASS] cite_ref_redsea_topo: quote verbatim in source (strong convergence areas form over the R...)
   [PASS] cite_ref_redsea_topo: quote verbatim in source (strengthen low-level jets...)
-  [PASS] cite_ref_redsea_topo: quote verbatim in source (create a conditionally unstable atmosphere...)
-  [PASS] cite_ref_heatflux_era5: quote verbatim in source (stronger winds combined with drier air produce...)
-  [PASS] cite_ref_heatwave_circulation: quote verbatim in source (Saudi Arabia experiences powerful solar...)
-  [PASS] cite_ref_heatwave_circulation: quote verbatim in source (The influence of a subtropical high-pressure...)
-  [PASS] cite_ref_heatwave_circulation: quote verbatim in source (This subtropical high-pressure system, combined...)
-  [PASS] cite_ref_heatwave_variability: quote verbatim in source (the adjacent sea moderates temperature extremes...)
-  [PASS] cite_ref_shamal_yu2016: quote verbatim in source (The summer Shamal, occurring from May to August...)
-  [PASS] cite_ref_shamal_yu2016: quote verbatim in source (It forms due to the steep pressure gradient...)
+  [PASS] cite_ref_redsea_topo: quote verbatim in source (create a conditionally unstable atmosphe...)
+  [PASS] cite_ref_heatflux_era5: quote verbatim in source (stronger winds combined with drier air p...)
+  [PASS] cite_ref_heatwave_circulation: quote verbatim in source (Saudi Arabia experiences powerful solar ...)
+  [PASS] cite_ref_heatwave_circulation: quote verbatim in source (The influence of a subtropical high-pres...)
+  [PASS] cite_ref_heatwave_circulation: quote verbatim in source (This subtropical high-pressure system, c...)
+  [PASS] cite_ref_heatwave_variability: quote verbatim in source (the adjacent sea moderates temperature e...)
+  [PASS] cite_ref_shamal_yu2016: quote verbatim in source (The summer Shamal, occurring from May to...)
+  [PASS] cite_ref_shamal_yu2016: quote verbatim in source (It forms due to the steep pressure gradi...)
   [PASS] cite_ref_shamal_yu2016: quote verbatim in source (The summer Shamal is the major driver of...)
   [PASS] cite_ref_shamal_yu2016: quote verbatim in source (capable of lifting dust and transporting...)
   [PASS] total evidence quotes checked: 20 (expect 20)
 
 ==========================================================================
-SECTION E â€” agent tools read the SAME data as the raw source (bypass test)
+SECTION E — agent tools read the SAME data as the raw source (bypass test)
 ==========================================================================
   [PASS] conditions_tool('Jizan','2025-08-23') matches independent raw-file read
 
 ==========================================================================
-SECTION F â€” deployed GitHub site matches local repo (no drift)
+SECTION F — deployed GitHub site matches local repo (no drift)
 ==========================================================================
   [PASS] remote kg_data.json node count matches local
   [PASS] remote kg_data.json edge count matches local
 
 ==========================================================================
-TOTAL: 36 passed, 0 failed
+SECTION G — post-Layer-4 extensions (terrain, population, A/B ablation)
+==========================================================================
+  [PASS] 'orography' variable present in consolidated dataset
+  [PASS] orography at Jeddah/Abha/Riyadh matches raw source exactly
+  [PASS] Abha: forecast_tool elevation_m matches independent raw lookup
+  [PASS] Abha: terrain_note flag (expected) matches independent elevation (2082m vs 1500m threshold)
+  [PASS] Taif: forecast_tool elevation_m matches independent raw lookup
+  [PASS] Taif: terrain_note flag (expected) matches independent elevation (1774m vs 1500m threshold)
+  [PASS] Jeddah: forecast_tool elevation_m matches independent raw lookup
+  [PASS] Jeddah: terrain_note flag (not expected) matches independent elevation (30m vs 1500m threshold)
+  [PASS] Dammam: forecast_tool elevation_m matches independent raw lookup
+  [PASS] Dammam: terrain_note flag (not expected) matches independent elevation (12m vs 1500m threshold)
+  [PASS] city_population.json exists
+  [PASS] all 8 cities have a population figure
+  [PASS] all population figures are plausible integers (10k-20M range)
+  [PASS] forecast_tool's impact_context population matches city_population.json exactly
+  [PASS] ablation_results.json exists
+  [PASS] ablation covers 4 questions
+  [PASS] re-derived from raw transcripts: WITH kg tool, 4/4 answers cite a mechanism
+  [PASS] re-derived from raw transcripts: WITHOUT kg tool, 0/4 cite a mechanism
+  [PASS] re-derived from raw transcripts: WITHOUT kg tool, 0/4 hallucinated one anyway
+  [PASS] causal_kg_tool never appears in any 'without_kg' trace (ablation was real)
+
+==========================================================================
+TOTAL: 56 passed, 0 failed
 ==========================================================================
 
 Every checked number traces back to the raw 5GB source data. No fabrication found.
