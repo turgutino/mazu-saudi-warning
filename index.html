@@ -47,14 +47,14 @@
 <header><div class="wrap">
   <div class="kicker">Multi-hazard · Alert · Zero-gap · Universal</div>
   <h1><b>MAZU</b> · Saudi Arabia</h1>
-  <p>Extreme-weather early-warning system for flash floods and heatwaves — built on CMA 10&nbsp;km meteorological indicators, a causal knowledge graph, and data-grounded detection.</p>
+  <p>Extreme-weather early-warning system for flash floods, heatwaves, and dust storms — built on CMA 10&nbsp;km meteorological indicators, a causal knowledge graph, and data-grounded detection.</p>
   <div class="stats">
     <div class="stat"><div class="n">365</div><div class="l">days · 2025</div></div>
     <div class="stat"><div class="n">10 km</div><div class="l">resolution</div></div>
-    <div class="stat"><div class="n">20</div><div class="l">core indicators</div></div>
-    <div class="stat"><div class="n">57 / 176</div><div class="l">KG nodes / edges</div></div>
+    <div class="stat"><div class="n">22</div><div class="l">core indicators</div></div>
+    <div class="stat"><div class="n">60 / 183</div><div class="l">KG nodes / edges</div></div>
     <div class="stat"><div class="n">6</div><div class="l">peer-reviewed citations</div></div>
-    <div class="stat"><div class="n">2</div><div class="l">hazards</div></div>
+    <div class="stat"><div class="n">3</div><div class="l">hazards</div></div>
   </div>
 </div></header>
 
@@ -87,10 +87,12 @@
   <div class="stats" style="justify-content:flex-start;margin-top:0 0 22px">
     <div class="stat"><div class="n">0.971</div><div class="l">heatwave ROC-AUC</div></div>
     <div class="stat"><div class="n">0.873</div><div class="l">flash-flood ROC-AUC</div></div>
+    <div class="stat"><div class="n">0.887</div><div class="l">dust-storm ROC-AUC</div></div>
   </div>
   <ul class="pts">
     <li><b>Heatwave:</b> strong, well-calibrated one-day-ahead skill (ROC-AUC 0.971, PR-AUC 0.795 with a spatial-context feature) — calm days stay near-zero risk.</li>
     <li><b>Flash flood:</b> real but modest skill (ROC-AUC 0.873) given extreme rarity (0.5% of grid-days) and one year of training data; correctly ranks CAPE as the dominant driver.</li>
+    <li><b>Dust storm:</b> real, out-of-sample-validated skill (ROC-AUC 0.887) for a similarly rare event (~2% of grid-days); the label itself was built from the detection engine's own already-validated rule rather than a separately invented definition.</li>
     <li><b>Also tested, disclosed honestly:</b> a spatiotemporal GNN improved flash-flood spatial recall on one event but degraded calibration overall — kept as a documented research direction, not deployed.</li>
   </ul>
 </div></section>
@@ -100,10 +102,11 @@
   <p class="lead">A DeepSeek function-calling agent wires the forecast model, the literature-grounded causal knowledge graph, and live conditions into one assistant. Every probability, mechanism and citation it states comes from an actual tool call — never invented. This is what makes the knowledge graph <i>functional</i> rather than just browsable: the agent queries it programmatically on every question, the same way a production detection system would.</p>
   <a class="cta" href="agent_view.html">See real worked examples &rarr;</a>
   <ul class="pts" style="margin-top:20px">
-    <li><b>Grounded, not generative.</b> The system prompt forbids stating any number or citation without a tool result backing it — verified across 73 unit tests and 4 end-to-end test scenarios, including honest refusal on out-of-range dates and unknown cities.</li>
+    <li><b>Grounded, not generative.</b> The system prompt forbids stating any number or citation without a tool result backing it — verified across 90 unit tests and 4 end-to-end test scenarios, including honest refusal on out-of-range dates and unknown cities.</li>
     <li><b>Proven with a live A/B test, not just claimed.</b> Running the same questions with the causal knowledge-graph tool removed showed 4/4 answers lost their mechanism/citation grounding — but crucially, 0/4 hallucinated a replacement; the agent honestly said it lacked a grounded explanation. Full transcripts: <code>agent/ABLATION_REPORT.md</code>.</li>
     <li><b>Terrain-aware.</b> Forecasts for mountain cities (Abha, Taif) are flagged as lower-confidence — a genuine model limitation (coarse feature grid understating steep local relief) found and disclosed while building this check, not assumed away.</li>
     <li><b>Reflexive self-check.</b> Every forecast is cross-validated against an independent, rule-based detection engine. This caught a real, disclosed model limitation: on 23 Aug (Jizan), the physical preconditions for flash flooding were already elevated the day before the storm, but the model gave only 12.5% — a genuine precursor signal it underweighted. See <code>agent/REFLEXIVE_CHECK_REPORT.md</code>.</li>
+    <li><b>3 hazards, not 2.</b> Dust storm was added with full depth — new indicators, a trained and out-of-sample-validated forecast model, and knowledge-graph grounding that reused an existing literature citation rather than inventing one. See <code>agent/DUST_STORM_REPORT.md</code>.</li>
     <li><b>Static showcase, by design.</b> GitHub Pages can't run the Python backend or safely hold an API key client-side, so the linked page shows real, verified agent transcripts with their exact tool-call traces rather than a live chat.</li>
   </ul>
 </div></section>

@@ -63,13 +63,15 @@ INDICATORS = {
     "flash_flood_risk":        ("Flash-flood risk score", "score", "derived"),
     "heatwave_day_flag":       ("Heatwave day flag", "flag", "DS8"),
     "heatwave_duration_days":  ("Heatwave duration", "days", "DS8"),
+    "wind10_speed":            ("10 m wind speed", "m/s", "DS1"),
+    "dewpoint_depression_c":   ("Dewpoint depression (dryness of air)", "degC", "DS2"),
 }
 
 # ── Hazards ──────────────────────────────────────────────────────────────
 HAZARDS = {
     "flash_flood": "Flash Flood / Wadi Flooding",
     "heatwave":    "Extreme Heat / Heatwave",
-    "dust":        "Dust Storm / Strong Wind",
+    "dust_storm":        "Dust Storm / Strong Wind",
     "coastal":     "Coastal / Marine Risk",
 }
 
@@ -93,8 +95,8 @@ REGIONS = {
 REGION_HAZARD = {
     "Jeddah": ["flash_flood", "coastal", "heatwave"], "Mecca": ["flash_flood", "heatwave"],
     "Taif": ["flash_flood"], "Jizan": ["flash_flood", "coastal"], "Abha": ["flash_flood"],
-    "Riyadh": ["heatwave", "dust"], "Medina": ["heatwave", "dust"],
-    "Dammam": ["heatwave", "coastal"], "Empty Quarter": ["heatwave", "dust"],
+    "Riyadh": ["heatwave", "dust_storm"], "Medina": ["heatwave", "dust_storm"],
+    "Dammam": ["heatwave", "coastal"], "Empty Quarter": ["heatwave", "dust_storm"],
     "Red Sea": ["coastal"], "Persian Gulf": ["coastal"], "Arabian Sea": ["coastal"],
 }
 # region -> mechanisms it is exposed to
@@ -122,9 +124,11 @@ EVENT_DEFS = [
     ("ivt",                "flash_flood", "vapour surge",    "kg/m/s"),
     ("tmax_c",             "heatwave",    "extreme heat",    "C"),
     ("heat_index_c",       "heatwave",    "heat stress",     "C"),
+    ("wind10_speed",       "dust_storm",  "extreme wind",    "m/s"),
 ]
 # indicators whose real value we attach to each event (driven_by, with value)
-EVENT_DRIVERS = ["daily_precip_total", "cape", "ivt", "pwat", "tmax_c", "heat_index_c", "vpd_kpa"]
+EVENT_DRIVERS = ["daily_precip_total", "cape", "ivt", "pwat", "tmax_c", "heat_index_c", "vpd_kpa",
+                 "wind850_speed", "dewpoint_depression_c"]
 
 
 def nearest_region(lat, lon):
@@ -163,7 +167,7 @@ def detect_events():
 HAZARD_MECH = {
     "flash_flood": ["ARST", "moisture_transport", "orographic_lift"],
     "heatwave":    ["subtropical_high", "thermal_low"],
-    "dust":        ["thermal_low"],
+    "dust_storm":        ["thermal_low"],
     "coastal":     ["moisture_transport"],
 }
 
@@ -177,7 +181,7 @@ CONTRIBUTES_TO = {
                     "ivt", "pwat", "wind850_speed", "daily_precip_anomaly", "flash_flood_risk"],
     "heatwave":    ["tmax_c", "t2m_c", "heat_index_c", "vpd_kpa",
                     "tmax_anomaly_c", "t2m_anomaly_c", "heatwave_day_flag", "heatwave_duration_days"],
-    "dust":        ["wind850_speed", "wind_shear_850_200", "vpd_kpa"],
+    "dust_storm":        ["wind850_speed", "wind_shear_850_200", "vpd_kpa", "wind10_speed", "dewpoint_depression_c"],
     "coastal":     ["sst_celsius", "wind850_speed", "ivt"],
 }
 
@@ -186,7 +190,7 @@ TRIGGERS = {
     "ARST":               ["ivt", "pwat", "flash_flood"],
     "moisture_transport": ["pwat", "ivt", "sst_celsius"],
     "subtropical_high":   ["tmax_c", "heatwave"],
-    "thermal_low":        ["tmax_c", "vpd_kpa", "dust"],
+    "thermal_low":        ["tmax_c", "vpd_kpa", "dust_storm"],
     "orographic_lift":    ["daily_precip_total", "flash_flood"],
 }
 

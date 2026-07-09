@@ -59,6 +59,9 @@ FEATURE_VARS = [
     "cape", "pwat", "ivt", "wind850_speed", "wind_shear_850_200",
     "daily_precip_anomaly", "t2m_anomaly_c", "tmax_anomaly_c", "sst_celsius",
 ]
+# dust_storm's model was trained with these 2 extra features appended after
+# the base FEATURE_VARS (see model/07_dust_storm_forecast.py) -- order matters.
+DUST_EXTRA_VARS = ["wind10_speed", "dewpoint_depression_c"]
 
 _MODELS = {}
 _META = None
@@ -198,13 +201,13 @@ def forecast_tool(city: str, target_date: str, hazard: str) -> dict:
     Args:
         city: one of CITIES keys (e.g. "Jeddah")
         target_date: "YYYY-MM-DD" -- the date whose risk is being forecast
-        hazard: "heatwave" or "flash_flood"
+        hazard: "heatwave", "flash_flood", or "dust_storm"
     Returns dict with probability, the date used for input features, and errors.
     """
     if city not in CITIES:
         return {"error": f"Unknown city '{city}'. Known cities: {list(CITIES.keys())}"}
-    if hazard not in ("heatwave", "flash_flood"):
-        return {"error": f"Unknown hazard '{hazard}'. Must be 'heatwave' or 'flash_flood'."}
+    if hazard not in ("heatwave", "flash_flood", "dust_storm"):
+        return {"error": f"Unknown hazard '{hazard}'. Must be 'heatwave', 'flash_flood', or 'dust_storm'."}
 
     meta, ds = _load_resources()
     times = np.array([str(t)[:10] for t in ds.time.values])
@@ -237,6 +240,12 @@ def forecast_tool(city: str, target_date: str, hazard: str) -> dict:
         for v in NEIGHBOR_VARS:
             nm = neighbor_mean(raw[v])
             feat_row.append(nm[cyi, cxi])
+    elif hazard == "dust_storm":
+        # matches model/07_dust_storm_forecast.py's FEATURE_VARS order exactly
+        # (base 17 vars, then these 2 dust-specific vars, then lat/lon/doy)
+        for v in DUST_EXTRA_VARS:
+            arr = ds[v].values[ti][yi_s][:, xi_s]
+            feat_row.append(arr[cyi, cxi])
     feat_row += [city_lat, city_lon, doy]
 
     X = np.array(feat_row, dtype="float64").reshape(1, -1)
@@ -379,6 +388,7 @@ def conditions_tool(city: str, date: str) -> dict:
 SIMILARITY_FEATURES = {
     "flash_flood": ["cape", "ivt", "pwat", "daily_precip_total", "wind850_speed"],
     "heatwave": ["tmax_c", "heat_index_c", "vpd_kpa", "t2m_c", "tmax_anomaly_c"],
+    "dust_storm": ["wind10_speed", "wind850_speed", "dewpoint_depression_c", "vpd_kpa"],
 }
 
 _EVENTS = None
@@ -434,8 +444,9 @@ def _get_vector(date, lat, lon, features):
 
 def similar_events_tool(city: str, date: str, hazard: str) -> dict:
     """Compare a city/date's actual indicator values against the KG's 5 known
-    real 2025 extreme events, ranked by similarity, so the agent can say
-    "this looks like the 23 Aug event" instead of only stating a bare number.
+    real 2025 extreme events (3 flash_flood, 2 heatwave, 1 dust_storm), ranked
+    by similarity, so the agent can say "this looks like the 23 Aug event"
+    instead of only stating a bare number.
 
     Similarity method (documented, not tuned to any specific outcome):
     z-score each shared feature using the dataset's own mean/std, then convert
@@ -446,8 +457,8 @@ def similar_events_tool(city: str, date: str, hazard: str) -> dict:
     """
     if city not in CITIES:
         return {"error": f"Unknown city '{city}'. Known cities: {list(CITIES.keys())}"}
-    if hazard not in ("heatwave", "flash_flood"):
-        return {"error": f"Unknown hazard '{hazard}'. Must be 'heatwave' or 'flash_flood'."}
+    if hazard not in ("heatwave", "flash_flood", "dust_storm"):
+        return {"error": f"Unknown hazard '{hazard}'. Must be 'heatwave', 'flash_flood', or 'dust_storm'."}
     features = SIMILARITY_FEATURES[hazard]
 
     city_lat, city_lon = CITIES[city]

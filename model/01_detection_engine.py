@@ -31,6 +31,10 @@ REGIONS = {
     "Medina": (24.5, 39.6), "Abha": (18.2, 42.5),
     "Red Sea": (20.0, 38.5), "Persian Gulf": (26.5, 51.5),
     "Arabian Sea": (15.5, 55.0), "Empty Quarter": (19.5, 52.0),
+    "Northern Border": (31.0, 42.0),   # An Nafud desert / Iraq-Jordan border area,
+                                        # where the dust-storm rule's known 2025-06-19
+                                        # peak cell (31.9N,44.3E) falls -- added when
+                                        # the dust_storm hazard was introduced.
 }
 
 # ── Rules: data-grounded thresholds (percentiles verified from dataset) ───
@@ -57,6 +61,23 @@ RULES = {
             {"ind": "heatwave_day_flag",      "op": ">=", "thr": 1,  "w": 0.25},
             {"ind": "heatwave_duration_days", "op": ">=", "thr": 3,  "w": 0.20},
             {"ind": "heat_index_c",           "op": ">=", "thr": 40, "w": 0.20},   # ~p91
+        ],
+        "min_cluster": 8, "connectivity": 8, "risk_threshold": 0.55,
+        "severity": [("caution", 0.0), ("warning", 0.55), ("alert", 0.7), ("emergency", 0.85)],
+    },
+    # Dust storms need BOTH strong wind (surface + low-level jet, capable of
+    # lifting loose material) AND dry air (loose, liftable soil; humid coastal
+    # wind alone does not produce dust) -- primary condition is surface wind,
+    # since that is the direct lifting mechanism; the other three are
+    # data-grounded percentile thresholds (~p93-p95, verified against the
+    # dataset in the conversation that added this hazard, June-August 2025 --
+    # matching the KG's already-cited Shamal season, Yu et al. 2016).
+    "dust_storm": {
+        "conditions": [
+            {"ind": "wind10_speed",         "op": ">=", "thr": 7.0,  "w": 0.35, "primary": True},  # ~p95
+            {"ind": "wind850_speed",        "op": ">=", "thr": 11.0, "w": 0.25},  # ~p95, low-level jet
+            {"ind": "dewpoint_depression_c","op": ">=", "thr": 38.0, "w": 0.20},  # ~p95, dry/liftable soil
+            {"ind": "vpd_kpa",              "op": ">=", "thr": 5.5,  "w": 0.20},  # ~p93, dry atmosphere
         ],
         "min_cluster": 8, "connectivity": 8, "risk_threshold": 0.55,
         "severity": [("caution", 0.0), ("warning", 0.55), ("alert", 0.7), ("emergency", 0.85)],
@@ -165,6 +186,8 @@ if __name__ == "__main__":
         ("2025-08-19", "flash_flood", "Arabian Sea IVT surge 728"),
         ("2025-07-25", "heatwave",    "Empty Quarter Tmax 53.7C"),
         ("2025-08-16", "heatwave",    "Persian Gulf heat-index 54.7C"),
+        ("2025-06-19", "dust_storm",  "Northern Border wind+dry peak (found via grid search, "
+                                       "falls within the KG's cited May-Aug Shamal season)"),
     ]
     for date, hz, note in tests:
         evs = eng.detect(date, hz)
@@ -179,7 +202,9 @@ if __name__ == "__main__":
     for date in ["2025-02-10", "2025-11-05"]:
         ff = eng.detect(date, "flash_flood")
         hw = eng.detect(date, "heatwave")
-        print(f"  {date}: flash_flood={len(ff)} cluster(s), heatwave={len(hw)} cluster(s)")
+        ds_ = eng.detect(date, "dust_storm")
+        print(f"  {date}: flash_flood={len(ff)} cluster(s), heatwave={len(hw)} cluster(s), "
+              f"dust_storm={len(ds_)} cluster(s)")
 
     # annual summary stratified by severity (the honest picture)
     print("\n" + "=" * 66)

@@ -1,1516 +1,1579 @@
 {
- "directed": true,
- "multigraph": false,
- "graph": {},
- "nodes": [
-  {
-   "ntype": "DataSource",
-   "label": "DS1",
-   "desc": "Global Atmospheric Reanalysis V1.5",
-   "id": "DS1"
-  },
-  {
-   "ntype": "DataSource",
-   "label": "DS2",
-   "desc": "Global Surface Daily Analysis",
-   "id": "DS2"
-  },
-  {
-   "ntype": "DataSource",
-   "label": "DS4",
-   "desc": "Global SST Fusion Analysis",
-   "id": "DS4"
-  },
-  {
-   "ntype": "DataSource",
-   "label": "DS8",
-   "desc": "Global Climate Normals (1991-2020)",
-   "id": "DS8"
-  },
-  {
-   "ntype": "DataSource",
-   "label": "DS10",
-   "desc": "Satellite Precipitation Retrieval",
-   "id": "DS10"
-  },
-  {
-   "ntype": "Indicator",
-   "label": "daily_precip_total",
-   "desc": "Total daily precipitation",
-   "unit": "mm",
-   "source": "DS2",
-   "id": "daily_precip_total"
-  },
-  {
-   "ntype": "Indicator",
-   "label": "daily_convective_precip",
-   "desc": "Convective precipitation",
-   "unit": "mm",
-   "source": "DS2",
-   "id": "daily_convective_precip"
-  },
-  {
-   "ntype": "Indicator",
-   "label": "daily_large_scale_precip",
-   "desc": "Large-scale precipitation",
-   "unit": "mm",
-   "source": "DS2",
-   "id": "daily_large_scale_precip"
-  },
-  {
-   "ntype": "Indicator",
-   "label": "t2m_c",
-   "desc": "2 m air temperature",
-   "unit": "degC",
-   "source": "DS2",
-   "id": "t2m_c"
-  },
-  {
-   "ntype": "Indicator",
-   "label": "tmax_c",
-   "desc": "Daily maximum temperature",
-   "unit": "degC",
-   "source": "DS2",
-   "id": "tmax_c"
-  },
-  {
-   "ntype": "Indicator",
-   "label": "tmin_c",
-   "desc": "Daily minimum temperature",
-   "unit": "degC",
-   "source": "DS2",
-   "id": "tmin_c"
-  },
-  {
-   "ntype": "Indicator",
-   "label": "heat_index_c",
-   "desc": "Heat index (apparent temp)",
-   "unit": "degC",
-   "source": "DS2",
-   "id": "heat_index_c"
-  },
-  {
-   "ntype": "Indicator",
-   "label": "vpd_kpa",
-   "desc": "Vapour pressure deficit",
-   "unit": "kPa",
-   "source": "DS2",
-   "id": "vpd_kpa"
-  },
-  {
-   "ntype": "Indicator",
-   "label": "cape",
-   "desc": "Convective available potential energy",
-   "unit": "J/kg",
-   "source": "DS1",
-   "id": "cape"
-  },
-  {
-   "ntype": "Indicator",
-   "label": "pwat",
-   "desc": "Precipitable water",
-   "unit": "kg/m2",
-   "source": "DS1",
-   "id": "pwat"
-  },
-  {
-   "ntype": "Indicator",
-   "label": "ivt",
-   "desc": "Integrated vapour transport",
-   "unit": "kg/m/s",
-   "source": "DS1",
-   "id": "ivt"
-  },
-  {
-   "ntype": "Indicator",
-   "label": "wind850_speed",
-   "desc": "850 hPa wind speed",
-   "unit": "m/s",
-   "source": "DS1",
-   "id": "wind850_speed"
-  },
-  {
-   "ntype": "Indicator",
-   "label": "wind_shear_850_200",
-   "desc": "850-200 hPa wind shear",
-   "unit": "m/s",
-   "source": "DS1",
-   "id": "wind_shear_850_200"
-  },
-  {
-   "ntype": "Indicator",
-   "label": "daily_precip_anomaly",
-   "desc": "Daily precipitation anomaly",
-   "unit": "mm",
-   "source": "DS8",
-   "id": "daily_precip_anomaly"
-  },
-  {
-   "ntype": "Indicator",
-   "label": "t2m_anomaly_c",
-   "desc": "2 m temperature anomaly",
-   "unit": "degC",
-   "source": "DS8",
-   "id": "t2m_anomaly_c"
-  },
-  {
-   "ntype": "Indicator",
-   "label": "tmax_anomaly_c",
-   "desc": "Max temperature anomaly",
-   "unit": "degC",
-   "source": "DS8",
-   "id": "tmax_anomaly_c"
-  },
-  {
-   "ntype": "Indicator",
-   "label": "sst_celsius",
-   "desc": "Sea surface temperature",
-   "unit": "degC",
-   "source": "DS4",
-   "id": "sst_celsius"
-  },
-  {
-   "ntype": "Indicator",
-   "label": "flash_flood_risk",
-   "desc": "Flash-flood risk score",
-   "unit": "score",
-   "source": "derived",
-   "id": "flash_flood_risk"
-  },
-  {
-   "ntype": "Indicator",
-   "label": "heatwave_day_flag",
-   "desc": "Heatwave day flag",
-   "unit": "flag",
-   "source": "DS8",
-   "id": "heatwave_day_flag"
-  },
-  {
-   "ntype": "Indicator",
-   "label": "heatwave_duration_days",
-   "desc": "Heatwave duration",
-   "unit": "days",
-   "source": "DS8",
-   "id": "heatwave_duration_days"
-  },
-  {
-   "ntype": "Hazard",
-   "label": "Flash Flood / Wadi Flooding",
-   "desc": "Flash Flood / Wadi Flooding",
-   "id": "flash_flood"
-  },
-  {
-   "ntype": "Hazard",
-   "label": "Extreme Heat / Heatwave",
-   "desc": "Extreme Heat / Heatwave",
-   "id": "heatwave"
-  },
-  {
-   "ntype": "Hazard",
-   "label": "Dust Storm / Strong Wind",
-   "desc": "Dust Storm / Strong Wind",
-   "id": "dust"
-  },
-  {
-   "ntype": "Hazard",
-   "label": "Coastal / Marine Risk",
-   "desc": "Coastal / Marine Risk",
-   "id": "coastal"
-  },
-  {
-   "ntype": "Region",
-   "label": "Jeddah",
-   "lat": 21.5,
-   "lon": 39.2,
-   "kind": "city",
-   "id": "Jeddah"
-  },
-  {
-   "ntype": "Region",
-   "label": "Mecca",
-   "lat": 21.4,
-   "lon": 39.8,
-   "kind": "city",
-   "id": "Mecca"
-  },
-  {
-   "ntype": "Region",
-   "label": "Riyadh",
-   "lat": 24.7,
-   "lon": 46.7,
-   "kind": "city",
-   "id": "Riyadh"
-  },
-  {
-   "ntype": "Region",
-   "label": "Jizan",
-   "lat": 16.9,
-   "lon": 42.6,
-   "kind": "city",
-   "id": "Jizan"
-  },
-  {
-   "ntype": "Region",
-   "label": "Dammam",
-   "lat": 26.4,
-   "lon": 50.1,
-   "kind": "city",
-   "id": "Dammam"
-  },
-  {
-   "ntype": "Region",
-   "label": "Taif",
-   "lat": 21.3,
-   "lon": 40.4,
-   "kind": "city",
-   "id": "Taif"
-  },
-  {
-   "ntype": "Region",
-   "label": "Medina",
-   "lat": 24.5,
-   "lon": 39.6,
-   "kind": "city",
-   "id": "Medina"
-  },
-  {
-   "ntype": "Region",
-   "label": "Abha",
-   "lat": 18.2,
-   "lon": 42.5,
-   "kind": "city",
-   "id": "Abha"
-  },
-  {
-   "ntype": "Region",
-   "label": "Red Sea",
-   "lat": 20.0,
-   "lon": 38.5,
-   "kind": "sea",
-   "id": "Red Sea"
-  },
-  {
-   "ntype": "Region",
-   "label": "Persian Gulf",
-   "lat": 26.5,
-   "lon": 51.5,
-   "kind": "sea",
-   "id": "Persian Gulf"
-  },
-  {
-   "ntype": "Region",
-   "label": "Arabian Sea",
-   "lat": 15.5,
-   "lon": 55.0,
-   "kind": "sea",
-   "id": "Arabian Sea"
-  },
-  {
-   "ntype": "Region",
-   "label": "Empty Quarter",
-   "lat": 19.5,
-   "lon": 52.0,
-   "kind": "desert",
-   "id": "Empty Quarter"
-  },
-  {
-   "ntype": "Mechanism",
-   "label": "ARST",
-   "desc": "Active Red Sea Trough - low-level convergence over the Red Sea",
-   "id": "ARST"
-  },
-  {
-   "ntype": "Mechanism",
-   "label": "moisture transport",
-   "desc": "Red Sea / Arabian Sea moisture transport",
-   "id": "moisture_transport"
-  },
-  {
-   "ntype": "Mechanism",
-   "label": "subtropical high",
-   "desc": "Subtropical / continental high (heat dome)",
-   "id": "subtropical_high"
-  },
-  {
-   "ntype": "Mechanism",
-   "label": "thermal low",
-   "desc": "Arabian thermal low (desert heat low)",
-   "id": "thermal_low"
-  },
-  {
-   "ntype": "Mechanism",
-   "label": "orographic lift",
-   "desc": "Orographic lifting over Hejaz / Asir mountains",
-   "id": "orographic_lift"
-  },
-  {
-   "ntype": "Event",
-   "label": "08-23 extreme rain",
-   "date": "2025-08-23",
-   "hazard": "flash_flood",
-   "value": "daily_precip_total 254.9 mm",
-   "location": "Jizan (17.5N,42.9E)",
-   "id": "E_20250823_daily_precip_total"
-  },
-  {
-   "ntype": "Event",
-   "label": "08-31 convective instability",
-   "date": "2025-08-31",
-   "hazard": "flash_flood",
-   "value": "cape 5196.0 J/kg",
-   "location": "Abha (18.9N,41.7E)",
-   "id": "E_20250831_cape"
-  },
-  {
-   "ntype": "Event",
-   "label": "08-19 vapour surge",
-   "date": "2025-08-19",
-   "hazard": "flash_flood",
-   "value": "ivt 728.4 kg/m/s",
-   "location": "Arabian Sea (16.0N,55.9E)",
-   "id": "E_20250819_ivt"
-  },
-  {
-   "ntype": "Event",
-   "label": "07-25 extreme heat",
-   "date": "2025-07-25",
-   "hazard": "heatwave",
-   "value": "tmax_c 53.7 C",
-   "location": "Empty Quarter (18.7N,54.5E)",
-   "id": "E_20250725_tmax_c"
-  },
-  {
-   "ntype": "Event",
-   "label": "08-16 heat stress",
-   "date": "2025-08-16",
-   "hazard": "heatwave",
-   "value": "heat_index_c 54.7 C",
-   "location": "Persian Gulf (25.0N,51.9E)",
-   "id": "E_20250816_heat_index_c"
-  },
-  {
-   "id": "cite_ref_devries2013",
-   "ntype": "Citation",
-   "label": "de Vries et al. (2013), J. Geophys. Res. Atmos.",
-   "desc": "Extreme precipitation events in the Middle East: Dynamics of the Active Red Sea Trough",
-   "url": "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/jgrd.50569",
-   "evidence": [
+  "directed": true,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
     {
-     "subject": "eastward-migrating Mediterranean cyclone",
-     "relation": "joins",
-     "object": "extension of the Sudan low-pressure zone (the Red Sea Trough)",
-     "quote": "an eastward-migrating Mediterranean cyclone joined an extension of the Sudan low-pressure zone (the Red Sea Trough)"
+      "ntype": "DataSource",
+      "label": "DS1",
+      "desc": "Global Atmospheric Reanalysis V1.5",
+      "id": "DS1"
     },
     {
-     "subject": "stationary anticyclone over the southeastern Arabian Peninsula (the Arabian Anticyclone)",
-     "relation": "produces",
-     "object": "clockwise flow that supplied moisture from the Arabian Sea and the Red Sea",
-     "quote": "a stationary anticyclone over the southeastern Arabian Peninsula (the Arabian Anticyclone) produced a clockwise flow that supplied moisture from the Arabian Sea and the Red Sea"
+      "ntype": "DataSource",
+      "label": "DS2",
+      "desc": "Global Surface Daily Analysis",
+      "id": "DS2"
     },
     {
-     "subject": "upper-level tropospheric instability combined with this moisture supply",
-     "relation": "produces",
-     "object": "deep moist convection",
-     "quote": "upper-level tropospheric instability combined with this moisture supply to produce deep moist convection"
+      "ntype": "DataSource",
+      "label": "DS4",
+      "desc": "Global SST Fusion Analysis",
+      "id": "DS4"
     },
     {
-     "subject": "deep moist convection",
-     "relation": "results in",
-     "object": "a quasi-stationary mesoscale convective system and heavy rainfall over Jeddah",
-     "quote": "resulting in a quasi-stationary mesoscale convective system and heavy rainfall over Jeddah"
+      "ntype": "DataSource",
+      "label": "DS8",
+      "desc": "Global Climate Normals (1991-2020)",
+      "id": "DS8"
     },
     {
-     "subject": "The Red Sea Trough",
-     "relation": "enhances",
-     "object": "low-level moisture transport and convergence",
-     "quote": "The Red Sea Trough enhances low-level moisture transport and convergence"
+      "ntype": "DataSource",
+      "label": "DS10",
+      "desc": "Satellite Precipitation Retrieval",
+      "id": "DS10"
     },
     {
-     "subject": "The Red Sea Trough",
-     "relation": "precedes",
-     "object": "deep convection and mesoscale convective system development",
-     "quote": "often acting as a precursor to deep convection and mesoscale convective system development"
+      "ntype": "Indicator",
+      "label": "daily_precip_total",
+      "desc": "Total daily precipitation",
+      "unit": "mm",
+      "source": "DS2",
+      "id": "daily_precip_total"
+    },
+    {
+      "ntype": "Indicator",
+      "label": "daily_convective_precip",
+      "desc": "Convective precipitation",
+      "unit": "mm",
+      "source": "DS2",
+      "id": "daily_convective_precip"
+    },
+    {
+      "ntype": "Indicator",
+      "label": "daily_large_scale_precip",
+      "desc": "Large-scale precipitation",
+      "unit": "mm",
+      "source": "DS2",
+      "id": "daily_large_scale_precip"
+    },
+    {
+      "ntype": "Indicator",
+      "label": "t2m_c",
+      "desc": "2 m air temperature",
+      "unit": "degC",
+      "source": "DS2",
+      "id": "t2m_c"
+    },
+    {
+      "ntype": "Indicator",
+      "label": "tmax_c",
+      "desc": "Daily maximum temperature",
+      "unit": "degC",
+      "source": "DS2",
+      "id": "tmax_c"
+    },
+    {
+      "ntype": "Indicator",
+      "label": "tmin_c",
+      "desc": "Daily minimum temperature",
+      "unit": "degC",
+      "source": "DS2",
+      "id": "tmin_c"
+    },
+    {
+      "ntype": "Indicator",
+      "label": "heat_index_c",
+      "desc": "Heat index (apparent temp)",
+      "unit": "degC",
+      "source": "DS2",
+      "id": "heat_index_c"
+    },
+    {
+      "ntype": "Indicator",
+      "label": "vpd_kpa",
+      "desc": "Vapour pressure deficit",
+      "unit": "kPa",
+      "source": "DS2",
+      "id": "vpd_kpa"
+    },
+    {
+      "ntype": "Indicator",
+      "label": "cape",
+      "desc": "Convective available potential energy",
+      "unit": "J/kg",
+      "source": "DS1",
+      "id": "cape"
+    },
+    {
+      "ntype": "Indicator",
+      "label": "pwat",
+      "desc": "Precipitable water",
+      "unit": "kg/m2",
+      "source": "DS1",
+      "id": "pwat"
+    },
+    {
+      "ntype": "Indicator",
+      "label": "ivt",
+      "desc": "Integrated vapour transport",
+      "unit": "kg/m/s",
+      "source": "DS1",
+      "id": "ivt"
+    },
+    {
+      "ntype": "Indicator",
+      "label": "wind850_speed",
+      "desc": "850 hPa wind speed",
+      "unit": "m/s",
+      "source": "DS1",
+      "id": "wind850_speed"
+    },
+    {
+      "ntype": "Indicator",
+      "label": "wind_shear_850_200",
+      "desc": "850-200 hPa wind shear",
+      "unit": "m/s",
+      "source": "DS1",
+      "id": "wind_shear_850_200"
+    },
+    {
+      "ntype": "Indicator",
+      "label": "daily_precip_anomaly",
+      "desc": "Daily precipitation anomaly",
+      "unit": "mm",
+      "source": "DS8",
+      "id": "daily_precip_anomaly"
+    },
+    {
+      "ntype": "Indicator",
+      "label": "t2m_anomaly_c",
+      "desc": "2 m temperature anomaly",
+      "unit": "degC",
+      "source": "DS8",
+      "id": "t2m_anomaly_c"
+    },
+    {
+      "ntype": "Indicator",
+      "label": "tmax_anomaly_c",
+      "desc": "Max temperature anomaly",
+      "unit": "degC",
+      "source": "DS8",
+      "id": "tmax_anomaly_c"
+    },
+    {
+      "ntype": "Indicator",
+      "label": "sst_celsius",
+      "desc": "Sea surface temperature",
+      "unit": "degC",
+      "source": "DS4",
+      "id": "sst_celsius"
+    },
+    {
+      "ntype": "Indicator",
+      "label": "flash_flood_risk",
+      "desc": "Flash-flood risk score",
+      "unit": "score",
+      "source": "derived",
+      "id": "flash_flood_risk"
+    },
+    {
+      "ntype": "Indicator",
+      "label": "heatwave_day_flag",
+      "desc": "Heatwave day flag",
+      "unit": "flag",
+      "source": "DS8",
+      "id": "heatwave_day_flag"
+    },
+    {
+      "ntype": "Indicator",
+      "label": "heatwave_duration_days",
+      "desc": "Heatwave duration",
+      "unit": "days",
+      "source": "DS8",
+      "id": "heatwave_duration_days"
+    },
+    {
+      "ntype": "Hazard",
+      "label": "Flash Flood / Wadi Flooding",
+      "desc": "Flash Flood / Wadi Flooding",
+      "id": "flash_flood"
+    },
+    {
+      "ntype": "Hazard",
+      "label": "Extreme Heat / Heatwave",
+      "desc": "Extreme Heat / Heatwave",
+      "id": "heatwave"
+    },
+    {
+      "ntype": "Hazard",
+      "label": "Dust Storm",
+      "desc": "Dust Storm (wind-lifted, per Shamal-driven mechanism)",
+      "id": "dust_storm"
+    },
+    {
+      "ntype": "Hazard",
+      "label": "Coastal / Marine Risk",
+      "desc": "Coastal / Marine Risk",
+      "id": "coastal"
+    },
+    {
+      "ntype": "Region",
+      "label": "Jeddah",
+      "lat": 21.5,
+      "lon": 39.2,
+      "kind": "city",
+      "id": "Jeddah"
+    },
+    {
+      "ntype": "Region",
+      "label": "Mecca",
+      "lat": 21.4,
+      "lon": 39.8,
+      "kind": "city",
+      "id": "Mecca"
+    },
+    {
+      "ntype": "Region",
+      "label": "Riyadh",
+      "lat": 24.7,
+      "lon": 46.7,
+      "kind": "city",
+      "id": "Riyadh"
+    },
+    {
+      "ntype": "Region",
+      "label": "Jizan",
+      "lat": 16.9,
+      "lon": 42.6,
+      "kind": "city",
+      "id": "Jizan"
+    },
+    {
+      "ntype": "Region",
+      "label": "Dammam",
+      "lat": 26.4,
+      "lon": 50.1,
+      "kind": "city",
+      "id": "Dammam"
+    },
+    {
+      "ntype": "Region",
+      "label": "Taif",
+      "lat": 21.3,
+      "lon": 40.4,
+      "kind": "city",
+      "id": "Taif"
+    },
+    {
+      "ntype": "Region",
+      "label": "Medina",
+      "lat": 24.5,
+      "lon": 39.6,
+      "kind": "city",
+      "id": "Medina"
+    },
+    {
+      "ntype": "Region",
+      "label": "Abha",
+      "lat": 18.2,
+      "lon": 42.5,
+      "kind": "city",
+      "id": "Abha"
+    },
+    {
+      "ntype": "Region",
+      "label": "Red Sea",
+      "lat": 20.0,
+      "lon": 38.5,
+      "kind": "sea",
+      "id": "Red Sea"
+    },
+    {
+      "ntype": "Region",
+      "label": "Persian Gulf",
+      "lat": 26.5,
+      "lon": 51.5,
+      "kind": "sea",
+      "id": "Persian Gulf"
+    },
+    {
+      "ntype": "Region",
+      "label": "Arabian Sea",
+      "lat": 15.5,
+      "lon": 55.0,
+      "kind": "sea",
+      "id": "Arabian Sea"
+    },
+    {
+      "ntype": "Region",
+      "label": "Empty Quarter",
+      "lat": 19.5,
+      "lon": 52.0,
+      "kind": "desert",
+      "id": "Empty Quarter"
+    },
+    {
+      "ntype": "Mechanism",
+      "label": "ARST",
+      "desc": "Active Red Sea Trough - low-level convergence over the Red Sea",
+      "id": "ARST"
+    },
+    {
+      "ntype": "Mechanism",
+      "label": "moisture transport",
+      "desc": "Red Sea / Arabian Sea moisture transport",
+      "id": "moisture_transport"
+    },
+    {
+      "ntype": "Mechanism",
+      "label": "subtropical high",
+      "desc": "Subtropical / continental high (heat dome)",
+      "id": "subtropical_high"
+    },
+    {
+      "ntype": "Mechanism",
+      "label": "thermal low",
+      "desc": "Arabian thermal low (desert heat low)",
+      "id": "thermal_low"
+    },
+    {
+      "ntype": "Mechanism",
+      "label": "orographic lift",
+      "desc": "Orographic lifting over Hejaz / Asir mountains",
+      "id": "orographic_lift"
+    },
+    {
+      "ntype": "Event",
+      "label": "08-23 extreme rain",
+      "date": "2025-08-23",
+      "hazard": "flash_flood",
+      "value": "daily_precip_total 254.9 mm",
+      "location": "Jizan (17.5N,42.9E)",
+      "id": "E_20250823_daily_precip_total"
+    },
+    {
+      "ntype": "Event",
+      "label": "08-31 convective instability",
+      "date": "2025-08-31",
+      "hazard": "flash_flood",
+      "value": "cape 5196.0 J/kg",
+      "location": "Abha (18.9N,41.7E)",
+      "id": "E_20250831_cape"
+    },
+    {
+      "ntype": "Event",
+      "label": "08-19 vapour surge",
+      "date": "2025-08-19",
+      "hazard": "flash_flood",
+      "value": "ivt 728.4 kg/m/s",
+      "location": "Arabian Sea (16.0N,55.9E)",
+      "id": "E_20250819_ivt"
+    },
+    {
+      "ntype": "Event",
+      "label": "07-25 extreme heat",
+      "date": "2025-07-25",
+      "hazard": "heatwave",
+      "value": "tmax_c 53.7 C",
+      "location": "Empty Quarter (18.7N,54.5E)",
+      "id": "E_20250725_tmax_c"
+    },
+    {
+      "ntype": "Event",
+      "label": "08-16 heat stress",
+      "date": "2025-08-16",
+      "hazard": "heatwave",
+      "value": "heat_index_c 54.7 C",
+      "location": "Persian Gulf (25.0N,51.9E)",
+      "id": "E_20250816_heat_index_c"
+    },
+    {
+      "id": "cite_ref_devries2013",
+      "ntype": "Citation",
+      "label": "de Vries et al. (2013), J. Geophys. Res. Atmos.",
+      "desc": "Extreme precipitation events in the Middle East: Dynamics of the Active Red Sea Trough",
+      "url": "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/jgrd.50569",
+      "evidence": [
+        {
+          "subject": "eastward-migrating Mediterranean cyclone",
+          "relation": "joins",
+          "object": "extension of the Sudan low-pressure zone (the Red Sea Trough)",
+          "quote": "an eastward-migrating Mediterranean cyclone joined an extension of the Sudan low-pressure zone (the Red Sea Trough)"
+        },
+        {
+          "subject": "stationary anticyclone over the southeastern Arabian Peninsula (the Arabian Anticyclone)",
+          "relation": "produces",
+          "object": "clockwise flow that supplied moisture from the Arabian Sea and the Red Sea",
+          "quote": "a stationary anticyclone over the southeastern Arabian Peninsula (the Arabian Anticyclone) produced a clockwise flow that supplied moisture from the Arabian Sea and the Red Sea"
+        },
+        {
+          "subject": "upper-level tropospheric instability combined with this moisture supply",
+          "relation": "produces",
+          "object": "deep moist convection",
+          "quote": "upper-level tropospheric instability combined with this moisture supply to produce deep moist convection"
+        },
+        {
+          "subject": "deep moist convection",
+          "relation": "results in",
+          "object": "a quasi-stationary mesoscale convective system and heavy rainfall over Jeddah",
+          "quote": "resulting in a quasi-stationary mesoscale convective system and heavy rainfall over Jeddah"
+        },
+        {
+          "subject": "The Red Sea Trough",
+          "relation": "enhances",
+          "object": "low-level moisture transport and convergence",
+          "quote": "The Red Sea Trough enhances low-level moisture transport and convergence"
+        },
+        {
+          "subject": "The Red Sea Trough",
+          "relation": "precedes",
+          "object": "deep convection and mesoscale convective system development",
+          "quote": "often acting as a precursor to deep convection and mesoscale convective system development"
+        }
+      ],
+      "n_triples": 6
+    },
+    {
+      "id": "cite_ref_redsea_topo",
+      "ntype": "Citation",
+      "label": "ResearchGate case study",
+      "desc": "On the Effect of Red Sea and Topography on Rainfall over Saudi Arabia",
+      "url": "https://www.researchgate.net/publication/336928573",
+      "evidence": [
+        {
+          "subject": "Surface fluxes over the Red Sea",
+          "relation": "regulates",
+          "object": "low-level moist-air convergence prior to convection initiation and development",
+          "quote": "Surface fluxes over the Red Sea play an important role in regulating low-level moist-air convergence prior to convection initiation and development"
+        },
+        {
+          "subject": "Red Sea water",
+          "relation": "affects",
+          "object": "regional rainfall",
+          "quote": "Red Sea water is estimated to affect regional rainfall by about 30 to 40 percent"
+        },
+        {
+          "subject": "strong convergence areas over the Red Sea",
+          "relation": "enhances",
+          "object": "uplift motion",
+          "quote": "strong convergence areas form over the Red Sea that enhance uplift motion"
+        },
+        {
+          "subject": "strong convergence areas over the Red Sea",
+          "relation": "strengthens",
+          "object": "low-level jets",
+          "quote": "strengthen low-level jets"
+        },
+        {
+          "subject": "strong convergence areas over the Red Sea",
+          "relation": "creates",
+          "object": "a conditionally unstable atmosphere that favours cyclonic system development",
+          "quote": "create a conditionally unstable atmosphere that favours cyclonic system development"
+        }
+      ],
+      "n_triples": 5
+    },
+    {
+      "id": "cite_ref_heatflux_era5",
+      "ntype": "Citation",
+      "label": "MDPI Atmosphere (2019)",
+      "desc": "Surface Heat Fluxes over the Northern Arabian Gulf and Red Sea (ERA5/MERRA2)",
+      "url": "https://www.mdpi.com/2073-4433/10/9/504",
+      "evidence": [
+        {
+          "subject": "stronger winds combined with drier air",
+          "relation": "produces",
+          "object": "latent heat losses of up to 410 watts per square metre",
+          "quote": "stronger winds combined with drier air produce latent heat losses of up to 410 watts per square metre"
+        }
+      ],
+      "n_triples": 1
+    },
+    {
+      "id": "cite_ref_heatwave_circulation",
+      "ntype": "Citation",
+      "label": "ScienceDirect, Atmospheric Research",
+      "desc": "Extreme summer temperatures in Saudi Arabia and large-scale circulation",
+      "url": "https://www.sciencedirect.com/science/article/abs/pii/S0169809519301747",
+      "evidence": [
+        {
+          "subject": "powerful solar radiation and persistent high-pressure systems",
+          "relation": "causes",
+          "object": "intense surface heating",
+          "quote": "Saudi Arabia experiences powerful solar radiation and persistent high-pressure systems that contribute to intense surface heating"
+        },
+        {
+          "subject": "subtropical high-pressure system over the Arabian Peninsula",
+          "relation": "causes",
+          "object": "extreme summer temperature variation",
+          "quote": "The influence of a subtropical high-pressure system over the Arabian Peninsula is associated with extreme summer temperature variation"
+        },
+        {
+          "subject": "subtropical high-pressure system, combined with the region's geographic location and solar radiation exposure",
+          "relation": "drives",
+          "object": "extreme summer heat in Saudi Arabia",
+          "quote": "This subtropical high-pressure system, combined with the region's geographic location and solar radiation exposure, is identified as a primary driver of extreme summer heat in Saudi Arabia"
+        }
+      ],
+      "n_triples": 3
+    },
+    {
+      "id": "cite_ref_heatwave_variability",
+      "ntype": "Citation",
+      "label": "Springer, Meteorology and Atmospheric Physics (2024)",
+      "desc": "Observed heatwaves characteristics and variability over Saudi Arabia",
+      "url": "https://link.springer.com/article/10.1007/s00703-024-01010-6",
+      "evidence": [
+        {
+          "subject": "the adjacent sea",
+          "relation": "moderates",
+          "object": "temperature extremes",
+          "quote": "the adjacent sea moderates temperature extremes compared to the interior"
+        }
+      ],
+      "n_triples": 1
+    },
+    {
+      "id": "cite_ref_shamal_yu2016",
+      "ntype": "Citation",
+      "label": "Yu et al. (2016), J. Geophys. Res. Atmos.",
+      "desc": "Climatology of summer Shamal wind in the Middle East",
+      "url": "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015jd024063",
+      "evidence": [
+        {
+          "subject": "high pressure over eastern Africa and thermal low-pressure centres over Iran and Pakistan",
+          "relation": "drives",
+          "object": "summer Shamal",
+          "quote": "The summer Shamal, occurring from May to August, is a persistent north-northwesterly wind regime driven by high pressure over eastern Africa and thermal low-pressure centres over Iran and Pakistan."
+        },
+        {
+          "subject": "steep pressure gradient between the heat low over Pakistan, Afghanistan and Iran and the high-pressure system over the eastern Mediterranean and northern Saudi Arabia",
+          "relation": "causes",
+          "object": "summer Shamal",
+          "quote": "It forms due to the steep pressure gradient between the heat low over Pakistan, Afghanistan and Iran and the high-pressure system over the eastern Mediterranean and northern Saudi Arabia."
+        },
+        {
+          "subject": "summer Shamal",
+          "relation": "causes",
+          "object": "dust storm activity across the Arabian Peninsula",
+          "quote": "The summer Shamal is the major driver of dust storm activity across the Arabian Peninsula"
+        },
+        {
+          "subject": "summer Shamal",
+          "relation": "produces",
+          "object": "lifting dust and transporting it to the Persian Gulf and the Arabian Peninsula",
+          "quote": "capable of lifting dust and transporting it to the Persian Gulf and the Arabian Peninsula"
+        }
+      ],
+      "n_triples": 4
+    },
+    {
+      "ntype": "Indicator",
+      "label": "wind10_speed",
+      "desc": "10 m wind speed",
+      "unit": "m/s",
+      "source": "DS1",
+      "id": "wind10_speed"
+    },
+    {
+      "ntype": "Indicator",
+      "label": "dewpoint_depression_c",
+      "desc": "Dewpoint depression (dryness of air)",
+      "unit": "degC",
+      "source": "DS2",
+      "id": "dewpoint_depression_c"
+    },
+    {
+      "ntype": "Event",
+      "label": "07-26 extreme wind",
+      "date": "2025-07-26",
+      "hazard": "dust_storm",
+      "value": "wind10_speed 20.7 m/s",
+      "location": "Arabian Sea (17.4N,55.8E)",
+      "id": "E_20250726_wind10_speed"
     }
-   ],
-   "n_triples": 6
-  },
-  {
-   "id": "cite_ref_redsea_topo",
-   "ntype": "Citation",
-   "label": "ResearchGate case study",
-   "desc": "On the Effect of Red Sea and Topography on Rainfall over Saudi Arabia",
-   "url": "https://www.researchgate.net/publication/336928573",
-   "evidence": [
+  ],
+  "links": [
     {
-     "subject": "Surface fluxes over the Red Sea",
-     "relation": "regulates",
-     "object": "low-level moist-air convergence prior to convection initiation and development",
-     "quote": "Surface fluxes over the Red Sea play an important role in regulating low-level moist-air convergence prior to convection initiation and development"
+      "etype": "sourced_from",
+      "source": "daily_precip_total",
+      "target": "DS2"
     },
     {
-     "subject": "Red Sea water",
-     "relation": "affects",
-     "object": "regional rainfall",
-     "quote": "Red Sea water is estimated to affect regional rainfall by about 30 to 40 percent"
+      "etype": "contributes_to",
+      "source": "daily_precip_total",
+      "target": "flash_flood"
     },
     {
-     "subject": "strong convergence areas over the Red Sea",
-     "relation": "enhances",
-     "object": "uplift motion",
-     "quote": "strong convergence areas form over the Red Sea that enhance uplift motion"
+      "etype": "correlates_with",
+      "weight": 0.921,
+      "source": "daily_precip_total",
+      "target": "daily_convective_precip"
     },
     {
-     "subject": "strong convergence areas over the Red Sea",
-     "relation": "strengthens",
-     "object": "low-level jets",
-     "quote": "strengthen low-level jets"
+      "etype": "correlates_with",
+      "weight": 0.909,
+      "source": "daily_precip_total",
+      "target": "daily_large_scale_precip"
     },
     {
-     "subject": "strong convergence areas over the Red Sea",
-     "relation": "creates",
-     "object": "a conditionally unstable atmosphere that favours cyclonic system development",
-     "quote": "create a conditionally unstable atmosphere that favours cyclonic system development"
+      "etype": "sourced_from",
+      "source": "daily_convective_precip",
+      "target": "DS2"
+    },
+    {
+      "etype": "contributes_to",
+      "source": "daily_convective_precip",
+      "target": "flash_flood"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.676,
+      "source": "daily_convective_precip",
+      "target": "daily_large_scale_precip"
+    },
+    {
+      "etype": "sourced_from",
+      "source": "daily_large_scale_precip",
+      "target": "DS2"
+    },
+    {
+      "etype": "sourced_from",
+      "source": "t2m_c",
+      "target": "DS2"
+    },
+    {
+      "etype": "contributes_to",
+      "source": "t2m_c",
+      "target": "heatwave"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.999,
+      "source": "t2m_c",
+      "target": "tmax_c"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.998,
+      "source": "t2m_c",
+      "target": "tmin_c"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.999,
+      "source": "t2m_c",
+      "target": "heat_index_c"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.983,
+      "source": "t2m_c",
+      "target": "vpd_kpa"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": -0.828,
+      "source": "t2m_c",
+      "target": "wind_shear_850_200"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.835,
+      "source": "t2m_c",
+      "target": "sst_celsius"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.757,
+      "source": "t2m_c",
+      "target": "heatwave_day_flag"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.652,
+      "source": "t2m_c",
+      "target": "heatwave_duration_days"
+    },
+    {
+      "etype": "sourced_from",
+      "source": "tmax_c",
+      "target": "DS2"
+    },
+    {
+      "etype": "contributes_to",
+      "source": "tmax_c",
+      "target": "heatwave"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.995,
+      "source": "tmax_c",
+      "target": "tmin_c"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.997,
+      "source": "tmax_c",
+      "target": "heat_index_c"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.985,
+      "source": "tmax_c",
+      "target": "vpd_kpa"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": -0.829,
+      "source": "tmax_c",
+      "target": "wind_shear_850_200"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.83,
+      "source": "tmax_c",
+      "target": "sst_celsius"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.758,
+      "source": "tmax_c",
+      "target": "heatwave_day_flag"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.655,
+      "source": "tmax_c",
+      "target": "heatwave_duration_days"
+    },
+    {
+      "etype": "sourced_from",
+      "source": "tmin_c",
+      "target": "DS2"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.999,
+      "source": "tmin_c",
+      "target": "heat_index_c"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.975,
+      "source": "tmin_c",
+      "target": "vpd_kpa"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": -0.828,
+      "source": "tmin_c",
+      "target": "wind_shear_850_200"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.846,
+      "source": "tmin_c",
+      "target": "sst_celsius"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.749,
+      "source": "tmin_c",
+      "target": "heatwave_day_flag"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.653,
+      "source": "tmin_c",
+      "target": "heatwave_duration_days"
+    },
+    {
+      "etype": "sourced_from",
+      "source": "heat_index_c",
+      "target": "DS2"
+    },
+    {
+      "etype": "contributes_to",
+      "source": "heat_index_c",
+      "target": "heatwave"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.98,
+      "source": "heat_index_c",
+      "target": "vpd_kpa"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": -0.84,
+      "source": "heat_index_c",
+      "target": "wind_shear_850_200"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.85,
+      "source": "heat_index_c",
+      "target": "sst_celsius"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.757,
+      "source": "heat_index_c",
+      "target": "heatwave_day_flag"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.666,
+      "source": "heat_index_c",
+      "target": "heatwave_duration_days"
+    },
+    {
+      "etype": "sourced_from",
+      "source": "vpd_kpa",
+      "target": "DS2"
+    },
+    {
+      "etype": "contributes_to",
+      "source": "vpd_kpa",
+      "target": "heatwave"
+    },
+    {
+      "etype": "contributes_to",
+      "source": "vpd_kpa",
+      "target": "dust_storm"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": -0.784,
+      "source": "vpd_kpa",
+      "target": "wind_shear_850_200"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.789,
+      "source": "vpd_kpa",
+      "target": "sst_celsius"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.812,
+      "source": "vpd_kpa",
+      "target": "heatwave_day_flag"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.688,
+      "source": "vpd_kpa",
+      "target": "heatwave_duration_days"
+    },
+    {
+      "etype": "sourced_from",
+      "source": "cape",
+      "target": "DS1"
+    },
+    {
+      "etype": "contributes_to",
+      "source": "cape",
+      "target": "flash_flood"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.835,
+      "source": "cape",
+      "target": "pwat"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.681,
+      "source": "cape",
+      "target": "sst_celsius"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.948,
+      "source": "cape",
+      "target": "flash_flood_risk"
+    },
+    {
+      "etype": "sourced_from",
+      "source": "pwat",
+      "target": "DS1"
+    },
+    {
+      "etype": "contributes_to",
+      "source": "pwat",
+      "target": "flash_flood"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.743,
+      "source": "pwat",
+      "target": "ivt"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.827,
+      "source": "pwat",
+      "target": "flash_flood_risk"
+    },
+    {
+      "etype": "sourced_from",
+      "source": "ivt",
+      "target": "DS1"
+    },
+    {
+      "etype": "contributes_to",
+      "source": "ivt",
+      "target": "flash_flood"
+    },
+    {
+      "etype": "contributes_to",
+      "source": "ivt",
+      "target": "coastal"
+    },
+    {
+      "etype": "sourced_from",
+      "source": "wind850_speed",
+      "target": "DS1"
+    },
+    {
+      "etype": "contributes_to",
+      "source": "wind850_speed",
+      "target": "flash_flood"
+    },
+    {
+      "etype": "contributes_to",
+      "source": "wind850_speed",
+      "target": "dust_storm"
+    },
+    {
+      "etype": "contributes_to",
+      "source": "wind850_speed",
+      "target": "coastal"
+    },
+    {
+      "etype": "sourced_from",
+      "source": "wind_shear_850_200",
+      "target": "DS1"
+    },
+    {
+      "etype": "contributes_to",
+      "source": "wind_shear_850_200",
+      "target": "dust_storm"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": -0.846,
+      "source": "wind_shear_850_200",
+      "target": "sst_celsius"
+    },
+    {
+      "etype": "sourced_from",
+      "source": "daily_precip_anomaly",
+      "target": "DS8"
+    },
+    {
+      "etype": "contributes_to",
+      "source": "daily_precip_anomaly",
+      "target": "flash_flood"
+    },
+    {
+      "etype": "sourced_from",
+      "source": "t2m_anomaly_c",
+      "target": "DS8"
+    },
+    {
+      "etype": "contributes_to",
+      "source": "t2m_anomaly_c",
+      "target": "heatwave"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.851,
+      "source": "t2m_anomaly_c",
+      "target": "tmax_anomaly_c"
+    },
+    {
+      "etype": "sourced_from",
+      "source": "tmax_anomaly_c",
+      "target": "DS8"
+    },
+    {
+      "etype": "contributes_to",
+      "source": "tmax_anomaly_c",
+      "target": "heatwave"
+    },
+    {
+      "etype": "sourced_from",
+      "source": "sst_celsius",
+      "target": "DS4"
+    },
+    {
+      "etype": "contributes_to",
+      "source": "sst_celsius",
+      "target": "coastal"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.676,
+      "source": "sst_celsius",
+      "target": "flash_flood_risk"
+    },
+    {
+      "etype": "contributes_to",
+      "source": "flash_flood_risk",
+      "target": "flash_flood"
+    },
+    {
+      "etype": "sourced_from",
+      "source": "heatwave_day_flag",
+      "target": "DS8"
+    },
+    {
+      "etype": "contributes_to",
+      "source": "heatwave_day_flag",
+      "target": "heatwave"
+    },
+    {
+      "etype": "correlates_with",
+      "weight": 0.808,
+      "source": "heatwave_day_flag",
+      "target": "heatwave_duration_days"
+    },
+    {
+      "etype": "sourced_from",
+      "source": "heatwave_duration_days",
+      "target": "DS8"
+    },
+    {
+      "etype": "contributes_to",
+      "source": "heatwave_duration_days",
+      "target": "heatwave"
+    },
+    {
+      "etype": "driven_by",
+      "source": "flash_flood",
+      "target": "ARST"
+    },
+    {
+      "etype": "driven_by",
+      "source": "flash_flood",
+      "target": "moisture_transport"
+    },
+    {
+      "etype": "driven_by",
+      "source": "flash_flood",
+      "target": "orographic_lift"
+    },
+    {
+      "etype": "driven_by",
+      "source": "heatwave",
+      "target": "subtropical_high"
+    },
+    {
+      "etype": "driven_by",
+      "source": "heatwave",
+      "target": "thermal_low"
+    },
+    {
+      "etype": "driven_by",
+      "source": "dust_storm",
+      "target": "thermal_low"
+    },
+    {
+      "etype": "driven_by",
+      "source": "coastal",
+      "target": "moisture_transport"
+    },
+    {
+      "etype": "at_risk_of",
+      "source": "Jeddah",
+      "target": "flash_flood"
+    },
+    {
+      "etype": "at_risk_of",
+      "source": "Jeddah",
+      "target": "coastal"
+    },
+    {
+      "etype": "at_risk_of",
+      "source": "Jeddah",
+      "target": "heatwave"
+    },
+    {
+      "etype": "exposed_to",
+      "source": "Jeddah",
+      "target": "moisture_transport"
+    },
+    {
+      "etype": "exposed_to",
+      "source": "Jeddah",
+      "target": "ARST"
+    },
+    {
+      "etype": "at_risk_of",
+      "source": "Mecca",
+      "target": "flash_flood"
+    },
+    {
+      "etype": "at_risk_of",
+      "source": "Mecca",
+      "target": "heatwave"
+    },
+    {
+      "etype": "exposed_to",
+      "source": "Mecca",
+      "target": "orographic_lift"
+    },
+    {
+      "etype": "exposed_to",
+      "source": "Mecca",
+      "target": "ARST"
+    },
+    {
+      "etype": "at_risk_of",
+      "source": "Riyadh",
+      "target": "heatwave"
+    },
+    {
+      "etype": "at_risk_of",
+      "source": "Riyadh",
+      "target": "dust_storm"
+    },
+    {
+      "etype": "exposed_to",
+      "source": "Riyadh",
+      "target": "subtropical_high"
+    },
+    {
+      "etype": "exposed_to",
+      "source": "Riyadh",
+      "target": "thermal_low"
+    },
+    {
+      "etype": "at_risk_of",
+      "source": "Jizan",
+      "target": "flash_flood"
+    },
+    {
+      "etype": "at_risk_of",
+      "source": "Jizan",
+      "target": "coastal"
+    },
+    {
+      "etype": "exposed_to",
+      "source": "Jizan",
+      "target": "moisture_transport"
+    },
+    {
+      "etype": "exposed_to",
+      "source": "Jizan",
+      "target": "orographic_lift"
+    },
+    {
+      "etype": "at_risk_of",
+      "source": "Dammam",
+      "target": "heatwave"
+    },
+    {
+      "etype": "at_risk_of",
+      "source": "Dammam",
+      "target": "coastal"
+    },
+    {
+      "etype": "exposed_to",
+      "source": "Dammam",
+      "target": "moisture_transport"
+    },
+    {
+      "etype": "at_risk_of",
+      "source": "Taif",
+      "target": "flash_flood"
+    },
+    {
+      "etype": "exposed_to",
+      "source": "Taif",
+      "target": "orographic_lift"
+    },
+    {
+      "etype": "at_risk_of",
+      "source": "Medina",
+      "target": "heatwave"
+    },
+    {
+      "etype": "at_risk_of",
+      "source": "Medina",
+      "target": "dust_storm"
+    },
+    {
+      "etype": "exposed_to",
+      "source": "Medina",
+      "target": "thermal_low"
+    },
+    {
+      "etype": "at_risk_of",
+      "source": "Abha",
+      "target": "flash_flood"
+    },
+    {
+      "etype": "exposed_to",
+      "source": "Abha",
+      "target": "orographic_lift"
+    },
+    {
+      "etype": "at_risk_of",
+      "source": "Red Sea",
+      "target": "coastal"
+    },
+    {
+      "etype": "exposed_to",
+      "source": "Red Sea",
+      "target": "moisture_transport"
+    },
+    {
+      "etype": "at_risk_of",
+      "source": "Persian Gulf",
+      "target": "coastal"
+    },
+    {
+      "etype": "exposed_to",
+      "source": "Persian Gulf",
+      "target": "moisture_transport"
+    },
+    {
+      "etype": "at_risk_of",
+      "source": "Arabian Sea",
+      "target": "coastal"
+    },
+    {
+      "etype": "exposed_to",
+      "source": "Arabian Sea",
+      "target": "moisture_transport"
+    },
+    {
+      "etype": "at_risk_of",
+      "source": "Empty Quarter",
+      "target": "heatwave"
+    },
+    {
+      "etype": "at_risk_of",
+      "source": "Empty Quarter",
+      "target": "dust_storm"
+    },
+    {
+      "etype": "exposed_to",
+      "source": "Empty Quarter",
+      "target": "subtropical_high"
+    },
+    {
+      "etype": "exposed_to",
+      "source": "Empty Quarter",
+      "target": "thermal_low"
+    },
+    {
+      "etype": "triggers",
+      "source": "ARST",
+      "target": "ivt"
+    },
+    {
+      "etype": "triggers",
+      "source": "ARST",
+      "target": "pwat"
+    },
+    {
+      "etype": "triggers",
+      "source": "ARST",
+      "target": "flash_flood"
+    },
+    {
+      "etype": "triggers",
+      "source": "moisture_transport",
+      "target": "pwat"
+    },
+    {
+      "etype": "triggers",
+      "source": "moisture_transport",
+      "target": "ivt"
+    },
+    {
+      "etype": "triggers",
+      "source": "moisture_transport",
+      "target": "sst_celsius"
+    },
+    {
+      "etype": "triggers",
+      "source": "subtropical_high",
+      "target": "tmax_c"
+    },
+    {
+      "etype": "triggers",
+      "source": "subtropical_high",
+      "target": "heatwave"
+    },
+    {
+      "etype": "triggers",
+      "source": "thermal_low",
+      "target": "tmax_c"
+    },
+    {
+      "etype": "triggers",
+      "source": "thermal_low",
+      "target": "vpd_kpa"
+    },
+    {
+      "etype": "triggers",
+      "source": "thermal_low",
+      "target": "dust_storm"
+    },
+    {
+      "etype": "triggers",
+      "source": "orographic_lift",
+      "target": "daily_precip_total"
+    },
+    {
+      "etype": "triggers",
+      "source": "orographic_lift",
+      "target": "flash_flood"
+    },
+    {
+      "etype": "manifests_as",
+      "source": "E_20250823_daily_precip_total",
+      "target": "flash_flood"
+    },
+    {
+      "etype": "occurs_at",
+      "source": "E_20250823_daily_precip_total",
+      "target": "Jizan"
+    },
+    {
+      "etype": "observed_value",
+      "value": 2360.0,
+      "source": "E_20250823_daily_precip_total",
+      "target": "cape"
+    },
+    {
+      "etype": "observed_value",
+      "value": 254.9,
+      "source": "E_20250823_daily_precip_total",
+      "target": "daily_precip_total"
+    },
+    {
+      "etype": "observed_value",
+      "value": 150.0,
+      "source": "E_20250823_daily_precip_total",
+      "target": "ivt"
+    },
+    {
+      "etype": "observed_value",
+      "value": 47.1,
+      "source": "E_20250823_daily_precip_total",
+      "target": "pwat"
+    },
+    {
+      "etype": "manifests_as",
+      "source": "E_20250831_cape",
+      "target": "flash_flood"
+    },
+    {
+      "etype": "occurs_at",
+      "source": "E_20250831_cape",
+      "target": "Abha"
+    },
+    {
+      "etype": "observed_value",
+      "value": 5196.0,
+      "source": "E_20250831_cape",
+      "target": "cape"
+    },
+    {
+      "etype": "observed_value",
+      "value": 94.9,
+      "source": "E_20250831_cape",
+      "target": "ivt"
+    },
+    {
+      "etype": "observed_value",
+      "value": 46.0,
+      "source": "E_20250831_cape",
+      "target": "pwat"
+    },
+    {
+      "etype": "observed_value",
+      "value": 44.6,
+      "source": "E_20250831_cape",
+      "target": "heat_index_c"
+    },
+    {
+      "etype": "manifests_as",
+      "source": "E_20250819_ivt",
+      "target": "flash_flood"
+    },
+    {
+      "etype": "occurs_at",
+      "source": "E_20250819_ivt",
+      "target": "Arabian Sea"
+    },
+    {
+      "etype": "observed_value",
+      "value": 728.4,
+      "source": "E_20250819_ivt",
+      "target": "ivt"
+    },
+    {
+      "etype": "observed_value",
+      "value": 61.1,
+      "source": "E_20250819_ivt",
+      "target": "pwat"
+    },
+    {
+      "etype": "observed_value",
+      "value": 52.0,
+      "source": "E_20250819_ivt",
+      "target": "cape"
+    },
+    {
+      "etype": "observed_value",
+      "value": 24.9,
+      "source": "E_20250819_ivt",
+      "target": "tmax_c"
+    },
+    {
+      "etype": "manifests_as",
+      "source": "E_20250725_tmax_c",
+      "target": "heatwave"
+    },
+    {
+      "etype": "occurs_at",
+      "source": "E_20250725_tmax_c",
+      "target": "Empty Quarter"
+    },
+    {
+      "etype": "observed_value",
+      "value": 167.4,
+      "source": "E_20250725_tmax_c",
+      "target": "ivt"
+    },
+    {
+      "etype": "observed_value",
+      "value": 53.7,
+      "source": "E_20250725_tmax_c",
+      "target": "tmax_c"
+    },
+    {
+      "etype": "observed_value",
+      "value": 39.6,
+      "source": "E_20250725_tmax_c",
+      "target": "heat_index_c"
+    },
+    {
+      "etype": "observed_value",
+      "value": 27.1,
+      "source": "E_20250725_tmax_c",
+      "target": "pwat"
+    },
+    {
+      "etype": "manifests_as",
+      "source": "E_20250816_heat_index_c",
+      "target": "heatwave"
+    },
+    {
+      "etype": "occurs_at",
+      "source": "E_20250816_heat_index_c",
+      "target": "Persian Gulf"
+    },
+    {
+      "etype": "observed_value",
+      "value": 3828.0,
+      "source": "E_20250816_heat_index_c",
+      "target": "cape"
+    },
+    {
+      "etype": "observed_value",
+      "value": 54.7,
+      "source": "E_20250816_heat_index_c",
+      "target": "heat_index_c"
+    },
+    {
+      "etype": "observed_value",
+      "value": 42.6,
+      "source": "E_20250816_heat_index_c",
+      "target": "pwat"
+    },
+    {
+      "etype": "observed_value",
+      "value": 35.2,
+      "source": "E_20250816_heat_index_c",
+      "target": "tmax_c"
+    },
+    {
+      "etype": "grounded_by",
+      "source": "ARST",
+      "target": "cite_ref_devries2013"
+    },
+    {
+      "etype": "grounded_by",
+      "source": "moisture_transport",
+      "target": "cite_ref_redsea_topo"
+    },
+    {
+      "etype": "grounded_by",
+      "source": "moisture_transport",
+      "target": "cite_ref_heatflux_era5"
+    },
+    {
+      "etype": "grounded_by",
+      "source": "subtropical_high",
+      "target": "cite_ref_heatwave_circulation"
+    },
+    {
+      "etype": "grounded_by",
+      "source": "subtropical_high",
+      "target": "cite_ref_heatwave_variability"
+    },
+    {
+      "etype": "grounded_by",
+      "source": "thermal_low",
+      "target": "cite_ref_shamal_yu2016"
+    },
+    {
+      "etype": "contributes_to",
+      "source": "wind10_speed",
+      "target": "dust_storm"
+    },
+    {
+      "etype": "contributes_to",
+      "source": "dewpoint_depression_c",
+      "target": "dust_storm"
+    },
+    {
+      "etype": "manifests_as",
+      "source": "E_20250726_wind10_speed",
+      "target": "dust_storm"
+    },
+    {
+      "etype": "occurs_at",
+      "source": "E_20250726_wind10_speed",
+      "target": "Arabian Sea"
+    },
+    {
+      "etype": "observed_value",
+      "value": 5.0,
+      "source": "E_20250726_wind10_speed",
+      "target": "wind850_speed"
+    },
+    {
+      "etype": "observed_value",
+      "value": 3.2,
+      "source": "E_20250726_wind10_speed",
+      "target": "dewpoint_depression_c"
+    },
+    {
+      "etype": "observed_value",
+      "value": 0.5,
+      "source": "E_20250726_wind10_speed",
+      "target": "vpd_kpa"
     }
-   ],
-   "n_triples": 5
-  },
-  {
-   "id": "cite_ref_heatflux_era5",
-   "ntype": "Citation",
-   "label": "MDPI Atmosphere (2019)",
-   "desc": "Surface Heat Fluxes over the Northern Arabian Gulf and Red Sea (ERA5/MERRA2)",
-   "url": "https://www.mdpi.com/2073-4433/10/9/504",
-   "evidence": [
-    {
-     "subject": "stronger winds combined with drier air",
-     "relation": "produces",
-     "object": "latent heat losses of up to 410 watts per square metre",
-     "quote": "stronger winds combined with drier air produce latent heat losses of up to 410 watts per square metre"
-    }
-   ],
-   "n_triples": 1
-  },
-  {
-   "id": "cite_ref_heatwave_circulation",
-   "ntype": "Citation",
-   "label": "ScienceDirect, Atmospheric Research",
-   "desc": "Extreme summer temperatures in Saudi Arabia and large-scale circulation",
-   "url": "https://www.sciencedirect.com/science/article/abs/pii/S0169809519301747",
-   "evidence": [
-    {
-     "subject": "powerful solar radiation and persistent high-pressure systems",
-     "relation": "causes",
-     "object": "intense surface heating",
-     "quote": "Saudi Arabia experiences powerful solar radiation and persistent high-pressure systems that contribute to intense surface heating"
-    },
-    {
-     "subject": "subtropical high-pressure system over the Arabian Peninsula",
-     "relation": "causes",
-     "object": "extreme summer temperature variation",
-     "quote": "The influence of a subtropical high-pressure system over the Arabian Peninsula is associated with extreme summer temperature variation"
-    },
-    {
-     "subject": "subtropical high-pressure system, combined with the region's geographic location and solar radiation exposure",
-     "relation": "drives",
-     "object": "extreme summer heat in Saudi Arabia",
-     "quote": "This subtropical high-pressure system, combined with the region's geographic location and solar radiation exposure, is identified as a primary driver of extreme summer heat in Saudi Arabia"
-    }
-   ],
-   "n_triples": 3
-  },
-  {
-   "id": "cite_ref_heatwave_variability",
-   "ntype": "Citation",
-   "label": "Springer, Meteorology and Atmospheric Physics (2024)",
-   "desc": "Observed heatwaves characteristics and variability over Saudi Arabia",
-   "url": "https://link.springer.com/article/10.1007/s00703-024-01010-6",
-   "evidence": [
-    {
-     "subject": "the adjacent sea",
-     "relation": "moderates",
-     "object": "temperature extremes",
-     "quote": "the adjacent sea moderates temperature extremes compared to the interior"
-    }
-   ],
-   "n_triples": 1
-  },
-  {
-   "id": "cite_ref_shamal_yu2016",
-   "ntype": "Citation",
-   "label": "Yu et al. (2016), J. Geophys. Res. Atmos.",
-   "desc": "Climatology of summer Shamal wind in the Middle East",
-   "url": "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015jd024063",
-   "evidence": [
-    {
-     "subject": "high pressure over eastern Africa and thermal low-pressure centres over Iran and Pakistan",
-     "relation": "drives",
-     "object": "summer Shamal",
-     "quote": "The summer Shamal, occurring from May to August, is a persistent north-northwesterly wind regime driven by high pressure over eastern Africa and thermal low-pressure centres over Iran and Pakistan."
-    },
-    {
-     "subject": "steep pressure gradient between the heat low over Pakistan, Afghanistan and Iran and the high-pressure system over the eastern Mediterranean and northern Saudi Arabia",
-     "relation": "causes",
-     "object": "summer Shamal",
-     "quote": "It forms due to the steep pressure gradient between the heat low over Pakistan, Afghanistan and Iran and the high-pressure system over the eastern Mediterranean and northern Saudi Arabia."
-    },
-    {
-     "subject": "summer Shamal",
-     "relation": "causes",
-     "object": "dust storm activity across the Arabian Peninsula",
-     "quote": "The summer Shamal is the major driver of dust storm activity across the Arabian Peninsula"
-    },
-    {
-     "subject": "summer Shamal",
-     "relation": "produces",
-     "object": "lifting dust and transporting it to the Persian Gulf and the Arabian Peninsula",
-     "quote": "capable of lifting dust and transporting it to the Persian Gulf and the Arabian Peninsula"
-    }
-   ],
-   "n_triples": 4
-  }
- ],
- "links": [
-  {
-   "etype": "sourced_from",
-   "source": "daily_precip_total",
-   "target": "DS2"
-  },
-  {
-   "etype": "contributes_to",
-   "source": "daily_precip_total",
-   "target": "flash_flood"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.921,
-   "source": "daily_precip_total",
-   "target": "daily_convective_precip"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.909,
-   "source": "daily_precip_total",
-   "target": "daily_large_scale_precip"
-  },
-  {
-   "etype": "sourced_from",
-   "source": "daily_convective_precip",
-   "target": "DS2"
-  },
-  {
-   "etype": "contributes_to",
-   "source": "daily_convective_precip",
-   "target": "flash_flood"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.676,
-   "source": "daily_convective_precip",
-   "target": "daily_large_scale_precip"
-  },
-  {
-   "etype": "sourced_from",
-   "source": "daily_large_scale_precip",
-   "target": "DS2"
-  },
-  {
-   "etype": "sourced_from",
-   "source": "t2m_c",
-   "target": "DS2"
-  },
-  {
-   "etype": "contributes_to",
-   "source": "t2m_c",
-   "target": "heatwave"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.999,
-   "source": "t2m_c",
-   "target": "tmax_c"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.998,
-   "source": "t2m_c",
-   "target": "tmin_c"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.999,
-   "source": "t2m_c",
-   "target": "heat_index_c"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.983,
-   "source": "t2m_c",
-   "target": "vpd_kpa"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": -0.828,
-   "source": "t2m_c",
-   "target": "wind_shear_850_200"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.835,
-   "source": "t2m_c",
-   "target": "sst_celsius"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.757,
-   "source": "t2m_c",
-   "target": "heatwave_day_flag"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.652,
-   "source": "t2m_c",
-   "target": "heatwave_duration_days"
-  },
-  {
-   "etype": "sourced_from",
-   "source": "tmax_c",
-   "target": "DS2"
-  },
-  {
-   "etype": "contributes_to",
-   "source": "tmax_c",
-   "target": "heatwave"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.995,
-   "source": "tmax_c",
-   "target": "tmin_c"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.997,
-   "source": "tmax_c",
-   "target": "heat_index_c"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.985,
-   "source": "tmax_c",
-   "target": "vpd_kpa"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": -0.829,
-   "source": "tmax_c",
-   "target": "wind_shear_850_200"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.83,
-   "source": "tmax_c",
-   "target": "sst_celsius"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.758,
-   "source": "tmax_c",
-   "target": "heatwave_day_flag"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.655,
-   "source": "tmax_c",
-   "target": "heatwave_duration_days"
-  },
-  {
-   "etype": "sourced_from",
-   "source": "tmin_c",
-   "target": "DS2"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.999,
-   "source": "tmin_c",
-   "target": "heat_index_c"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.975,
-   "source": "tmin_c",
-   "target": "vpd_kpa"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": -0.828,
-   "source": "tmin_c",
-   "target": "wind_shear_850_200"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.846,
-   "source": "tmin_c",
-   "target": "sst_celsius"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.749,
-   "source": "tmin_c",
-   "target": "heatwave_day_flag"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.653,
-   "source": "tmin_c",
-   "target": "heatwave_duration_days"
-  },
-  {
-   "etype": "sourced_from",
-   "source": "heat_index_c",
-   "target": "DS2"
-  },
-  {
-   "etype": "contributes_to",
-   "source": "heat_index_c",
-   "target": "heatwave"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.98,
-   "source": "heat_index_c",
-   "target": "vpd_kpa"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": -0.84,
-   "source": "heat_index_c",
-   "target": "wind_shear_850_200"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.85,
-   "source": "heat_index_c",
-   "target": "sst_celsius"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.757,
-   "source": "heat_index_c",
-   "target": "heatwave_day_flag"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.666,
-   "source": "heat_index_c",
-   "target": "heatwave_duration_days"
-  },
-  {
-   "etype": "sourced_from",
-   "source": "vpd_kpa",
-   "target": "DS2"
-  },
-  {
-   "etype": "contributes_to",
-   "source": "vpd_kpa",
-   "target": "heatwave"
-  },
-  {
-   "etype": "contributes_to",
-   "source": "vpd_kpa",
-   "target": "dust"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": -0.784,
-   "source": "vpd_kpa",
-   "target": "wind_shear_850_200"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.789,
-   "source": "vpd_kpa",
-   "target": "sst_celsius"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.812,
-   "source": "vpd_kpa",
-   "target": "heatwave_day_flag"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.688,
-   "source": "vpd_kpa",
-   "target": "heatwave_duration_days"
-  },
-  {
-   "etype": "sourced_from",
-   "source": "cape",
-   "target": "DS1"
-  },
-  {
-   "etype": "contributes_to",
-   "source": "cape",
-   "target": "flash_flood"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.835,
-   "source": "cape",
-   "target": "pwat"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.681,
-   "source": "cape",
-   "target": "sst_celsius"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.948,
-   "source": "cape",
-   "target": "flash_flood_risk"
-  },
-  {
-   "etype": "sourced_from",
-   "source": "pwat",
-   "target": "DS1"
-  },
-  {
-   "etype": "contributes_to",
-   "source": "pwat",
-   "target": "flash_flood"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.743,
-   "source": "pwat",
-   "target": "ivt"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.827,
-   "source": "pwat",
-   "target": "flash_flood_risk"
-  },
-  {
-   "etype": "sourced_from",
-   "source": "ivt",
-   "target": "DS1"
-  },
-  {
-   "etype": "contributes_to",
-   "source": "ivt",
-   "target": "flash_flood"
-  },
-  {
-   "etype": "contributes_to",
-   "source": "ivt",
-   "target": "coastal"
-  },
-  {
-   "etype": "sourced_from",
-   "source": "wind850_speed",
-   "target": "DS1"
-  },
-  {
-   "etype": "contributes_to",
-   "source": "wind850_speed",
-   "target": "flash_flood"
-  },
-  {
-   "etype": "contributes_to",
-   "source": "wind850_speed",
-   "target": "dust"
-  },
-  {
-   "etype": "contributes_to",
-   "source": "wind850_speed",
-   "target": "coastal"
-  },
-  {
-   "etype": "sourced_from",
-   "source": "wind_shear_850_200",
-   "target": "DS1"
-  },
-  {
-   "etype": "contributes_to",
-   "source": "wind_shear_850_200",
-   "target": "dust"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": -0.846,
-   "source": "wind_shear_850_200",
-   "target": "sst_celsius"
-  },
-  {
-   "etype": "sourced_from",
-   "source": "daily_precip_anomaly",
-   "target": "DS8"
-  },
-  {
-   "etype": "contributes_to",
-   "source": "daily_precip_anomaly",
-   "target": "flash_flood"
-  },
-  {
-   "etype": "sourced_from",
-   "source": "t2m_anomaly_c",
-   "target": "DS8"
-  },
-  {
-   "etype": "contributes_to",
-   "source": "t2m_anomaly_c",
-   "target": "heatwave"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.851,
-   "source": "t2m_anomaly_c",
-   "target": "tmax_anomaly_c"
-  },
-  {
-   "etype": "sourced_from",
-   "source": "tmax_anomaly_c",
-   "target": "DS8"
-  },
-  {
-   "etype": "contributes_to",
-   "source": "tmax_anomaly_c",
-   "target": "heatwave"
-  },
-  {
-   "etype": "sourced_from",
-   "source": "sst_celsius",
-   "target": "DS4"
-  },
-  {
-   "etype": "contributes_to",
-   "source": "sst_celsius",
-   "target": "coastal"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.676,
-   "source": "sst_celsius",
-   "target": "flash_flood_risk"
-  },
-  {
-   "etype": "contributes_to",
-   "source": "flash_flood_risk",
-   "target": "flash_flood"
-  },
-  {
-   "etype": "sourced_from",
-   "source": "heatwave_day_flag",
-   "target": "DS8"
-  },
-  {
-   "etype": "contributes_to",
-   "source": "heatwave_day_flag",
-   "target": "heatwave"
-  },
-  {
-   "etype": "correlates_with",
-   "weight": 0.808,
-   "source": "heatwave_day_flag",
-   "target": "heatwave_duration_days"
-  },
-  {
-   "etype": "sourced_from",
-   "source": "heatwave_duration_days",
-   "target": "DS8"
-  },
-  {
-   "etype": "contributes_to",
-   "source": "heatwave_duration_days",
-   "target": "heatwave"
-  },
-  {
-   "etype": "driven_by",
-   "source": "flash_flood",
-   "target": "ARST"
-  },
-  {
-   "etype": "driven_by",
-   "source": "flash_flood",
-   "target": "moisture_transport"
-  },
-  {
-   "etype": "driven_by",
-   "source": "flash_flood",
-   "target": "orographic_lift"
-  },
-  {
-   "etype": "driven_by",
-   "source": "heatwave",
-   "target": "subtropical_high"
-  },
-  {
-   "etype": "driven_by",
-   "source": "heatwave",
-   "target": "thermal_low"
-  },
-  {
-   "etype": "driven_by",
-   "source": "dust",
-   "target": "thermal_low"
-  },
-  {
-   "etype": "driven_by",
-   "source": "coastal",
-   "target": "moisture_transport"
-  },
-  {
-   "etype": "at_risk_of",
-   "source": "Jeddah",
-   "target": "flash_flood"
-  },
-  {
-   "etype": "at_risk_of",
-   "source": "Jeddah",
-   "target": "coastal"
-  },
-  {
-   "etype": "at_risk_of",
-   "source": "Jeddah",
-   "target": "heatwave"
-  },
-  {
-   "etype": "exposed_to",
-   "source": "Jeddah",
-   "target": "moisture_transport"
-  },
-  {
-   "etype": "exposed_to",
-   "source": "Jeddah",
-   "target": "ARST"
-  },
-  {
-   "etype": "at_risk_of",
-   "source": "Mecca",
-   "target": "flash_flood"
-  },
-  {
-   "etype": "at_risk_of",
-   "source": "Mecca",
-   "target": "heatwave"
-  },
-  {
-   "etype": "exposed_to",
-   "source": "Mecca",
-   "target": "orographic_lift"
-  },
-  {
-   "etype": "exposed_to",
-   "source": "Mecca",
-   "target": "ARST"
-  },
-  {
-   "etype": "at_risk_of",
-   "source": "Riyadh",
-   "target": "heatwave"
-  },
-  {
-   "etype": "at_risk_of",
-   "source": "Riyadh",
-   "target": "dust"
-  },
-  {
-   "etype": "exposed_to",
-   "source": "Riyadh",
-   "target": "subtropical_high"
-  },
-  {
-   "etype": "exposed_to",
-   "source": "Riyadh",
-   "target": "thermal_low"
-  },
-  {
-   "etype": "at_risk_of",
-   "source": "Jizan",
-   "target": "flash_flood"
-  },
-  {
-   "etype": "at_risk_of",
-   "source": "Jizan",
-   "target": "coastal"
-  },
-  {
-   "etype": "exposed_to",
-   "source": "Jizan",
-   "target": "moisture_transport"
-  },
-  {
-   "etype": "exposed_to",
-   "source": "Jizan",
-   "target": "orographic_lift"
-  },
-  {
-   "etype": "at_risk_of",
-   "source": "Dammam",
-   "target": "heatwave"
-  },
-  {
-   "etype": "at_risk_of",
-   "source": "Dammam",
-   "target": "coastal"
-  },
-  {
-   "etype": "exposed_to",
-   "source": "Dammam",
-   "target": "moisture_transport"
-  },
-  {
-   "etype": "at_risk_of",
-   "source": "Taif",
-   "target": "flash_flood"
-  },
-  {
-   "etype": "exposed_to",
-   "source": "Taif",
-   "target": "orographic_lift"
-  },
-  {
-   "etype": "at_risk_of",
-   "source": "Medina",
-   "target": "heatwave"
-  },
-  {
-   "etype": "at_risk_of",
-   "source": "Medina",
-   "target": "dust"
-  },
-  {
-   "etype": "exposed_to",
-   "source": "Medina",
-   "target": "thermal_low"
-  },
-  {
-   "etype": "at_risk_of",
-   "source": "Abha",
-   "target": "flash_flood"
-  },
-  {
-   "etype": "exposed_to",
-   "source": "Abha",
-   "target": "orographic_lift"
-  },
-  {
-   "etype": "at_risk_of",
-   "source": "Red Sea",
-   "target": "coastal"
-  },
-  {
-   "etype": "exposed_to",
-   "source": "Red Sea",
-   "target": "moisture_transport"
-  },
-  {
-   "etype": "at_risk_of",
-   "source": "Persian Gulf",
-   "target": "coastal"
-  },
-  {
-   "etype": "exposed_to",
-   "source": "Persian Gulf",
-   "target": "moisture_transport"
-  },
-  {
-   "etype": "at_risk_of",
-   "source": "Arabian Sea",
-   "target": "coastal"
-  },
-  {
-   "etype": "exposed_to",
-   "source": "Arabian Sea",
-   "target": "moisture_transport"
-  },
-  {
-   "etype": "at_risk_of",
-   "source": "Empty Quarter",
-   "target": "heatwave"
-  },
-  {
-   "etype": "at_risk_of",
-   "source": "Empty Quarter",
-   "target": "dust"
-  },
-  {
-   "etype": "exposed_to",
-   "source": "Empty Quarter",
-   "target": "subtropical_high"
-  },
-  {
-   "etype": "exposed_to",
-   "source": "Empty Quarter",
-   "target": "thermal_low"
-  },
-  {
-   "etype": "triggers",
-   "source": "ARST",
-   "target": "ivt"
-  },
-  {
-   "etype": "triggers",
-   "source": "ARST",
-   "target": "pwat"
-  },
-  {
-   "etype": "triggers",
-   "source": "ARST",
-   "target": "flash_flood"
-  },
-  {
-   "etype": "triggers",
-   "source": "moisture_transport",
-   "target": "pwat"
-  },
-  {
-   "etype": "triggers",
-   "source": "moisture_transport",
-   "target": "ivt"
-  },
-  {
-   "etype": "triggers",
-   "source": "moisture_transport",
-   "target": "sst_celsius"
-  },
-  {
-   "etype": "triggers",
-   "source": "subtropical_high",
-   "target": "tmax_c"
-  },
-  {
-   "etype": "triggers",
-   "source": "subtropical_high",
-   "target": "heatwave"
-  },
-  {
-   "etype": "triggers",
-   "source": "thermal_low",
-   "target": "tmax_c"
-  },
-  {
-   "etype": "triggers",
-   "source": "thermal_low",
-   "target": "vpd_kpa"
-  },
-  {
-   "etype": "triggers",
-   "source": "thermal_low",
-   "target": "dust"
-  },
-  {
-   "etype": "triggers",
-   "source": "orographic_lift",
-   "target": "daily_precip_total"
-  },
-  {
-   "etype": "triggers",
-   "source": "orographic_lift",
-   "target": "flash_flood"
-  },
-  {
-   "etype": "manifests_as",
-   "source": "E_20250823_daily_precip_total",
-   "target": "flash_flood"
-  },
-  {
-   "etype": "occurs_at",
-   "source": "E_20250823_daily_precip_total",
-   "target": "Jizan"
-  },
-  {
-   "etype": "observed_value",
-   "value": 2360.0,
-   "source": "E_20250823_daily_precip_total",
-   "target": "cape"
-  },
-  {
-   "etype": "observed_value",
-   "value": 254.9,
-   "source": "E_20250823_daily_precip_total",
-   "target": "daily_precip_total"
-  },
-  {
-   "etype": "observed_value",
-   "value": 150.0,
-   "source": "E_20250823_daily_precip_total",
-   "target": "ivt"
-  },
-  {
-   "etype": "observed_value",
-   "value": 47.1,
-   "source": "E_20250823_daily_precip_total",
-   "target": "pwat"
-  },
-  {
-   "etype": "manifests_as",
-   "source": "E_20250831_cape",
-   "target": "flash_flood"
-  },
-  {
-   "etype": "occurs_at",
-   "source": "E_20250831_cape",
-   "target": "Abha"
-  },
-  {
-   "etype": "observed_value",
-   "value": 5196.0,
-   "source": "E_20250831_cape",
-   "target": "cape"
-  },
-  {
-   "etype": "observed_value",
-   "value": 94.9,
-   "source": "E_20250831_cape",
-   "target": "ivt"
-  },
-  {
-   "etype": "observed_value",
-   "value": 46.0,
-   "source": "E_20250831_cape",
-   "target": "pwat"
-  },
-  {
-   "etype": "observed_value",
-   "value": 44.6,
-   "source": "E_20250831_cape",
-   "target": "heat_index_c"
-  },
-  {
-   "etype": "manifests_as",
-   "source": "E_20250819_ivt",
-   "target": "flash_flood"
-  },
-  {
-   "etype": "occurs_at",
-   "source": "E_20250819_ivt",
-   "target": "Arabian Sea"
-  },
-  {
-   "etype": "observed_value",
-   "value": 728.4,
-   "source": "E_20250819_ivt",
-   "target": "ivt"
-  },
-  {
-   "etype": "observed_value",
-   "value": 61.1,
-   "source": "E_20250819_ivt",
-   "target": "pwat"
-  },
-  {
-   "etype": "observed_value",
-   "value": 52.0,
-   "source": "E_20250819_ivt",
-   "target": "cape"
-  },
-  {
-   "etype": "observed_value",
-   "value": 24.9,
-   "source": "E_20250819_ivt",
-   "target": "tmax_c"
-  },
-  {
-   "etype": "manifests_as",
-   "source": "E_20250725_tmax_c",
-   "target": "heatwave"
-  },
-  {
-   "etype": "occurs_at",
-   "source": "E_20250725_tmax_c",
-   "target": "Empty Quarter"
-  },
-  {
-   "etype": "observed_value",
-   "value": 167.4,
-   "source": "E_20250725_tmax_c",
-   "target": "ivt"
-  },
-  {
-   "etype": "observed_value",
-   "value": 53.7,
-   "source": "E_20250725_tmax_c",
-   "target": "tmax_c"
-  },
-  {
-   "etype": "observed_value",
-   "value": 39.6,
-   "source": "E_20250725_tmax_c",
-   "target": "heat_index_c"
-  },
-  {
-   "etype": "observed_value",
-   "value": 27.1,
-   "source": "E_20250725_tmax_c",
-   "target": "pwat"
-  },
-  {
-   "etype": "manifests_as",
-   "source": "E_20250816_heat_index_c",
-   "target": "heatwave"
-  },
-  {
-   "etype": "occurs_at",
-   "source": "E_20250816_heat_index_c",
-   "target": "Persian Gulf"
-  },
-  {
-   "etype": "observed_value",
-   "value": 3828.0,
-   "source": "E_20250816_heat_index_c",
-   "target": "cape"
-  },
-  {
-   "etype": "observed_value",
-   "value": 54.7,
-   "source": "E_20250816_heat_index_c",
-   "target": "heat_index_c"
-  },
-  {
-   "etype": "observed_value",
-   "value": 42.6,
-   "source": "E_20250816_heat_index_c",
-   "target": "pwat"
-  },
-  {
-   "etype": "observed_value",
-   "value": 35.2,
-   "source": "E_20250816_heat_index_c",
-   "target": "tmax_c"
-  },
-  {
-   "etype": "grounded_by",
-   "source": "ARST",
-   "target": "cite_ref_devries2013"
-  },
-  {
-   "etype": "grounded_by",
-   "source": "moisture_transport",
-   "target": "cite_ref_redsea_topo"
-  },
-  {
-   "etype": "grounded_by",
-   "source": "moisture_transport",
-   "target": "cite_ref_heatflux_era5"
-  },
-  {
-   "etype": "grounded_by",
-   "source": "subtropical_high",
-   "target": "cite_ref_heatwave_circulation"
-  },
-  {
-   "etype": "grounded_by",
-   "source": "subtropical_high",
-   "target": "cite_ref_heatwave_variability"
-  },
-  {
-   "etype": "grounded_by",
-   "source": "thermal_low",
-   "target": "cite_ref_shamal_yu2016"
-  }
- ]
+  ]
 }

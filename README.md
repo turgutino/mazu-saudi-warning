@@ -2,7 +2,7 @@
 
 沙特多灾种极端天气早期预警系统 — MAZU (Multi-hazard · Alert · Zero-gap · Universal).
 
-An early-warning system for **flash floods** and **heatwaves** over Saudi Arabia, built on
+An early-warning system for **flash floods**, **heatwaves**, and **dust storms** over Saudi Arabia, built on
 CMA 10 km meteorological indicators. It combines a **literature-grounded causal knowledge
 graph**, a **weighted spatial detection engine**, a **verified one-day-ahead forecast model**,
 and an **explainable warning agent** (DeepSeek function calling).
@@ -13,7 +13,7 @@ and an **explainable warning agent** (DeepSeek function calling).
 
 ## Full system audit
 
-`FULL_SYSTEM_AUDIT.py` independently traces 66 numbers — from the consolidated
+`FULL_SYSTEM_AUDIT.py` independently traces 78 numbers — from the consolidated
 dataset, the knowledge graph's event values, the causal citations, an
 agent tool's output, and four post-Layer-4 extensions (terrain elevation,
 population context, an A/B ablation test re-derived from raw saved
@@ -21,7 +21,7 @@ transcripts, and a reflexive self-check whose two headline findings are
 independently re-derived a third time directly from the raw source files)
 — back to the raw 5GB source data (365 daily NetCDF files), plus checks the
 deployed GitHub site matches the local repo exactly.
-**Result: 66/66 passed, zero fabricated values found.** Full log in
+**Result: 78/78 passed, zero fabricated values found.** Full log in
 [`AUDIT_RESULTS.txt`](AUDIT_RESULTS.txt).
 
 ---
@@ -30,8 +30,8 @@ deployed GitHub site matches the local repo exactly.
 
 | Layer | Status | Description |
 |-------|--------|-------------|
-| Indicator pipeline | ✅ | Consolidates 365 daily NetCDF files (10 km grid) into one analysis-ready dataset of 20 core reliable indicators. |
-| Knowledge graph | ✅ | 57 nodes / 176 edges — indicators, hazards, mechanisms, regions, **real 2025 events with observed values**, and **6 peer-reviewed citations** grounding 4 of 5 mechanisms in verbatim-verified literature text. Interactive. |
+| Indicator pipeline | ✅ | Consolidates 365 daily NetCDF files (10 km grid) into one analysis-ready dataset of 22 core reliable indicators. |
+| Knowledge graph | ✅ | 60 nodes / 183 edges — indicators, hazards (now 3: flash flood, heatwave, **dust storm**), mechanisms, regions, **real 2025 events with observed values**, and **6 peer-reviewed citations** grounding 4 of 5 mechanisms in verbatim-verified literature text. Interactive. |
 | Detection engine | ✅ | Weighted multi-condition rules + spatial connected-component clustering. Validated against known 2025 events and a spatial-climatology check. |
 | Forecast (t→t+1) | ✅ | Gradient-boosted spatiotemporal model. Heatwave ROC-AUC 0.971 (PR-AUC 0.795); flash-flood ROC-AUC 0.873. A GNN variant was also tested and honestly reported (mixed result, not deployed). |
 | Explainable agent | ✅ | DeepSeek function-calling agent wiring the forecast model, causal KG and live conditions into grounded answers. 27 tool tests + 4 end-to-end scenarios, all passing. See `agent/LAYER4_REPORT.md` and the [worked examples](agent_view.html). |
@@ -84,8 +84,21 @@ tested — see `agent/EXTENSIONS_REPORT.md` for full methodology and results:
   (Mecca 08-04 vs. the 07-25 Empty Quarter heat event, 46.1%, despite being
   1,659km apart — both were anomalously hot for their own conditions). See
   `agent/SIMILAR_EVENTS_REPORT.md`.
+- **Dust storm — a 3rd hazard, full depth.** Not detection-only: 2 new raw
+  indicators added to the dataset (wind10_speed, dewpoint_depression_c,
+  processed from all 365 raw files), a data-grounded detection rule, a
+  genuinely trained and out-of-sample-validated forecast model (ROC-AUC
+  0.8866, PR-AUC 0.1635 — comparable to flash-flood), and real KG grounding
+  that required **zero new literature extraction**: the KG's existing Shamal
+  citation (Yu et al. 2016) already states *"The summer Shamal is the major
+  driver of dust storm activity across the Arabian Peninsula"* — dust_storm
+  was correctly re-pointed at that pre-existing grounding rather than
+  inventing a new one. A real methodological catch during testing: the first
+  known-event validation attempt accidentally used a training-period date;
+  caught and corrected to a genuine out-of-sample test-period event before
+  being reported. See `agent/DUST_STORM_REPORT.md`.
 
-All 73 unit tests pass (`agent/02_test_tools.py`, up from 32).
+All 90 unit tests pass (`agent/02_test_tools.py`, up from 32).
 
 ---
 

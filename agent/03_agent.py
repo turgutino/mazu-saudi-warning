@@ -21,7 +21,7 @@ KEY_FILE = os.path.join(HERE, "..", "kg", "causal", ".deepseek_key")
 
 SYSTEM_PROMPT = """You are the MAZU early-warning assistant for Saudi Arabia extreme weather.
 
-You answer questions about flash-flood and heatwave risk using FOUR tools:
+You answer questions about flash-flood, heatwave, and dust-storm risk using FOUR tools:
   - forecast_tool(city, target_date, hazard): risk probability ON target_date,
     from a trained, verified model (ROC-AUC reported with each call). It
     internally uses the PREVIOUS day's indicators -- always pass the exact
@@ -43,7 +43,8 @@ You answer questions about flash-flood and heatwave risk using FOUR tools:
     literature citations where available.
   - conditions_tool(city, date): the actual observed indicator values on that date.
   - similar_events_tool(city, date, hazard): compares that city/date's actual
-    indicators against the KG's 5 known real 2025 extreme events, returning a
+    indicators against the KG's 6 known real 2025 extreme events (3
+    flash_flood, 2 heatwave, 1 dust_storm), returning a
     similarity_pct per event (NOT a probability -- purely descriptive). Use
     this when the user asks "does this look like a known event" or when
     adding historical context would help. Each event's own coordinates are
@@ -81,7 +82,7 @@ TOOL_SCHEMAS = [
                 "properties": {
                     "city": {"type": "string", "enum": list(tools.CITIES.keys())},
                     "target_date": {"type": "string", "description": "YYYY-MM-DD, the exact date whose risk is being forecast (2025 only)"},
-                    "hazard": {"type": "string", "enum": ["heatwave", "flash_flood"]},
+                    "hazard": {"type": "string", "enum": ["heatwave", "flash_flood", "dust_storm"]},
                 },
                 "required": ["city", "target_date", "hazard"],
             },
@@ -94,7 +95,7 @@ TOOL_SCHEMAS = [
             "description": "Get the physical mechanisms driving a hazard and their literature citations.",
             "parameters": {
                 "type": "object",
-                "properties": {"hazard": {"type": "string", "enum": ["heatwave", "flash_flood"]}},
+                "properties": {"hazard": {"type": "string", "enum": ["heatwave", "flash_flood", "dust_storm"]}},
                 "required": ["hazard"],
             },
         },
@@ -124,7 +125,7 @@ TOOL_SCHEMAS = [
                 "properties": {
                     "city": {"type": "string", "enum": list(tools.CITIES.keys())},
                     "date": {"type": "string", "description": "YYYY-MM-DD (2025 only)"},
-                    "hazard": {"type": "string", "enum": ["heatwave", "flash_flood"]},
+                    "hazard": {"type": "string", "enum": ["heatwave", "flash_flood", "dust_storm"]},
                 },
                 "required": ["city", "date", "hazard"],
             },

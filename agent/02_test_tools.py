@@ -382,6 +382,80 @@ check("out-of-range date -> error", "error" in tools.similar_events_tool("Jizan"
 
 print()
 print("=" * 70)
+print("EXTENSION: dust_storm as a 3rd hazard, across all 4 tools")
+print("=" * 70)
+
+# --- forecast_tool: label was built from Layer 1's already-validated
+# DetectionEngine RULES['dust_storm'] (not a separately-invented definition),
+# model trained t->t+1 with the SAME methodology as flash_flood/heatwave
+# (Jan-Jun train, Jul-Dec test). ROC-AUC/PR-AUC verified in
+# model/dust_storm_forecast_report.txt.
+r_dust = tools.forecast_tool("Riyadh", "2025-07-06", "dust_storm")
+print(" ", "Riyadh 2025-07-06 dust_storm:", {k: v for k, v in r_dust.items() if k != "reflexive_check"})
+check("dust_storm: no error", "error" not in r_dust, r_dust)
+check("dust_storm: probability in [0,1]", 0.0 <= r_dust.get("probability", -1) <= 1.0)
+check("dust_storm: reports its own verified ROC-AUC (0.8866, distinct from flash_flood/heatwave)",
+     abs(r_dust.get("model_verified_roc_auc", 0) - 0.8866) < 0.001, r_dust.get("model_verified_roc_auc"))
+check("dust_storm: reflexive_check present (reuses the same generic mechanism)",
+     r_dust.get("reflexive_check") is not None, r_dust.get("reflexive_check"))
+
+# Real, found-then-independently-verified elevated case: Dammam around the
+# known dust period (06-19 to 07-07) shows BOTH signals agreeing elevated --
+# found by scanning all 8 cities across several dates, then independently
+# re-derived from the raw source file (2025-07-05, the features day for a
+# 07-06 forecast): wind10_speed=9.01 (>=7, fires), wind850_speed=18.40
+# (>=11, fires), dewpoint_depression_c=23.53 (<38, does NOT fire),
+# vpd_kpa=4.54 (<5.5, does NOT fire) -> 0.35+0.25=0.60, matching exactly.
+r_dammam = tools.forecast_tool("Dammam", "2025-07-06", "dust_storm")
+rc_dammam = r_dammam.get("reflexive_check")
+print(" ", "Dammam 2025-07-06 dust_storm reflexive_check:", rc_dammam)
+check("Dammam 07-06: consistency = consistent_elevated (found + independently verified from raw source)",
+     rc_dammam is not None and rc_dammam["consistency"] == "consistent_elevated", rc_dammam)
+check("Dammam 07-06: detection score matches independent hand-computation from raw values (0.60)",
+     rc_dammam is not None and abs(rc_dammam["detection_engine_risk_score"] - 0.60) < 0.01, rc_dammam)
+
+# Negative control: a calm winter day should show low dust_storm probability
+# and consistent_low, same pattern as the other 2 hazards.
+r_calm_dust = tools.forecast_tool("Riyadh", "2025-01-15", "dust_storm")
+check("dust_storm calm day: low probability", r_calm_dust.get("probability", 1) < 0.3, r_calm_dust.get("probability"))
+check("dust_storm calm day: consistent_low",
+     r_calm_dust.get("reflexive_check", {}).get("consistency") == "consistent_low", r_calm_dust)
+
+# --- causal_kg_tool: dust_storm hazard node (renamed from the KG's original
+# 'dust' id during this extension) must resolve, with 'thermal_low' as its
+# mechanism -- ALREADY literature-grounded via the existing Yu et al. (2016)
+# Shamal citation (that citation's own evidence quotes literally mention
+# "capable of lifting dust and transporting it to the Persian Gulf and the
+# Arabian Peninsula" -- grounding it for dust_storm required zero new
+# literature extraction, only correcting the id/edges).
+k_dust = tools.causal_kg_tool("dust_storm")
+print(" ", "dust_storm mechanisms:", [m["mechanism"] for m in k_dust.get("mechanisms", [])])
+check("dust_storm: no error", "error" not in k_dust, k_dust)
+check("dust_storm: thermal_low mechanism present", "thermal_low" in [m["mechanism"] for m in k_dust["mechanisms"]])
+thermal_low_entry = next(m for m in k_dust["mechanisms"] if m["mechanism"] == "thermal_low")
+check("dust_storm: thermal_low is literature-grounded (reused Shamal citation, not fabricated)",
+     thermal_low_entry["literature_grounded"] is True, thermal_low_entry)
+check("dust_storm: citation is the Yu et al. 2016 Shamal paper",
+     any("Yu et al" in c["citation"] for c in thermal_low_entry["citations"]), thermal_low_entry["citations"])
+check("dust_storm: contributing_indicators includes the 2 newly-added raw variables",
+     "wind10_speed" in k_dust["contributing_indicators"] and "dewpoint_depression_c" in k_dust["contributing_indicators"],
+     k_dust["contributing_indicators"])
+
+# --- similar_events_tool: 1 real dust_storm event exists in the KG (auto-
+# detected the same way as the other 5: annual grid-max of the headline
+# variable, wind10_speed, on 2025-07-26 near the Arabian Sea).
+s_dust = tools.similar_events_tool("Dammam", "2025-07-06", "dust_storm")
+check("dust_storm similar_events: no error", "error" not in s_dust, s_dust)
+check("dust_storm similar_events: exactly 1 event compared against (only 1 dust_storm event in KG)",
+     len(s_dust["ranked_similar_events"]) + len(s_dust["excluded_events"]) == 1,
+     (s_dust["ranked_similar_events"], s_dust["excluded_events"]))
+
+# Error handling for the new hazard value across all 3 hazard-taking tools.
+check("dust_storm typo -> error (forecast_tool)", "error" in tools.forecast_tool("Riyadh", "2025-07-06", "duststorm"))
+check("dust_storm valid in causal_kg_tool's own hazard enum (no KeyError)", "error" not in tools.causal_kg_tool("dust_storm"))
+
+print()
+print("=" * 70)
 print(f"TOTAL: {PASS} passed, {FAIL} failed")
 print("=" * 70)
 if FAIL > 0:

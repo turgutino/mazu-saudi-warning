@@ -62,6 +62,37 @@
     "roc_auc": 0.8731742776960718,
     "pr_auc": 0.08906247051431657
   },
+  "dust_storm": {
+    "features": [
+      "daily_precip_total",
+      "daily_convective_precip",
+      "daily_large_scale_precip",
+      "t2m_c",
+      "tmax_c",
+      "tmin_c",
+      "heat_index_c",
+      "vpd_kpa",
+      "cape",
+      "pwat",
+      "ivt",
+      "wind850_speed",
+      "wind_shear_850_200",
+      "daily_precip_anomaly",
+      "t2m_anomaly_c",
+      "tmax_anomaly_c",
+      "sst_celsius",
+      "wind10_speed",
+      "dewpoint_depression_c",
+      "lat",
+      "lon",
+      "day_of_year"
+    ],
+    "label_var": "dust_storm_rule_score",
+    "label_thr": 0.55,
+    "label_source": "Layer 1 DetectionEngine RULES['dust_storm'] (model/01_detection_engine.py), not a separately-invented label",
+    "roc_auc": 0.8866,
+    "pr_auc": 0.1635
+  },
   "train_end": "2025-06-30",
   "stride": 2
 }

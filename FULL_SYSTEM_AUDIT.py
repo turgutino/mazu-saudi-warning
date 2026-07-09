@@ -104,7 +104,8 @@ print("=" * 74)
 with open(KG_JSON, encoding="utf-8") as f:
     kg = json.load(f)
 events = [n for n in kg["nodes"] if n.get("ntype") == "Event"]
-check("C", "5 event nodes present in KG", len(events) == 5, f"found {len(events)}")
+check("C", "6 event nodes present in KG (5 original + 1 dust_storm added later)",
+     len(events) == 6, f"found {len(events)}")
 
 lat_full, lon_full = cons.latitude.values, cons.longitude.values
 for ev in events:
@@ -425,6 +426,96 @@ check("I", "Mecca/07-25-event similarity independently re-derived (RAW files + d
      "mean/std recomputed fresh, not reusing tools.py's cache) matches tool output",
      mecca_match is not None and abs(mecca_match["similarity_pct"] - indep_sim_i) < 0.1,
      f"tool={mecca_match['similarity_pct'] if mecca_match else None} independent={indep_sim_i}")
+
+# =============================================================================
+print()
+print("=" * 74)
+print("SECTION J — dust_storm: a 3rd hazard added across the whole stack")
+print("=" * 74)
+
+# J1 -- the 2 new dataset variables (wind10_speed, dewpoint_depression_c),
+# added to mazu_dataset.nc from the raw 5GB source after the original build,
+# match the RAW source exactly at 2 sample dates (same pattern as Section B).
+mismatches_j1 = []
+for date in ["2025-07-05", "2025-07-26"]:
+    raw_path = os.path.join(RAW_DIR, f"saudi_indicators_{date.replace('-','')}.nc")
+    raw_ds = xr.open_dataset(raw_path)
+    ci = int(np.where(cons_times == date)[0][0])
+    for v in ["wind10_speed", "dewpoint_depression_c"]:
+        raw_val = float(raw_ds[v].values[80, 110])
+        cons_val = float(cons[v].values[ci, 80, 110])
+        if np.isfinite(raw_val) and np.isfinite(cons_val) and abs(raw_val - cons_val) > 1e-3:
+            mismatches_j1.append(f"{date} {v}: raw={raw_val} cons={cons_val}")
+    raw_ds.close()
+check("J", "wind10_speed / dewpoint_depression_c in consolidated dataset match RAW source exactly",
+     len(mismatches_j1) == 0, "; ".join(mismatches_j1))
+
+# J2 -- the dust_storm Event node's headline value (wind10_speed annual grid
+# max) is independently re-derived directly from the raw source (this is
+# ALSO covered generically by Section C now that there are 6 events, but we
+# re-check it explicitly here with the exact variable/date for clarity).
+raw_726 = xr.open_dataset(os.path.join(RAW_DIR, "saudi_indicators_20250726.nc"))
+w10 = raw_726["wind10_speed"].values
+raw_max_wind = float(np.nanmax(w10))
+check("J", "dust_storm event headline value (wind10_speed 20.7 m/s on 2025-07-26) "
+     "matches RAW source grid max", abs(raw_max_wind - 20.7) < 0.1, raw_max_wind)
+raw_726.close()
+
+# J3 -- KG integrity after the dust/dust_storm rename + new nodes/edges: no
+# dangling edges (source/target referencing a nonexistent node id), no
+# duplicate node ids, and the old 'dust' id is fully gone (a rename, not a
+# duplicate addition).
+node_ids_j = {n["id"] for n in kg["nodes"]}
+dangling_j = [l for l in kg["links"] if l.get("source") not in node_ids_j or l.get("target") not in node_ids_j]
+check("J", "no dangling KG edges after the dust->dust_storm rename + new nodes", len(dangling_j) == 0, dangling_j)
+check("J", "no duplicate KG node ids", len(kg["nodes"]) == len(node_ids_j),
+     f"{len(kg['nodes'])} nodes, {len(node_ids_j)} unique ids")
+check("J", "old 'dust' id fully removed (renamed, not duplicated)", "dust" not in node_ids_j)
+check("J", "'dust_storm' hazard node present", "dust_storm" in node_ids_j)
+check("J", "KG now has 60 nodes / 183 edges (57/176 + 2 indicator nodes + 1 event node + "
+     "renamed dust_storm hazard + new edges)",
+     len(kg["nodes"]) == 60 and len(kg["links"]) == 183,
+     f"{len(kg['nodes'])} nodes, {len(kg['links'])} edges")
+
+# J4 -- dust_storm's thermal_low mechanism is grounded by the PRE-EXISTING
+# Shamal citation (Yu et al. 2016) -- confirm the quote about dust really is
+# in that citation's evidence in kg_data.json, not silently fabricated when
+# the hazard was re-pointed at it.
+thermal_low_grounded = [l for l in kg["links"] if l.get("etype") == "grounded_by" and l.get("source") == "thermal_low"]
+check("J", "thermal_low mechanism is grounded_by cite_ref_shamal_yu2016 (pre-existing, reused not invented)",
+     any(l["target"] == "cite_ref_shamal_yu2016" for l in thermal_low_grounded), thermal_low_grounded)
+shamal_node = next(n for n in kg["nodes"] if n["id"] == "cite_ref_shamal_yu2016")
+dust_quote_present = any("dust" in ev["quote"].lower() for ev in shamal_node.get("evidence", []))
+check("J", "the Shamal citation's own evidence quotes literally mention dust "
+     "(grounding was appropriate, not a stretch)", dust_quote_present,
+     [ev["quote"] for ev in shamal_node.get("evidence", [])])
+
+# J5 -- forecast_tool's dust_storm probability + reflexive_check, re-verified
+# fresh (not reusing any earlier section's call) against independently
+# hand-computed detection score from RAW source values (Dammam, 2025-07-06
+# forecast uses 2025-07-05 features).
+raw_705 = xr.open_dataset(os.path.join(RAW_DIR, "saudi_indicators_20250705.nc"))
+dyi = int(np.argmin(np.abs(raw_705.latitude.values - 26.4)))
+dxi = int(np.argmin(np.abs(raw_705.longitude.values - 50.1)))
+d_wind10 = float(raw_705["wind10_speed"].values[dyi, dxi])
+d_wind850 = float(raw_705["wind850_speed"].values[dyi, dxi])
+d_dd = float(raw_705["dewpoint_depression_c"].values[dyi, dxi])
+d_vpd = float(raw_705["vpd_kpa"].values[dyi, dxi])
+raw_705.close()
+indep_dust_score = (0.35 if d_wind10 >= 7.0 else 0.0) + (0.25 if d_wind850 >= 11.0 else 0.0) + \
+                   (0.20 if d_dd >= 38.0 else 0.0) + (0.20 if d_vpd >= 5.5 else 0.0)
+
+r_dammam_j = agent_tools.forecast_tool("Dammam", "2025-07-06", "dust_storm")
+rc_dammam_j = r_dammam_j.get("reflexive_check")
+check("J", "Dammam dust_storm reflexive_check detection score matches RAW-source hand-computation "
+     "(fresh call, independent of earlier test runs)",
+     rc_dammam_j is not None and abs(rc_dammam_j["detection_engine_risk_score"] - indep_dust_score) < 1e-6,
+     f"tool={rc_dammam_j['detection_engine_risk_score'] if rc_dammam_j else None} independent={indep_dust_score}")
+check("J", "dust_storm model reports its own distinct ROC-AUC (0.8866), not copied from another hazard",
+     abs(r_dammam_j.get("model_verified_roc_auc", 0) - 0.8866) < 0.001 and
+     r_dammam_j.get("model_verified_roc_auc") != 0.9705939220629891 and
+     r_dammam_j.get("model_verified_roc_auc") != 0.8731742776960718,
+     r_dammam_j.get("model_verified_roc_auc"))
 
 cons.close()
 

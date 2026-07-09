@@ -15,12 +15,13 @@ SECTION B — consolidated dataset (mazu_dataset.nc) matches RAW source
 ==========================================================================
 SECTION C — KG event values trace back to the RAW source (not just consolidated)
 ==========================================================================
-  [PASS] 5 event nodes present in KG
+  [PASS] 6 event nodes present in KG (5 original + 1 dust_storm added later)
   [PASS] 08-23 extreme rain: claimed value (254.9) matches raw grid MAX for daily_precip_total on 2025-08-23 (254.9)
   [PASS] 08-31 convective instability: claimed value (5196.0) matches raw grid MAX for cape on 2025-08-31 (5196.0)
   [PASS] 08-19 vapour surge: claimed value (728.4) matches raw grid MAX for ivt on 2025-08-19 (728.4)
   [PASS] 07-25 extreme heat: claimed value (53.7) matches raw grid MAX for tmax_c on 2025-07-25 (53.7)
   [PASS] 08-16 heat stress: claimed value (54.7) matches raw grid MAX for heat_index_c on 2025-08-16 (54.7)
+  [PASS] 07-26 extreme wind: claimed value (20.7) matches raw grid MAX for wind10_speed on 2025-07-26 (20.7)
 
 ==========================================================================
 SECTION D — causal KG citations: quotes still verbatim in corpus.py
@@ -56,8 +57,8 @@ SECTION E — agent tools read the SAME data as the raw source (bypass test)
 ==========================================================================
 SECTION F — deployed GitHub site matches local repo (no drift)
 ==========================================================================
-  [PASS] remote kg_data.json node count matches local
-  [PASS] remote kg_data.json edge count matches local
+  [FAIL] remote kg_data.json node count matches local  -- remote=57 local=60
+  [FAIL] remote kg_data.json edge count matches local  -- remote=176 local=183
 
 ==========================================================================
 SECTION G — post-Layer-4 extensions (terrain, population, A/B ablation)
@@ -102,7 +103,24 @@ SECTION I — similar_events_tool (KG event similarity)
   [PASS] Mecca/07-25-event similarity independently re-derived (RAW files + dataset-wide mean/std recomputed fresh, not reusing tools.py's cache) matches tool output
 
 ==========================================================================
-TOTAL: 66 passed, 0 failed
+SECTION J — dust_storm: a 3rd hazard added across the whole stack
+==========================================================================
+  [PASS] wind10_speed / dewpoint_depression_c in consolidated dataset match RAW source exactly
+  [PASS] dust_storm event headline value (wind10_speed 20.7 m/s on 2025-07-26) matches RAW source grid max
+  [PASS] no dangling KG edges after the dust->dust_storm rename + new nodes
+  [PASS] no duplicate KG node ids
+  [PASS] old 'dust' id fully removed (renamed, not duplicated)
+  [PASS] 'dust_storm' hazard node present
+  [PASS] KG now has 60 nodes / 183 edges (57/176 + 2 indicator nodes + 1 event node + renamed dust_storm hazard + new edges)
+  [PASS] thermal_low mechanism is grounded_by cite_ref_shamal_yu2016 (pre-existing, reused not invented)
+  [PASS] the Shamal citation's own evidence quotes literally mention dust (grounding was appropriate, not a stretch)
+  [PASS] Dammam dust_storm reflexive_check detection score matches RAW-source hand-computation (fresh call, independent of earlier test runs)
+  [PASS] dust_storm model reports its own distinct ROC-AUC (0.8866), not copied from another hazard
+
+==========================================================================
+TOTAL: 76 passed, 2 failed
 ==========================================================================
 
-Every checked number traces back to the raw 5GB source data. No fabrication found.
+FAILURES:
+  - F :: remote kg_data.json node count matches local :: remote=57 local=60
+  - F :: remote kg_data.json edge count matches local :: remote=176 local=183
