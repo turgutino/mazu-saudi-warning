@@ -288,6 +288,100 @@ check("unknown city -> error", "error" in c3, c3)
 
 print()
 print("=" * 70)
+print("TOOL 4: similar_events_tool")
+print("=" * 70)
+
+# Core-math sanity check: querying AT the exact coordinates and date of a
+# known event must score exactly 100% self-similarity (distance 0). This is
+# the foundational check that the z-score/distance formula is implemented
+# correctly, independent of any city-lookup complications.
+_orig_jizan = tools.CITIES["Jizan"]
+tools.CITIES["Jizan"] = (17.5, 42.9)   # the 08-23 event's own grid-max coords
+s_self = tools.similar_events_tool("Jizan", "2025-08-23", "flash_flood")
+self_match = next((x for x in s_self["ranked_similar_events"] if x["event"] == "08-23 extreme rain"), None)
+check("self-match at exact event coords/date scores exactly 100%",
+     self_match is not None and self_match["similarity_pct"] == 100.0, self_match)
+check("self-match: event_distance_from_city_km is 0 when query IS the event location",
+     self_match is not None and self_match["event_distance_from_city_km"] == 0, self_match)
+tools.CITIES["Jizan"] = _orig_jizan   # restore -- must not leak into other tests
+
+# Real-world case (investigated in conversation): Jizan CITY center on the
+# 08-23 event's own date scores LOW similarity to that same-named event,
+# because the event's coordinates are the storm's grid-max centroid, ~74km
+# from the city center, where daily_precip_total was 0.6mm vs 254.9mm at the
+# centroid -- independently confirmed against the raw source file. This is
+# correct, disclosed behavior (hyperlocal extreme), not a bug.
+s_city = tools.similar_events_tool("Jizan", "2025-08-23", "flash_flood")
+same_day_event = next((x for x in s_city["ranked_similar_events"] if x["event"] == "08-23 extreme rain"), None)
+check("Jizan city center vs the same-day/same-name event: LOW similarity (hyperlocal storm, correct behavior)",
+     same_day_event is not None and same_day_event["similarity_pct"] < 5, same_day_event)
+check("distance field correctly shows the city-to-centroid gap (~74km, independently computed)",
+     same_day_event is not None and 65 <= same_day_event["event_distance_from_city_km"] <= 85,
+     same_day_event)
+
+# Real, found-then-independently-verified positive match: Mecca 2025-08-04
+# was anomalously hot (raw tmax_c=45.95C, tmax_anomaly_c=+6.65C, independently
+# read from the raw source file) -- genuinely similar in PROFILE (both
+# anomalously hot for their own conditions) to the Empty Quarter's record
+# 07-25 heat event (tmax_c=53.75C, anomaly +10.15C), despite the ~1659km
+# distance and 8C absolute temperature gap -- the z-scored comparison
+# correctly captures "both anomalous" rather than being fooled by the raw
+# temperature difference.
+s_mecca = tools.similar_events_tool("Mecca", "2025-08-04", "heatwave")
+mecca_match = next((x for x in s_mecca["ranked_similar_events"] if x["event"] == "07-25 extreme heat"), None)
+check("Mecca 08-04 vs 07-25 extreme-heat event: meaningfully high similarity (>=30%, found + independently verified)",
+     mecca_match is not None and mecca_match["similarity_pct"] >= 30, mecca_match)
+check("query_indicators echoes the real raw tmax_c (~45.95C, independently confirmed)",
+     abs(s_mecca["query_indicators"]["tmax_c"] - 45.95) < 0.1, s_mecca["query_indicators"])
+
+# Negative control: a calm day should NOT score highly against any event.
+s_calm = tools.similar_events_tool("Riyadh", "2025-11-06", "heatwave")
+check("calm day: no event scores above 30% similarity",
+     all(x["similarity_pct"] < 30 for x in s_calm["ranked_similar_events"]),
+     s_calm["ranked_similar_events"])
+
+# Results must be sorted descending by similarity.
+check("Mecca results are sorted descending by similarity_pct",
+     all(s_mecca["ranked_similar_events"][i]["similarity_pct"] >= s_mecca["ranked_similar_events"][i + 1]["similarity_pct"]
+         for i in range(len(s_mecca["ranked_similar_events"]) - 1)),
+     [x["similarity_pct"] for x in s_mecca["ranked_similar_events"]])
+
+# Structural / disclosure checks.
+check("note field explicitly disclaims this is NOT a probability",
+     "NOT a probability" in s_mecca["note"], s_mecca["note"])
+check("flash_flood query only compares against flash_flood events (3 of them), not heatwave events",
+     len(s_city["ranked_similar_events"]) + len(s_city["excluded_events"]) == 3,
+     (s_city["ranked_similar_events"], s_city["excluded_events"]))
+check("heatwave query only compares against heatwave events (2 of them)",
+     len(s_mecca["ranked_similar_events"]) + len(s_mecca["excluded_events"]) == 2,
+     (s_mecca["ranked_similar_events"], s_mecca["excluded_events"]))
+
+# Bypass test: independently re-derive the Mecca/07-25 similarity score using
+# raw values pulled directly and hand-computed z-score distance, bypassing
+# similar_events_tool's internals (only reusing the already-tested
+# _feature_stats cache for mean/std, which is itself dataset-derived, not
+# hardcoded).
+feats = tools.SIMILARITY_FEATURES["heatwave"]
+import numpy as _np
+mecca_raw = tools._get_vector("2025-08-04", *tools.CITIES["Mecca"], feats)
+event_raw = tools._get_vector("2025-07-25", 18.7, 54.5, feats)
+sq = []
+for v in feats:
+    mean, std = tools._feature_stats(v)
+    sq.append(((mecca_raw[v] - mean) / std - (event_raw[v] - mean) / std) ** 2)
+indep_dist = _np.sqrt(sum(sq))
+indep_sim = round(100.0 / (1.0 + indep_dist), 1)
+check("bypass test: independently hand-computed similarity matches tool output exactly",
+     mecca_match is not None and abs(mecca_match["similarity_pct"] - indep_sim) < 0.05,
+     f"tool={mecca_match['similarity_pct'] if mecca_match else None} independent={indep_sim}")
+
+# Error handling.
+check("unknown city -> error", "error" in tools.similar_events_tool("Atlantis", "2025-08-23", "flash_flood"))
+check("unknown hazard -> error", "error" in tools.similar_events_tool("Jizan", "2025-08-23", "earthquake"))
+check("out-of-range date -> error", "error" in tools.similar_events_tool("Jizan", "2099-01-01", "flash_flood"))
+
+print()
+print("=" * 70)
 print(f"TOTAL: {PASS} passed, {FAIL} failed")
 print("=" * 70)
 if FAIL > 0:

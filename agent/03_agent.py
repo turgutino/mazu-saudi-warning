@@ -1,11 +1,12 @@
 # =============================================================================
 # MAZU — Layer 4: Agent orchestration (DeepSeek function calling)
 #
-# The LLM receives a natural-language question, decides which of the 3
-# verified tools to call (forecast_tool, causal_kg_tool, conditions_tool),
-# and composes a final answer grounded in their real outputs. The model is
-# instructed to NEVER invent a probability or a citation — every number and
-# every mechanism/citation in its answer must come from a tool call.
+# The LLM receives a natural-language question, decides which of the 4
+# verified tools to call (forecast_tool, causal_kg_tool, conditions_tool,
+# similar_events_tool), and composes a final answer grounded in their real
+# outputs. The model is instructed to NEVER invent a probability or a
+# citation — every number and every mechanism/citation in its answer must
+# come from a tool call.
 # =============================================================================
 
 import os
@@ -20,7 +21,7 @@ KEY_FILE = os.path.join(HERE, "..", "kg", "causal", ".deepseek_key")
 
 SYSTEM_PROMPT = """You are the MAZU early-warning assistant for Saudi Arabia extreme weather.
 
-You answer questions about flash-flood and heatwave risk using THREE tools:
+You answer questions about flash-flood and heatwave risk using FOUR tools:
   - forecast_tool(city, target_date, hazard): risk probability ON target_date,
     from a trained, verified model (ROC-AUC reported with each call). It
     internally uses the PREVIOUS day's indicators -- always pass the exact
@@ -41,6 +42,16 @@ You answer questions about flash-flood and heatwave risk using THREE tools:
   - causal_kg_tool(hazard): the physical mechanisms driving a hazard, with
     literature citations where available.
   - conditions_tool(city, date): the actual observed indicator values on that date.
+  - similar_events_tool(city, date, hazard): compares that city/date's actual
+    indicators against the KG's 5 known real 2025 extreme events, returning a
+    similarity_pct per event (NOT a probability -- purely descriptive). Use
+    this when the user asks "does this look like a known event" or when
+    adding historical context would help. Each event's own coordinates are
+    its grid-cell MAXIMUM (the storm/heat centroid), which can be tens of km
+    from a same-named city's center (event_distance_from_city_km shows this)
+    -- a same-city, same-day query can legitimately score LOW similarity to
+    its own same-named event if the extreme was hyperlocal; state this
+    plainly if it comes up, do not treat it as an error.
 
 Rules (strict):
 1. NEVER state a probability, indicator value, mechanism name, or citation that
@@ -103,12 +114,29 @@ TOOL_SCHEMAS = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "similar_events_tool",
+            "description": "Compare a city/date's indicators against the KG's 5 known real 2025 extreme events, ranked by descriptive similarity (not a probability).",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "city": {"type": "string", "enum": list(tools.CITIES.keys())},
+                    "date": {"type": "string", "description": "YYYY-MM-DD (2025 only)"},
+                    "hazard": {"type": "string", "enum": ["heatwave", "flash_flood"]},
+                },
+                "required": ["city", "date", "hazard"],
+            },
+        },
+    },
 ]
 
 TOOL_FUNCS = {
     "forecast_tool": tools.forecast_tool,
     "causal_kg_tool": tools.causal_kg_tool,
     "conditions_tool": tools.conditions_tool,
+    "similar_events_tool": tools.similar_events_tool,
 }
 
 

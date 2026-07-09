@@ -370,6 +370,62 @@ check("H", "Mecca: consistency label correctly reflects model >= 0.3 > detection
      and rm["consistency"] == "model_higher_than_detection",
      f"model_proba={r_mecca['probability']} detection={indep_mecca_score} label={rm['consistency'] if rm else None}")
 
+# =============================================================================
+print()
+print("=" * 74)
+print("SECTION I — similar_events_tool (KG event similarity)")
+print("=" * 74)
+
+# I1 -- self-match property re-verified via a fresh, direct call (not reusing
+# any cached state from earlier sections): querying AT an event's own
+# coordinates and date must score exactly 100%.
+_orig = agent_tools.CITIES["Jizan"]
+agent_tools.CITIES["Jizan"] = (17.5, 42.9)
+s_self = agent_tools.similar_events_tool("Jizan", "2025-08-23", "flash_flood")
+agent_tools.CITIES["Jizan"] = _orig
+self_match = next((x for x in s_self["ranked_similar_events"] if x["event"] == "08-23 extreme rain"), None)
+check("I", "self-match at exact event coords/date scores exactly 100% (re-verified fresh)",
+     self_match is not None and self_match["similarity_pct"] == 100.0, self_match)
+
+# I2 -- independently re-derive the Mecca 08-04 vs 07-25-event similarity
+# score, computing mean/std DIRECTLY from the consolidated dataset (not
+# reusing tools.py's cached _feature_stats) and reading both raw indicator
+# vectors directly from the RAW source files (bypassing mazu_dataset.nc too),
+# for maximum independence from the code path under test.
+feats = ["tmax_c", "heat_index_c", "vpd_kpa", "t2m_c", "tmax_anomaly_c"]
+means_stds = {}
+for v in feats:
+    arr = cons[v].values
+    means_stds[v] = (float(np.nanmean(arr)), float(np.nanstd(arr)))
+
+raw_804 = xr.open_dataset(os.path.join(RAW_DIR, "saudi_indicators_20250804.nc"))
+mecca_yi = int(np.argmin(np.abs(raw_804.latitude.values - 21.4)))
+mecca_xi = int(np.argmin(np.abs(raw_804.longitude.values - 39.8)))
+mecca_vals = {v: float(raw_804[v].values[mecca_yi, mecca_xi]) for v in feats}
+raw_804.close()
+
+raw_725b = xr.open_dataset(os.path.join(RAW_DIR, "saudi_indicators_20250725.nc"))
+eq_yi = int(np.argmin(np.abs(raw_725b.latitude.values - 18.7)))
+eq_xi = int(np.argmin(np.abs(raw_725b.longitude.values - 54.5)))
+eq_vals = {v: float(raw_725b[v].values[eq_yi, eq_xi]) for v in feats}
+raw_725b.close()
+
+sq_i = []
+for v in feats:
+    mean, std = means_stds[v]
+    sq_i.append(((mecca_vals[v] - mean) / std - (eq_vals[v] - mean) / std) ** 2)
+indep_dist_i = float(np.sqrt(sum(sq_i)))
+indep_sim_i = round(100.0 / (1.0 + indep_dist_i), 1)
+
+s_mecca = agent_tools.similar_events_tool("Mecca", "2025-08-04", "heatwave")
+mecca_match = next((x for x in s_mecca["ranked_similar_events"] if x["event"] == "07-25 extreme heat"), None)
+check("I", "Mecca 08-04 raw tmax_c matches value read directly from the RAW source file",
+     abs(mecca_vals["tmax_c"] - 45.95) < 0.1, mecca_vals["tmax_c"])
+check("I", "Mecca/07-25-event similarity independently re-derived (RAW files + dataset-wide "
+     "mean/std recomputed fresh, not reusing tools.py's cache) matches tool output",
+     mecca_match is not None and abs(mecca_match["similarity_pct"] - indep_sim_i) < 0.1,
+     f"tool={mecca_match['similarity_pct'] if mecca_match else None} independent={indep_sim_i}")
+
 cons.close()
 
 # =============================================================================

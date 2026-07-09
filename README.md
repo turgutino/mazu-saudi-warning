@@ -13,7 +13,7 @@ and an **explainable warning agent** (DeepSeek function calling).
 
 ## Full system audit
 
-`FULL_SYSTEM_AUDIT.py` independently traces 63 numbers — from the consolidated
+`FULL_SYSTEM_AUDIT.py` independently traces 66 numbers — from the consolidated
 dataset, the knowledge graph's event values, the causal citations, an
 agent tool's output, and four post-Layer-4 extensions (terrain elevation,
 population context, an A/B ablation test re-derived from raw saved
@@ -21,7 +21,7 @@ transcripts, and a reflexive self-check whose two headline findings are
 independently re-derived a third time directly from the raw source files)
 — back to the raw 5GB source data (365 daily NetCDF files), plus checks the
 deployed GitHub site matches the local repo exactly.
-**Result: 63/63 passed, zero fabricated values found.** Full log in
+**Result: 66/66 passed, zero fabricated values found.** Full log in
 [`AUDIT_RESULTS.txt`](AUDIT_RESULTS.txt).
 
 ---
@@ -72,8 +72,20 @@ tested — see `agent/EXTENSIONS_REPORT.md` for full methodology and results:
   above local climatology) that the detection engine's fixed absolute
   thresholds missed entirely — real evidence the ML model adds value beyond
   simple thresholding. See `agent/REFLEXIVE_CHECK_REPORT.md`.
+- **Similar historical events (4th agent tool).** `similar_events_tool`
+  compares a city/date's indicators against the KG's 5 known real events via
+  z-scored similarity, making those event nodes agent-usable rather than
+  only browsable. Found a real, investigated quirk: an event's coordinates
+  are its own grid-cell maximum (the storm centroid), often tens of km from
+  a same-named city's center, so a same-city/same-day query can legitimately
+  score LOW similarity to "its own" event — now surfaced explicitly via an
+  `event_distance_from_city_km` field rather than silently confusing.
+  Verified with a real found-and-independently-checked positive match too
+  (Mecca 08-04 vs. the 07-25 Empty Quarter heat event, 46.1%, despite being
+  1,659km apart — both were anomalously hot for their own conditions). See
+  `agent/SIMILAR_EVENTS_REPORT.md`.
 
-All 58 unit tests pass (`agent/02_test_tools.py`, up from 32).
+All 73 unit tests pass (`agent/02_test_tools.py`, up from 32).
 
 ---
 

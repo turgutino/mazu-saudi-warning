@@ -369,5 +369,155 @@ def conditions_tool(city: str, date: str) -> dict:
             "indicators": values}
 
 
+# =============================================================================
+# TOOL 4: similar historical events
+# =============================================================================
+
+# Which raw indicators are compared per hazard. Chosen because they are the
+# SAME variables already used elsewhere for this hazard (RULES in
+# 01_detection_engine.py / FEATURE_VARS), not a new, untested feature set.
+SIMILARITY_FEATURES = {
+    "flash_flood": ["cape", "ivt", "pwat", "daily_precip_total", "wind850_speed"],
+    "heatwave": ["tmax_c", "heat_index_c", "vpd_kpa", "t2m_c", "tmax_anomaly_c"],
+}
+
+_EVENTS = None
+_FEATURE_STATS = {}
+
+
+def _load_events():
+    global _EVENTS
+    if _EVENTS is None:
+        with open(KG_JSON, encoding="utf-8") as f:
+            kg = json.load(f)
+        _EVENTS = [n for n in kg["nodes"] if n.get("ntype") == "Event"]
+    return _EVENTS
+
+
+def _feature_stats(var):
+    """Dataset-wide mean/std for one variable, cached. Used to z-score before
+    comparing, so variables on very different physical scales (e.g. cape in
+    the thousands vs vpd_kpa in single digits) don't silently dominate the
+    similarity score just because of their units."""
+    if var not in _FEATURE_STATS:
+        _, ds = _load_resources()
+        arr = ds[var].values
+        _FEATURE_STATS[var] = (float(np.nanmean(arr)), float(np.nanstd(arr)))
+    return _FEATURE_STATS[var]
+
+
+def _parse_event_location(loc_str):
+    # "Jizan (17.5N,42.9E)" -> (17.5, 42.9)
+    coords = loc_str.split("(")[1].rstrip(")").replace("N", "").replace("E", "")
+    la, lo = coords.split(",")
+    return float(la), float(lo)
+
+
+def _get_vector(date, lat, lon, features):
+    """Read raw indicator values at the nearest full-resolution grid cell for
+    a date/location, for the given feature list. Returns dict{var: value or
+    None if missing/out of range}."""
+    _, ds = _load_resources()
+    times = np.array([str(t)[:10] for t in ds.time.values])
+    if date not in times:
+        return None
+    ti = int(np.where(times == date)[0][0])
+    lat_full, lon_full = ds.latitude.values, ds.longitude.values
+    yi = int(np.argmin(np.abs(lat_full - lat)))
+    xi = int(np.argmin(np.abs(lon_full - lon)))
+    vec = {}
+    for v in features:
+        val = float(ds[v].values[ti, yi, xi])
+        vec[v] = val if np.isfinite(val) else None
+    return vec
+
+
+def similar_events_tool(city: str, date: str, hazard: str) -> dict:
+    """Compare a city/date's actual indicator values against the KG's 5 known
+    real 2025 extreme events, ranked by similarity, so the agent can say
+    "this looks like the 23 Aug event" instead of only stating a bare number.
+
+    Similarity method (documented, not tuned to any specific outcome):
+    z-score each shared feature using the dataset's own mean/std, then convert
+    normalized Euclidean distance to a 0-100% score via 100/(1+distance) --
+    distance 0 -> 100%, larger distance -> lower, monotonically decreasing.
+    An event needs at least half its features available on both sides to be
+    ranked; otherwise it is excluded with a reason (not silently dropped).
+    """
+    if city not in CITIES:
+        return {"error": f"Unknown city '{city}'. Known cities: {list(CITIES.keys())}"}
+    if hazard not in ("heatwave", "flash_flood"):
+        return {"error": f"Unknown hazard '{hazard}'. Must be 'heatwave' or 'flash_flood'."}
+    features = SIMILARITY_FEATURES[hazard]
+
+    city_lat, city_lon = CITIES[city]
+    query_vec = _get_vector(date, city_lat, city_lon, features)
+    if query_vec is None:
+        return {"error": f"Date '{date}' not in dataset range (2025-01-01 to 2025-12-31)."}
+
+    events = [e for e in _load_events() if e["hazard"] == hazard]
+    results = []
+    excluded = []
+    for e in events:
+        e_lat, e_lon = _parse_event_location(e["location"])
+        event_vec = _get_vector(e["date"], e_lat, e_lon, features)
+        if event_vec is None:
+            excluded.append({"event": e["label"], "reason": "event date not in dataset"})
+            continue
+
+        sq_dists = []
+        for v in features:
+            qv, ev = query_vec.get(v), event_vec.get(v)
+            if qv is None or ev is None:
+                continue
+            mean, std = _feature_stats(v)
+            if std <= 0:
+                continue
+            sq_dists.append(((qv - mean) / std - (ev - mean) / std) ** 2)
+
+        if len(sq_dists) < (len(features) + 1) // 2:
+            excluded.append({"event": e["label"],
+                             "reason": f"only {len(sq_dists)}/{len(features)} features available, "
+                                       f"below the half-coverage minimum"})
+            continue
+
+        distance = float(np.sqrt(sum(sq_dists)))
+        similarity_pct = round(100.0 / (1.0 + distance), 1)
+        # Rough great-circle-ish distance (deg->km at ~111km/deg, adequate at
+        # this latitude/precision for a disclosure caveat, not navigation).
+        # Event coordinates in the KG are each event's own grid-cell MAXIMUM
+        # (e.g. the exact storm centroid), which is commonly tens of km from
+        # a city's center -- discovered while testing this tool (Jizan city
+        # center vs the "Jizan" 08-23 rain event's own coordinates are ~74km
+        # apart, and daily_precip_total differs hugely: 0.6mm at the city vs
+        # 254.9mm at the storm centroid). Surfacing this distance lets the
+        # agent/user understand why a same-named, same-day event can still
+        # score a LOW similarity -- that is correct, hyperlocal behavior, not
+        # a bug in this comparison.
+        km = round(((city_lat - e_lat) ** 2 + (city_lon - e_lon) ** 2) ** 0.5 * 111)
+        results.append({
+            "event": e["label"], "event_date": e["date"], "event_location": e["location"],
+            "event_headline_value": e["value"], "similarity_pct": similarity_pct,
+            "features_compared": len(sq_dists),
+            "event_distance_from_city_km": km,
+        })
+
+    results.sort(key=lambda r: -r["similarity_pct"])
+    return {
+        "city": city, "date": date, "hazard": hazard,
+        "query_indicators": query_vec,
+        "ranked_similar_events": results,
+        "excluded_events": excluded,
+        "note": ("similarity_pct is a descriptive, z-scored-distance-based measure "
+                 "(100/(1+normalized_distance)), NOT a probability or a claim that this "
+                 "event WILL repeat -- it only says how physically similar the raw "
+                 "indicators are to a known past event. Each event's coordinates are its "
+                 "own grid-cell MAXIMUM (the storm/heat centroid), often tens of km from a "
+                 "same-named city's center -- a same-city, same-day comparison can still "
+                 "score LOW if the extreme was hyperlocal (see event_distance_from_city_km "
+                 "on each result); that is correct behavior, not an error."),
+    }
+
+
 if __name__ == "__main__":
     print("tools.py loaded OK — run test_tools.py for verification.")

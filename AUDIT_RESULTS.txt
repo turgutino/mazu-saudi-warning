@@ -95,7 +95,14 @@ SECTION H — reflexive_check (model vs. independent rule-based detection)
   [PASS] Mecca: consistency label correctly reflects model >= 0.3 > detection (independent re-check)
 
 ==========================================================================
-TOTAL: 63 passed, 0 failed
+SECTION I — similar_events_tool (KG event similarity)
+==========================================================================
+  [PASS] self-match at exact event coords/date scores exactly 100% (re-verified fresh)
+  [PASS] Mecca 08-04 raw tmax_c matches value read directly from the RAW source file
+  [PASS] Mecca/07-25-event similarity independently re-derived (RAW files + dataset-wide mean/std recomputed fresh, not reusing tools.py's cache) matches tool output
+
+==========================================================================
+TOTAL: 66 passed, 0 failed
 ==========================================================================
 
 Every checked number traces back to the raw 5GB source data. No fabrication found.
