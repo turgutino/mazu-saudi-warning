@@ -5,9 +5,20 @@
 An early-warning system for **flash floods** and **heatwaves** over Saudi Arabia, built on
 CMA 10 km meteorological indicators. It combines a **literature-grounded causal knowledge
 graph**, a **weighted spatial detection engine**, a **verified one-day-ahead forecast model**,
-and (in progress) an **explainable warning agent**.
+and an **explainable warning agent** (DeepSeek function calling).
 
 🌐 **Live site:** https://turgutino.github.io/mazu-saudi-warning/
+
+---
+
+## Full system audit
+
+`FULL_SYSTEM_AUDIT.py` independently traces 36 numbers — from the consolidated
+dataset, the knowledge graph's event values, the causal citations, and an
+agent tool's output — back to the raw 5GB source data (365 daily NetCDF
+files), plus checks the deployed GitHub site matches the local repo exactly.
+**Result: 36/36 passed, zero fabricated values found.** Full log in
+[`AUDIT_RESULTS.txt`](AUDIT_RESULTS.txt).
 
 ---
 

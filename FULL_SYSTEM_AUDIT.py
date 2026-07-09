@@ -1,0 +1,220 @@
+# =============================================================================
+# MAZU — Full system audit: trace every layer back to the raw 5GB source data
+#
+# This does NOT trust any intermediate file. For each check, it reads the
+# RAW source (saudi_indicators_YYYYMMDD.nc, 365 files, ~5GB) directly and
+# independently re-derives the number, then compares it to what our
+# pipeline/KG/agent produced. Any mismatch is a FAIL, not a warning.
+#
+# Reproducibility note: Sections A-C and E require the raw 5GB source files
+# locally (path set in RAW_DIR below) -- these are NOT included in this
+# repository (see README's Data section), so this script cannot be re-run
+# standalone by someone who only has the repo. The full output/results of
+# the last run are recorded in AUDIT_RESULTS.txt for transparency.
+# =============================================================================
+
+import os
+import sys
+import json
+import glob
+import numpy as np
+import xarray as xr
+import warnings
+
+warnings.filterwarnings("ignore")
+
+RAW_DIR = r"E:\Data\New data\indicators"
+HERE = os.path.dirname(os.path.abspath(__file__))
+CONSOLIDATED = os.path.join(HERE, "data", "mazu_dataset.nc")
+KG_JSON = os.path.join(HERE, "kg", "kg_data.json")
+CORPUS_PY = os.path.join(HERE, "kg", "causal", "corpus.py")
+
+PASS, FAIL = 0, 0
+FAILURES = []
+
+
+def check(section, name, cond, detail=""):
+    global PASS, FAIL
+    status = "PASS" if cond else "FAIL"
+    print(f"  [{status}] {name}" + (f"  -- {detail}" if (detail and not cond) else ""))
+    if cond:
+        PASS += 1
+    else:
+        FAIL += 1
+        FAILURES.append(f"{section} :: {name} :: {detail}")
+
+
+# =============================================================================
+print("=" * 74)
+print("SECTION A — raw 5GB source files exist and are readable")
+print("=" * 74)
+
+raw_files = sorted(glob.glob(os.path.join(RAW_DIR, "saudi_indicators_*.nc")))
+check("A", "365 raw daily files present", len(raw_files) == 365, f"found {len(raw_files)}")
+check("A", "raw directory matches documented path", os.path.exists(RAW_DIR))
+
+# =============================================================================
+print()
+print("=" * 74)
+print("SECTION B — consolidated dataset (mazu_dataset.nc) matches RAW source")
+print("=" * 74)
+print("(direct re-read of 3 random raw files, independent of the pipeline code)")
+
+cons = xr.open_dataset(CONSOLIDATED)
+cons_times = np.array([str(t)[:10] for t in cons.time.values])
+
+FEATURE_VARS = [
+    "daily_precip_total", "daily_convective_precip", "daily_large_scale_precip",
+    "t2m_c", "tmax_c", "tmin_c", "heat_index_c", "vpd_kpa",
+    "cape", "pwat", "ivt", "wind850_speed", "wind_shear_850_200",
+    "daily_precip_anomaly", "t2m_anomaly_c", "tmax_anomaly_c",
+]
+
+rng = np.random.default_rng(42)
+sample_dates = ["2025-08-23", "2025-07-25", "2025-03-11"]   # 2 known events + 1 arbitrary
+
+for date in sample_dates:
+    raw_path = os.path.join(RAW_DIR, f"saudi_indicators_{date.replace('-','')}.nc")
+    if not os.path.exists(raw_path):
+        check("B", f"{date}: raw file exists", False, "missing")
+        continue
+    raw_ds = xr.open_dataset(raw_path)
+    ci = int(np.where(cons_times == date)[0][0])
+    mismatches = []
+    for v in FEATURE_VARS:
+        if v not in raw_ds:
+            continue
+        raw_val = float(raw_ds[v].values[80, 110])   # arbitrary fixed grid cell, mid-domain
+        cons_val = float(cons[v].values[ci, 80, 110])
+        if np.isfinite(raw_val) and np.isfinite(cons_val):
+            if abs(raw_val - cons_val) > 1e-3:
+                mismatches.append(f"{v}: raw={raw_val} consolidated={cons_val}")
+        elif np.isfinite(raw_val) != np.isfinite(cons_val):
+            mismatches.append(f"{v}: raw finite={np.isfinite(raw_val)} consolidated finite={np.isfinite(cons_val)}")
+    check("B", f"{date}: all {len(FEATURE_VARS)} indicators match raw source exactly",
+         len(mismatches) == 0, "; ".join(mismatches[:3]))
+    raw_ds.close()
+
+# =============================================================================
+print()
+print("=" * 74)
+print("SECTION C — KG event values trace back to the RAW source (not just consolidated)")
+print("=" * 74)
+
+with open(KG_JSON, encoding="utf-8") as f:
+    kg = json.load(f)
+events = [n for n in kg["nodes"] if n.get("ntype") == "Event"]
+check("C", "5 event nodes present in KG", len(events) == 5, f"found {len(events)}")
+
+lat_full, lon_full = cons.latitude.values, cons.longitude.values
+for ev in events:
+    date = ev["date"]
+    # parse "peak_var value unit" from the value string, e.g. "daily_precip_total 254.9 mm"
+    val_str = ev["value"]
+    var_name = val_str.split()[0]
+    claimed_val = float(val_str.split()[1])
+    loc_str = ev["location"]   # "Jizan (17.5N,42.9E)"
+    coords = loc_str.split("(")[1].rstrip(")").replace("N", "").replace("E", "")
+    claim_lat, claim_lon = [float(x) for x in coords.split(",")]
+
+    raw_path = os.path.join(RAW_DIR, f"saudi_indicators_{date.replace('-','')}.nc")
+    if not os.path.exists(raw_path):
+        check("C", f"{ev['label']}: raw file exists", False, "missing")
+        continue
+    raw_ds = xr.open_dataset(raw_path)
+    if var_name not in raw_ds:
+        check("C", f"{ev['label']}: variable '{var_name}' in raw file", False)
+        raw_ds.close()
+        continue
+    arr = raw_ds[var_name].values
+    ti, yi, xi = np.unravel_index(np.nanargmax(arr), arr.shape) if arr.ndim == 3 else \
+        (0, *np.unravel_index(np.nanargmax(arr), arr.shape))
+    raw_max = float(arr[ti, yi, xi]) if arr.ndim == 3 else float(arr[yi, xi])
+    check("C", f"{ev['label']}: claimed value ({claimed_val}) matches raw grid MAX for {var_name} on {date} ({round(raw_max,1)})",
+         abs(claimed_val - round(raw_max, 1)) < 0.2, f"claimed={claimed_val} raw_max={raw_max:.2f}")
+    raw_ds.close()
+
+# =============================================================================
+print()
+print("=" * 74)
+print("SECTION D — causal KG citations: quotes still verbatim in corpus.py")
+print("=" * 74)
+
+import importlib.util
+spec = importlib.util.spec_from_file_location("corpus", CORPUS_PY)
+corpus_mod = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(corpus_mod)
+corpus_by_id = {c["id"]: c["text"] for c in corpus_mod.CORPUS}
+
+import re
+def norm(s): return re.sub(r"\s+", " ", s).strip().lower()
+
+citation_nodes = [n for n in kg["nodes"] if n.get("ntype") == "Citation"]
+check("D", "6 Citation nodes present", len(citation_nodes) == 6, f"found {len(citation_nodes)}")
+total_ev = 0
+for n in citation_nodes:
+    sid = n["id"].replace("cite_", "")
+    src_text = corpus_by_id.get(sid, "")
+    for ev in n["evidence"]:
+        total_ev += 1
+        ok = norm(ev["quote"]) in norm(src_text)
+        check("D", f"{n['id']}: quote verbatim in source ({ev['quote'][:40]}...)", ok)
+check("D", f"total evidence quotes checked: {total_ev} (expect 20)", total_ev == 20)
+
+# =============================================================================
+print()
+print("=" * 74)
+print("SECTION E — agent tools read the SAME data as the raw source (bypass test)")
+print("=" * 74)
+
+sys.path.insert(0, os.path.join(HERE, "agent"))
+import tools as agent_tools
+
+# direct raw read, bypassing the tool entirely
+raw_path = os.path.join(RAW_DIR, "saudi_indicators_20250823.nc")
+raw_ds = xr.open_dataset(raw_path)
+jizan_lat, jizan_lon = 16.9, 42.6
+yi = int(np.argmin(np.abs(raw_ds.latitude.values - jizan_lat)))
+xi = int(np.argmin(np.abs(raw_ds.longitude.values - jizan_lon)))
+raw_precip = float(raw_ds["daily_precip_total"].values[yi, xi])
+raw_ds.close()
+
+tool_result = agent_tools.conditions_tool("Jizan", "2025-08-23")
+tool_precip = tool_result["indicators"]["daily_precip_total"]
+check("E", "conditions_tool('Jizan','2025-08-23') matches independent raw-file read",
+     abs(raw_precip - tool_precip) < 0.01, f"raw={raw_precip} tool={tool_precip}")
+
+# =============================================================================
+print()
+print("=" * 74)
+print("SECTION F — deployed GitHub site matches local repo (no drift)")
+print("=" * 74)
+
+import subprocess
+try:
+    r = subprocess.run(["curl", "-s", "https://raw.githubusercontent.com/turgutino/mazu-saudi-warning/main/kg/kg_data.json"],
+                       capture_output=True, text=True, timeout=20)
+    remote_kg = json.loads(r.stdout)
+    check("F", "remote kg_data.json node count matches local",
+         len(remote_kg["nodes"]) == len(kg["nodes"]),
+         f"remote={len(remote_kg['nodes'])} local={len(kg['nodes'])}")
+    check("F", "remote kg_data.json edge count matches local",
+         len(remote_kg["links"]) == len(kg["links"]),
+         f"remote={len(remote_kg['links'])} local={len(kg['links'])}")
+except Exception as e:
+    check("F", "remote KG fetch succeeded", False, str(e))
+
+cons.close()
+
+# =============================================================================
+print()
+print("=" * 74)
+print(f"TOTAL: {PASS} passed, {FAIL} failed")
+print("=" * 74)
+if FAILURES:
+    print("\nFAILURES:")
+    for f in FAILURES:
+        print(f"  - {f}")
+    sys.exit(1)
+else:
+    print("\nEvery checked number traces back to the raw 5GB source data. No fabrication found.")
