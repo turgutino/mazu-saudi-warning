@@ -33,8 +33,23 @@ def render_trace(trace):
     return "\n".join(parts)
 
 
+def render_markdown_table(block):
+    """Render a GFM-style markdown table block (list of '| a | b |' lines,
+    2nd line is the '|---|---|' separator) as an HTML <table>."""
+    rows = [r.strip() for r in block if r.strip()]
+    if len(rows) < 2:
+        return "\n".join(rows)
+    def cells(line):
+        return [c.strip() for c in line.strip("|").split("|")]
+    header = cells(rows[0])
+    body_rows = [cells(r) for r in rows[2:]]  # skip the --- separator row
+    thead = "".join(f"<th>{c}</th>" for c in header)
+    tbody = "".join("<tr>" + "".join(f"<td>{c}</td>" for c in r) + "</tr>" for r in body_rows)
+    return f'<table class="mdtable"><thead><tr>{thead}</tr></thead><tbody>{tbody}</tbody></table>'
+
+
 def render_answer(answer):
-    # minimal markdown-ish rendering: bold, headers, line breaks
+    # minimal markdown-ish rendering: bold, headers, tables, line breaks
     import re
     a = htmllib.escape(answer)
     a = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", a)
@@ -42,6 +57,22 @@ def render_answer(answer):
     a = re.sub(r"^## (.+)$", r"<h3>\1</h3>", a, flags=re.M)
     a = re.sub(r"^---$", r"<hr>", a, flags=re.M)
     a = re.sub(r"^\d+\.\s+(.+)$", r"<li>\1</li>", a, flags=re.M)
+
+    # table blocks: consecutive lines starting with '|'
+    lines = a.split("\n")
+    out_lines, table_buf = [], []
+    for line in lines:
+        if line.strip().startswith("|"):
+            table_buf.append(line)
+        else:
+            if table_buf:
+                out_lines.append(render_markdown_table(table_buf))
+                table_buf = []
+            out_lines.append(line)
+    if table_buf:
+        out_lines.append(render_markdown_table(table_buf))
+    a = "\n".join(out_lines)
+
     a = a.replace("\n\n", "</p><p>")
     return f"<p>{a}</p>"
 
@@ -81,6 +112,10 @@ html_out = f"""<!doctype html>
   .answer hr{{border:none;border-top:1px solid var(--line);margin:12px 0}}
   .answer li{{margin-left:20px;color:var(--txt)}}
   .answer b{{color:var(--green)}}
+  table.mdtable{{border-collapse:collapse;width:100%;margin:10px 0;font-size:13px}}
+  table.mdtable th,table.mdtable td{{border:1px solid var(--line);padding:6px 10px;text-align:left}}
+  table.mdtable th{{background:var(--bg);color:var(--cyan);font-weight:700}}
+  table.mdtable td b{{color:var(--green)}}
   .note{{background:rgba(94,232,165,0.08);border-left:2px solid var(--green);border-radius:6px;padding:12px 16px;font-size:13px;color:var(--mut);margin-bottom:26px}}
 </style></head>
 <body><div class="wrap">
@@ -88,9 +123,9 @@ html_out = f"""<!doctype html>
   <a class="back" href="index.html">&larr; back</a>
   <div class="kicker">Layer 4 &middot; Agent</div>
   <h1>MAZU Agent — worked examples</h1>
-  <p>Real transcripts from the DeepSeek function-calling agent (<code>agent/03_agent.py</code>). Every number and citation below came from an actual tool call — click a tool-call line to see its exact input and output.</p>
+  <p>Real transcripts from the DeepSeek function-calling agent (<code>agent/03_agent.py</code>), now with <b>5 tools</b> (forecast, causal-KG, conditions, similar-events, region-risk) across <b>3 hazards</b> (flash flood, heatwave, dust storm). Every number and citation below came from an actual tool call — click a tool-call line to see its exact input and output.</p>
 </header>
-<div class="note">Static page, not a live chat: GitHub Pages cannot run the agent's Python backend, and embedding the API key in client-side JavaScript would let anyone steal and abuse it. These are real, verified runs of the agent shown as evidence it works — see <code>agent/LAYER4_REPORT.md</code> for the full test suite (27 tool tests + 4 end-to-end scenarios, all passing).</div>
+<div class="note">Static page, not a live chat: GitHub Pages cannot run the agent's Python backend, and embedding the API key in client-side JavaScript would let anyone steal and abuse it. These are real, verified runs of the agent shown as evidence it works — see <code>agent/LAYER4_REPORT.md</code> for the full test suite (112 tool tests + 4 end-to-end scenarios, all passing), <code>agent/ABLATION_REPORT.md</code> for a live A/B test proving the causal-KG tool is what grounds the agent's explanations (removing it: 4/4 answers lost mechanism/citation grounding, but 0/4 hallucinated a replacement), <code>agent/REFLEXIVE_CHECK_REPORT.md</code> for a self-check against an independent rule-based engine that caught a real, disclosed model limitation, <code>agent/DUST_STORM_REPORT.md</code> for the 3rd hazard added with full depth, and <code>agent/REGION_RISK_REPORT.md</code> for the 5th tool that closed a self-found knowledge-graph utilization gap.</div>
 {''.join(cards)}
 </div></body></html>"""
 

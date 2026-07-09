@@ -25,6 +25,10 @@
   .answer hr{border:none;border-top:1px solid var(--line);margin:12px 0}
   .answer li{margin-left:20px;color:var(--txt)}
   .answer b{color:var(--green)}
+  table.mdtable{border-collapse:collapse;width:100%;margin:10px 0;font-size:13px}
+  table.mdtable th,table.mdtable td{border:1px solid var(--line);padding:6px 10px;text-align:left}
+  table.mdtable th{background:var(--bg);color:var(--cyan);font-weight:700}
+  table.mdtable td b{color:var(--green)}
   .note{background:rgba(94,232,165,0.08);border-left:2px solid var(--green);border-radius:6px;padding:12px 16px;font-size:13px;color:var(--mut);margin-bottom:26px}
 </style></head>
 <body><div class="wrap">
@@ -32,9 +36,9 @@
   <a class="back" href="index.html">&larr; back</a>
   <div class="kicker">Layer 4 &middot; Agent</div>
   <h1>MAZU Agent — worked examples</h1>
-  <p>Real transcripts from the DeepSeek function-calling agent (<code>agent/03_agent.py</code>). Every number and citation below came from an actual tool call — click a tool-call line to see its exact input and output.</p>
+  <p>Real transcripts from the DeepSeek function-calling agent (<code>agent/03_agent.py</code>), now with <b>5 tools</b> (forecast, causal-KG, conditions, similar-events, region-risk) across <b>3 hazards</b> (flash flood, heatwave, dust storm). Every number and citation below came from an actual tool call — click a tool-call line to see its exact input and output.</p>
 </header>
-<div class="note">Static page, not a live chat: GitHub Pages cannot run the agent's Python backend, and embedding the API key in client-side JavaScript would let anyone steal and abuse it. These are real, verified runs of the agent shown as evidence it works — see <code>agent/LAYER4_REPORT.md</code> for the full test suite (112 tool tests + 4 end-to-end scenarios, all passing), <code>agent/ABLATION_REPORT.md</code> for a live A/B test proving the causal-KG tool is what grounds the agent's explanations (removing it: 4/4 answers lost mechanism/citation grounding, but 0/4 hallucinated a replacement), and <code>agent/REFLEXIVE_CHECK_REPORT.md</code> for a self-check against an independent rule-based engine that caught a real, disclosed model limitation (underconfidence on a flash-flood precursor day).</div>
+<div class="note">Static page, not a live chat: GitHub Pages cannot run the agent's Python backend, and embedding the API key in client-side JavaScript would let anyone steal and abuse it. These are real, verified runs of the agent shown as evidence it works — see <code>agent/LAYER4_REPORT.md</code> for the full test suite (112 tool tests + 4 end-to-end scenarios, all passing), <code>agent/ABLATION_REPORT.md</code> for a live A/B test proving the causal-KG tool is what grounds the agent's explanations (removing it: 4/4 answers lost mechanism/citation grounding, but 0/4 hallucinated a replacement), <code>agent/REFLEXIVE_CHECK_REPORT.md</code> for a self-check against an independent rule-based engine that caught a real, disclosed model limitation, <code>agent/DUST_STORM_REPORT.md</code> for the 3rd hazard added with full depth, and <code>agent/REGION_RISK_REPORT.md</code> for the 5th tool that closed a self-found knowledge-graph utilization gap.</div>
 <div class="card">
   <div class="q">What is the flash-flood risk in Jizan for 2025-08-23, and why?</div>
   <div class="tools"><details class="toolcall">
@@ -267,14 +271,7 @@
 }</pre>
 </details></div>
   <div class="answer"><p>Here&#x27;s the full picture for <b>Mecca on 2025-07-25</b>:</p><p><hr></p><p><h3>🌡️ Heatwave Risk: <b>62.8% probability</b></h3></p><p><b>Model confidence:</b> Very high (ROC-AUC = <b>0.971</b>)</p><p><h4>Observed conditions on 2025-07-24 (the day before)</h4>
-| Indicator | Value |
-|---|---|
-| Max temperature (tmax) | <b>42.98°C</b> |
-| Mean temperature (t2m) | <b>37.03°C</b> |
-| Min temperature | 31.59°C |
-| Heat index | 37.03°C |
-| Vapor Pressure Deficit | <b>5.45 kPa</b> (very dry air) |
-| Tmax anomaly | <b>+3.68°C</b> above normal |</p><p><h4>Why the risk is elevated</h4>
+<table class="mdtable"><thead><tr><th>Indicator</th><th>Value</th></tr></thead><tbody><tr><td>Max temperature (tmax)</td><td><b>42.98°C</b></td></tr><tr><td>Mean temperature (t2m)</td><td><b>37.03°C</b></td></tr><tr><td>Min temperature</td><td>31.59°C</td></tr><tr><td>Heat index</td><td>37.03°C</td></tr><tr><td>Vapor Pressure Deficit</td><td><b>5.45 kPa</b> (very dry air)</td></tr><tr><td>Tmax anomaly</td><td><b>+3.68°C</b> above normal</td></tr></tbody></table></p><p><h4>Why the risk is elevated</h4>
 Two key mechanisms are driving this:</p><p><li><b>Subtropical High (Heat Dome)</b> – A persistent high-pressure system over the Arabian Peninsula traps intense solar radiation, causing extreme surface heating. *(ScienceDirect, Atmospheric Research)*</li>
 <li><b>Arabian Thermal Low</b> – A desert heat low contributes to the summer Shamal winds and reinforces the extreme temperature regime. *(Yu et al., 2016, J. Geophys. Res. Atmos.)*</li></p><p><h4>Recommendation</h4>
 With max temps already near <b>43°C</b> and a 63% chance of heatwave conditions on July 25, take precautions: stay hydrated, avoid outdoor activity during peak hours (12–4 PM), and check on vulnerable individuals.</p></div>
@@ -377,5 +374,721 @@ With max temps already near <b>43°C</b> and a 63% chance of heatwave conditions
 </details></div>
   <div class="answer"><p><h3>Heatwave Risk for Riyadh on 2025-11-06</h3></p><p><b>Probability:</b> <b>0.06%</b> (extremely low)</p><p><b>Model Reliability:</b> The forecast model has a verified ROC-AUC of <b>0.971</b>, indicating excellent predictive performance.</p><p><h4>Why So Low?</h4></p><p>November is late autumn in Riyadh, well outside the peak heat season. The key physical mechanisms behind Saudi heatwaves are:</p><p><li><b>Subtropical High (Heat Dome)</b> – A persistent high-pressure system over the Arabian Peninsula traps intense solar radiation, causing extreme surface heating. This is most active in summer months.</li>
 <li><b>Arabian Thermal Low</b> – A desert heat low that drives hot, dry conditions, particularly during the May–August period.</li></p><p>By November 6th, these mechanisms are far less active, and the interior (like Riyadh) is already cooling significantly.</p><p><h4>Recommendation</h4></p><p>No heatwave precautions are needed for this date. Enjoy the mild late-autumn conditions in Riyadh!</p></div>
+</div><div class="card">
+  <div class="q">I&#x27;m planning a trip to Abha on 2025-08-31. What weather risks should I know about?</div>
+  <div class="tools"><details class="toolcall">
+  <summary><code>region_risk_tool(city=&#x27;Abha&#x27;, date=&#x27;2025-08-31&#x27;)</code></summary>
+  <pre>{
+  &quot;city&quot;: &quot;Abha&quot;,
+  &quot;hazard_count&quot;: 1,
+  &quot;hazards&quot;: [
+    {
+      &quot;hazard&quot;: &quot;flash_flood&quot;,
+      &quot;hazard_label&quot;: &quot;Flash Flood / Wadi Flooding&quot;,
+      &quot;mechanisms_affecting_this_city&quot;: [
+        &quot;orographic_lift&quot;
+      ],
+      &quot;all_mechanisms_for_this_hazard&quot;: [
+        &quot;ARST&quot;,
+        &quot;moisture_transport&quot;,
+        &quot;orographic_lift&quot;
+      ],
+      &quot;has_forecast_model&quot;: true,
+      &quot;forecast&quot;: {
+        &quot;target_date&quot;: &quot;2025-08-31&quot;,
+        &quot;probability&quot;: 0.5962,
+        &quot;model_verified_roc_auc&quot;: 0.8731742776960718
+      }
+    }
+  ],
+  &quot;date&quot;: &quot;2025-08-31&quot;
+}</pre>
+</details>
+<details class="toolcall">
+  <summary><code>causal_kg_tool(hazard=&#x27;flash_flood&#x27;)</code></summary>
+  <pre>{
+  &quot;hazard&quot;: &quot;flash_flood&quot;,
+  &quot;contributing_indicators&quot;: [
+    &quot;daily_precip_total&quot;,
+    &quot;daily_convective_precip&quot;,
+    &quot;cape&quot;,
+    &quot;pwat&quot;,
+    &quot;ivt&quot;,
+    &quot;wind850_speed&quot;,
+    &quot;daily_precip_anomaly&quot;,
+    &quot;flash_flood_risk&quot;
+  ],
+  &quot;mechanisms&quot;: [
+    {
+      &quot;mechanism&quot;: &quot;ARST&quot;,
+      &quot;description&quot;: &quot;Active Red Sea Trough - low-level convergence over the Red Sea&quot;,
+      &quot;literature_grounded&quot;: true,
+      &quot;citations&quot;: [
+        {
+          &quot;citation&quot;: &quot;de Vries et al. (2013), J. Geophys. Res. Atmos.&quot;,
+          &quot;url&quot;: &quot;https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/jgrd.50569&quot;,
+          &quot;evidence&quot;: [
+            {
+              &quot;subject&quot;: &quot;eastward-migrating Mediterranean cyclone&quot;,
+              &quot;relation&quot;: &quot;joins&quot;,
+              &quot;object&quot;: &quot;extension of the Sudan low-pressure zone (the Red Sea Trough)&quot;,
+              &quot;quote&quot;: &quot;an eastward-migrating Mediterranean cyclone joined an extension of the Sudan low-pressure zone (the Red Sea Trough)&quot;
+            },
+            {
+              &quot;subject&quot;: &quot;stationary anticyclone over the southeastern Arabian Peninsula (the Arabian Anticyclone)&quot;,
+              &quot;relation&quot;: &quot;produces&quot;,
+              &quot;object&quot;: &quot;clockwise flow that supplied moisture from the Arabian Sea and the Red Sea&quot;,
+              &quot;quote&quot;: &quot;a stationary anticyclone over the southeastern Arabian Peninsula (the Arabian Anticyclone) produced a clockwise flow that supplied moisture from the Arabian Sea and the Red Sea&quot;
+            }
+          ]
+        }
+      ]
+    },
+    {
+      &quot;mechanism&quot;: &quot;moisture_transport&quot;,
+      &quot;description&quot;: &quot;Red Sea / Arabian Sea moisture transport&quot;,
+      &quot;literature_grounded&quot;: true,
+      &quot;citations&quot;: [
+        {
+          &quot;citation&quot;: &quot;ResearchGate case study&quot;,
+          &quot;url&quot;: &quot;https://www.researchgate.net/publication/336928573&quot;,
+          &quot;evidence&quot;: [
+            {
+              &quot;subject&quot;: &quot;Surface fluxes over the Red Sea&quot;,
+              &quot;relation&quot;: &quot;regulates&quot;,
+              &quot;object&quot;: &quot;low-level moist-air convergence prior to convection initiation and development&quot;,
+              &quot;quote&quot;: &quot;Surface fluxes over the Red Sea play an important role in regulating low-level moist-air convergence prior to convection initiation and development&quot;
+            },
+            {
+              &quot;subject&quot;: &quot;Red Sea water&quot;,
+              &quot;relation&quot;: &quot;affects&quot;,
+              &quot;object&quot;: &quot;regional rainfall&quot;,
+              &quot;quote&quot;: &quot;Red Sea water is estimated to affect regional rainfall by about 30 to 40 percent&quot;
+            }
+          ]
+        },
+        {
+          &quot;citation&quot;: &quot;MDPI Atmosphere (2019)&quot;,
+          &quot;url&quot;: &quot;https://www.mdpi.com/2073-4433/10/9/504&quot;,
+          &quot;evidence&quot;: [
+            {
+              &quot;subject&quot;: &quot;stronger winds combined with drier air&quot;,
+              &quot;relation&quot;: &quot;produces&quot;,
+              &quot;object&quot;: &quot;latent heat losses of up to 410 watts per square metre&quot;,
+              &quot;quote&quot;: &quot;stronger winds combined with drier air produce latent heat losses of up to 410 watts per square metre&quot;
+            }
+          ]
+        }
+      ]
+    },
+    {
+      &quot;mechanism&quot;: &quot;orographic_lift&quot;,
+      &quot;description&quot;: &quot;Orographic lifting over Hejaz / Asir mountains&quot;,
+      &quot;literature_grounded&quot;: false,
+      &quot;citations&quot;: []
+    }
+  ]
+}</pre>
+</details>
+<details class="toolcall">
+  <summary><code>conditions_tool(city=&#x27;Abha&#x27;, date=&#x27;2025-08-31&#x27;)</code></summary>
+  <pre>{
+  &quot;city&quot;: &quot;Abha&quot;,
+  &quot;date&quot;: &quot;2025-08-31&quot;,
+  &quot;grid_cell&quot;: {
+    &quot;lat&quot;: 18.2,
+    &quot;lon&quot;: 42.5
+  },
+  &quot;indicators&quot;: {
+    &quot;daily_precip_total&quot;: 0.0,
+    &quot;daily_convective_precip&quot;: 0.0,
+    &quot;daily_large_scale_precip&quot;: 0.0,
+    &quot;t2m_c&quot;: 24.89,
+    &quot;tmax_c&quot;: 28.96,
+    &quot;tmin_c&quot;: 20.76,
+    &quot;heat_index_c&quot;: 24.89,
+    &quot;vpd_kpa&quot;: 2.0,
+    &quot;cape&quot;: 264.0,
+    &quot;pwat&quot;: 15.0,
+    &quot;ivt&quot;: 202.5,
+    &quot;wind850_speed&quot;: 3.1,
+    &quot;wind_shear_850_200&quot;: 11.78,
+    &quot;daily_precip_anomaly&quot;: 0.0,
+    &quot;t2m_anomaly_c&quot;: 1.39,
+    &quot;tmax_anomaly_c&quot;: -3.14
+  }
+}</pre>
+</details>
+<details class="toolcall">
+  <summary><code>similar_events_tool(city=&#x27;Abha&#x27;, date=&#x27;2025-08-31&#x27;, hazard=&#x27;flash_flood&#x27;)</code></summary>
+  <pre>{
+  &quot;city&quot;: &quot;Abha&quot;,
+  &quot;date&quot;: &quot;2025-08-31&quot;,
+  &quot;hazard&quot;: &quot;flash_flood&quot;,
+  &quot;query_indicators&quot;: {
+    &quot;cape&quot;: 264.0,
+    &quot;ivt&quot;: 202.49803161621094,
+    &quot;pwat&quot;: 15.000957489013672,
+    &quot;daily_precip_total&quot;: 0.0,
+    &quot;wind850_speed&quot;: 3.103806257247925
+  },
+  &quot;ranked_similar_events&quot;: [
+    {
+      &quot;event&quot;: &quot;08-31 convective instability&quot;,
+      &quot;event_date&quot;: &quot;2025-08-31&quot;,
+      &quot;event_location&quot;: &quot;Abha (18.9N,41.7E)&quot;,
+      &quot;event_headline_value&quot;: &quot;cape 5196.0 J/kg&quot;,
+      &quot;similarity_pct&quot;: 10.0,
+      &quot;features_compared&quot;: 5,
+      &quot;event_distance_from_city_km&quot;: 118
+    },
+    {
+      &quot;event&quot;: &quot;08-19 vapour surge&quot;,
+      &quot;event_date&quot;: &quot;2025-08-19&quot;,
+      &quot;event_location&quot;: &quot;Arabian Sea (16.0N,55.9E)&quot;,
+      &quot;event_headline_value&quot;: &quot;ivt 728.4 kg/m/s&quot;,
+      &quot;similarity_pct&quot;: 7.9,
+      &quot;features_compared&quot;: 5,
+      &quot;event_distance_from_city_km&quot;: 1507
+    },
+    {
+      &quot;event&quot;: &quot;08-23 extreme rain&quot;,
+      &quot;event_date&quot;: &quot;2025-08-23&quot;,
+      &quot;event_location&quot;: &quot;Jizan (17.5N,42.9E)&quot;,
+      &quot;event_headline_value&quot;: &quot;daily_precip_total 254.9 mm&quot;,
+      &quot;similarity_pct&quot;: 0.8,
+      &quot;features_compared&quot;: 5,
+      &quot;event_distance_from_city_km&quot;: 89
+    }
+  ],
+  &quot;excluded_events&quot;: [],
+  &quot;note&quot;: &quot;similarity_pct is a descriptive, z-scored-distance-based measure (100/(1+normalized_distance)), NOT a probability or a claim that this event WILL repeat -- it only says how physically similar the raw indicators are to a known past event. Each event&#x27;s coordinates are its own grid-cell MAXIMUM (the storm/heat centroid), often tens of km from a same-named city&#x27;s center -- a same-city, same-day comparison can still score LOW if the extreme was hyperlocal (see event_distance_from_city_km on each result); that is correct behavior, not an error.&quot;
+}</pre>
+</details>
+<details class="toolcall">
+  <summary><code>forecast_tool(city=&#x27;Abha&#x27;, target_date=&#x27;2025-08-31&#x27;, hazard=&#x27;flash_flood&#x27;)</code></summary>
+  <pre>{
+  &quot;city&quot;: &quot;Abha&quot;,
+  &quot;target_date&quot;: &quot;2025-08-31&quot;,
+  &quot;features_from_date&quot;: &quot;2025-08-30&quot;,
+  &quot;hazard&quot;: &quot;flash_flood&quot;,
+  &quot;probability&quot;: 0.5962,
+  &quot;grid_cell&quot;: {
+    &quot;lat&quot;: 18.1,
+    &quot;lon&quot;: 42.4
+  },
+  &quot;elevation_m&quot;: 2082.2,
+  &quot;terrain_note&quot;: &quot;This city is at 2082 m elevation (mountain terrain, e.g. Asir range). Meteorological indicators and model training data are sparser here than in the low-elevation interior/coast, and the model&#x27;s feature grid is coarser than local terrain relief, so treat this probability with added caution.&quot;,
+  &quot;impact_context&quot;: {
+    &quot;city_population_2022_census&quot;: 422243,
+    &quot;source&quot;: &quot;Saudi Census 2022, GASTAT&quot;,
+    &quot;note&quot;: &quot;Reference population only, NOT a model output and NOT an estimate of how many people would actually be exposed to this hazard -- this system does not perform exposure/vulnerability modeling. Provided so risk can be discussed in human terms, per WMO impact-based warning guidance, not to imply a precise affected-population count.&quot;
+  },
+  &quot;reflexive_check&quot;: {
+    &quot;model_probability&quot;: 0.5962,
+    &quot;detection_engine_risk_score&quot;: 0.0,
+    &quot;detection_engine_conditions_fired&quot;: [],
+    &quot;threshold_used&quot;: 0.3,
+    &quot;consistency&quot;: &quot;model_higher_than_detection&quot;,
+    &quot;note&quot;: &quot;Model flags elevated risk, but the classic physical drivers for this hazard (per Layer 1&#x27;s data-grounded thresholds) were NOT present in that day&#x27;s indicators at this location -- treat with added caution, the model may be picking up a signal the rule-based check doesn&#x27;t capture, or may be over-confident.&quot;
+  },
+  &quot;model_verified_roc_auc&quot;: 0.8731742776960718
+}</pre>
+</details></div>
+  <div class="answer"><p>Here&#x27;s your full weather risk briefing for <b>Abha on 2025-08-31</b>:</p><p><hr></p><p><h3>🌧️ Flash Flood / Wadi Flooding — Moderate Risk (59.6%)</h3></p><p><b>Model confidence:</b> The forecast model has a verified ROC-AUC of <b>0.87</b> (strong discriminative ability).</p><p><h4>⚠️ Important Caveats</h4></p><p><li><b>Mountain terrain:</b> Abha sits at <b>~2,082 m elevation</b> in the Asir mountain range. The model&#x27;s grid is coarser than the local relief, so <b>treat this probability with added caution</b> — conditions can vary sharply within short distances.</li></p><p><li><b>Model vs. physical detection mismatch:</b> The model predicts elevated risk (59.6%), but the rule-based physical detection engine found <b>no classic flash-flood triggers</b> active on Aug 30 (the day used for prediction). This means the model may be picking up a subtle signal the simpler check misses, <b>or</b> it could be over-confident.</li></p><p><h4>🔬 Driving Mechanisms</h4></p><p>The main mechanism affecting Abha specifically is <b>orographic lift</b> — moist air forced upward by the Asir mountains, triggering convective storms. This is supported by:
+- <b>CAPE: 264 J/kg</b> (moderate instability)
+- <b>PWAT: 15 mm</b> (moderate moisture)
+- <b>IVT: 202.5 kg/m/s</b> (moisture transport from the Red Sea)</p><p>The broader flash-flood mechanisms (literature-grounded) include the <b>Active Red Sea Trough (ARST)</b> — where a Mediterranean cyclone joins the Sudan low-pressure zone, drawing moisture from the Red Sea and Arabian Sea (de Vries et al., 2013).</p><p><h4>📊 Actual Conditions on Aug 31</h4></p><p>Interestingly, <b>no precipitation was recorded</b> on the day itself (0 mm). The risk is based on the *previous day&#x27;s* indicators — so conditions may have been building but didn&#x27;t materialize into rain at this exact grid cell.</p><p><h4>🏙️ Context</h4></p><p>Abha&#x27;s population is ~422,000 (2022 census). The indicators on this date show <b>low similarity</b> to known 2025 extreme events — the closest match is a convective instability event near Abha (10% similarity, 118 km away), meaning this isn&#x27;t a repeat of a major historical pattern.</p><p><hr></p><p><h4>✅ Recommendation</h4></p><p><b>Moderate flash-flood risk.</b> If you&#x27;re traveling to Abha on Aug 31, keep an eye on local weather updates, especially if you plan to drive through wadi (valley) areas or hike in the mountains. The risk isn&#x27;t extreme, but the mountain terrain means storms can develop quickly and cause localized flash flooding even if the city center stays dry.</p></div>
+</div><div class="card">
+  <div class="q">Tell me about the extreme rain event in Jizan on 2025-08-23 - how much rain fell?</div>
+  <div class="tools"><details class="toolcall">
+  <summary><code>conditions_tool(city=&#x27;Jizan&#x27;, date=&#x27;2025-08-23&#x27;)</code></summary>
+  <pre>{
+  &quot;city&quot;: &quot;Jizan&quot;,
+  &quot;date&quot;: &quot;2025-08-23&quot;,
+  &quot;grid_cell&quot;: {
+    &quot;lat&quot;: 16.9,
+    &quot;lon&quot;: 42.6
+  },
+  &quot;indicators&quot;: {
+    &quot;daily_precip_total&quot;: 0.62,
+    &quot;daily_convective_precip&quot;: 0.5,
+    &quot;daily_large_scale_precip&quot;: 0.0,
+    &quot;t2m_c&quot;: 31.68,
+    &quot;tmax_c&quot;: 32.81,
+    &quot;tmin_c&quot;: 29.72,
+    &quot;heat_index_c&quot;: 39.45,
+    &quot;vpd_kpa&quot;: 1.41,
+    &quot;cape&quot;: 2582.0,
+    &quot;pwat&quot;: 63.13,
+    &quot;ivt&quot;: 143.29,
+    &quot;wind850_speed&quot;: 1.7,
+    &quot;wind_shear_850_200&quot;: 15.23,
+    &quot;daily_precip_anomaly&quot;: 0.62,
+    &quot;t2m_anomaly_c&quot;: -1.92,
+    &quot;tmax_anomaly_c&quot;: -5.19
+  }
+}</pre>
+</details>
+<details class="toolcall">
+  <summary><code>forecast_tool(city=&#x27;Jizan&#x27;, target_date=&#x27;2025-08-23&#x27;, hazard=&#x27;flash_flood&#x27;)</code></summary>
+  <pre>{
+  &quot;city&quot;: &quot;Jizan&quot;,
+  &quot;target_date&quot;: &quot;2025-08-23&quot;,
+  &quot;features_from_date&quot;: &quot;2025-08-22&quot;,
+  &quot;hazard&quot;: &quot;flash_flood&quot;,
+  &quot;probability&quot;: 0.1253,
+  &quot;grid_cell&quot;: {
+    &quot;lat&quot;: 16.9,
+    &quot;lon&quot;: 42.6
+  },
+  &quot;elevation_m&quot;: 7.7,
+  &quot;terrain_note&quot;: null,
+  &quot;impact_context&quot;: {
+    &quot;city_population_2022_census&quot;: 173919,
+    &quot;source&quot;: &quot;Saudi Census 2022, GASTAT&quot;,
+    &quot;note&quot;: &quot;Reference population only, NOT a model output and NOT an estimate of how many people would actually be exposed to this hazard -- this system does not perform exposure/vulnerability modeling. Provided so risk can be discussed in human terms, per WMO impact-based warning guidance, not to imply a precise affected-population count.&quot;
+  },
+  &quot;reflexive_check&quot;: {
+    &quot;model_probability&quot;: 0.1253,
+    &quot;detection_engine_risk_score&quot;: 0.6,
+    &quot;detection_engine_conditions_fired&quot;: [
+      &quot;flash_flood_risk=2.0&quot;,
+      &quot;cape=2292.0&quot;,
+      &quot;ivt=227.7&quot;,
+      &quot;pwat=61.1&quot;
+    ],
+    &quot;threshold_used&quot;: 0.3,
+    &quot;consistency&quot;: &quot;detection_higher_than_model&quot;,
+    &quot;note&quot;: &quot;The classic physical drivers for this hazard WERE present that day, but the model assigned low probability -- also worth caution, this is the riskier mismatch direction for a genuine miss.&quot;
+  },
+  &quot;model_verified_roc_auc&quot;: 0.8731742776960718
+}</pre>
+</details>
+<details class="toolcall">
+  <summary><code>causal_kg_tool(hazard=&#x27;flash_flood&#x27;)</code></summary>
+  <pre>{
+  &quot;hazard&quot;: &quot;flash_flood&quot;,
+  &quot;contributing_indicators&quot;: [
+    &quot;daily_precip_total&quot;,
+    &quot;daily_convective_precip&quot;,
+    &quot;cape&quot;,
+    &quot;pwat&quot;,
+    &quot;ivt&quot;,
+    &quot;wind850_speed&quot;,
+    &quot;daily_precip_anomaly&quot;,
+    &quot;flash_flood_risk&quot;
+  ],
+  &quot;mechanisms&quot;: [
+    {
+      &quot;mechanism&quot;: &quot;ARST&quot;,
+      &quot;description&quot;: &quot;Active Red Sea Trough - low-level convergence over the Red Sea&quot;,
+      &quot;literature_grounded&quot;: true,
+      &quot;citations&quot;: [
+        {
+          &quot;citation&quot;: &quot;de Vries et al. (2013), J. Geophys. Res. Atmos.&quot;,
+          &quot;url&quot;: &quot;https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/jgrd.50569&quot;,
+          &quot;evidence&quot;: [
+            {
+              &quot;subject&quot;: &quot;eastward-migrating Mediterranean cyclone&quot;,
+              &quot;relation&quot;: &quot;joins&quot;,
+              &quot;object&quot;: &quot;extension of the Sudan low-pressure zone (the Red Sea Trough)&quot;,
+              &quot;quote&quot;: &quot;an eastward-migrating Mediterranean cyclone joined an extension of the Sudan low-pressure zone (the Red Sea Trough)&quot;
+            },
+            {
+              &quot;subject&quot;: &quot;stationary anticyclone over the southeastern Arabian Peninsula (the Arabian Anticyclone)&quot;,
+              &quot;relation&quot;: &quot;produces&quot;,
+              &quot;object&quot;: &quot;clockwise flow that supplied moisture from the Arabian Sea and the Red Sea&quot;,
+              &quot;quote&quot;: &quot;a stationary anticyclone over the southeastern Arabian Peninsula (the Arabian Anticyclone) produced a clockwise flow that supplied moisture from the Arabian Sea and the Red Sea&quot;
+            }
+          ]
+        }
+      ]
+    },
+    {
+      &quot;mechanism&quot;: &quot;moisture_transport&quot;,
+      &quot;description&quot;: &quot;Red Sea / Arabian Sea moisture transport&quot;,
+      &quot;literature_grounded&quot;: true,
+      &quot;citations&quot;: [
+        {
+          &quot;citation&quot;: &quot;ResearchGate case study&quot;,
+          &quot;url&quot;: &quot;https://www.researchgate.net/publication/336928573&quot;,
+          &quot;evidence&quot;: [
+            {
+              &quot;subject&quot;: &quot;Surface fluxes over the Red Sea&quot;,
+              &quot;relation&quot;: &quot;regulates&quot;,
+              &quot;object&quot;: &quot;low-level moist-air convergence prior to convection initiation and development&quot;,
+              &quot;quote&quot;: &quot;Surface fluxes over the Red Sea play an important role in regulating low-level moist-air convergence prior to convection initiation and development&quot;
+            },
+            {
+              &quot;subject&quot;: &quot;Red Sea water&quot;,
+              &quot;relation&quot;: &quot;affects&quot;,
+              &quot;object&quot;: &quot;regional rainfall&quot;,
+              &quot;quote&quot;: &quot;Red Sea water is estimated to affect regional rainfall by about 30 to 40 percent&quot;
+            }
+          ]
+        },
+        {
+          &quot;citation&quot;: &quot;MDPI Atmosphere (2019)&quot;,
+          &quot;url&quot;: &quot;https://www.mdpi.com/2073-4433/10/9/504&quot;,
+          &quot;evidence&quot;: [
+            {
+              &quot;subject&quot;: &quot;stronger winds combined with drier air&quot;,
+              &quot;relation&quot;: &quot;produces&quot;,
+              &quot;object&quot;: &quot;latent heat losses of up to 410 watts per square metre&quot;,
+              &quot;quote&quot;: &quot;stronger winds combined with drier air produce latent heat losses of up to 410 watts per square metre&quot;
+            }
+          ]
+        }
+      ]
+    },
+    {
+      &quot;mechanism&quot;: &quot;orographic_lift&quot;,
+      &quot;description&quot;: &quot;Orographic lifting over Hejaz / Asir mountains&quot;,
+      &quot;literature_grounded&quot;: false,
+      &quot;citations&quot;: []
+    }
+  ]
+}</pre>
+</details>
+<details class="toolcall">
+  <summary><code>similar_events_tool(city=&#x27;Jizan&#x27;, date=&#x27;2025-08-23&#x27;, hazard=&#x27;flash_flood&#x27;)</code></summary>
+  <pre>{
+  &quot;city&quot;: &quot;Jizan&quot;,
+  &quot;date&quot;: &quot;2025-08-23&quot;,
+  &quot;hazard&quot;: &quot;flash_flood&quot;,
+  &quot;query_indicators&quot;: {
+    &quot;cape&quot;: 2582.0,
+    &quot;ivt&quot;: 143.2869415283203,
+    &quot;pwat&quot;: 63.13427734375,
+    &quot;daily_precip_total&quot;: 0.625,
+    &quot;wind850_speed&quot;: 1.6969658136367798
+  },
+  &quot;ranked_similar_events&quot;: [
+    {
+      &quot;event&quot;: &quot;08-31 convective instability&quot;,
+      &quot;event_date&quot;: &quot;2025-08-31&quot;,
+      &quot;event_location&quot;: &quot;Abha (18.9N,41.7E)&quot;,
+      &quot;event_headline_value&quot;: &quot;cape 5196.0 J/kg&quot;,
+      &quot;similarity_pct&quot;: 17.4,
+      &quot;features_compared&quot;: 5,
+      &quot;event_distance_from_city_km&quot;: 243
+    },
+    {
+      &quot;event&quot;: &quot;08-19 vapour surge&quot;,
+      &quot;event_date&quot;: &quot;2025-08-19&quot;,
+      &quot;event_location&quot;: &quot;Arabian Sea (16.0N,55.9E)&quot;,
+      &quot;event_headline_value&quot;: &quot;ivt 728.4 kg/m/s&quot;,
+      &quot;similarity_pct&quot;: 7.6,
+      &quot;features_compared&quot;: 5,
+      &quot;event_distance_from_city_km&quot;: 1480
+    },
+    {
+      &quot;event&quot;: &quot;08-23 extreme rain&quot;,
+      &quot;event_date&quot;: &quot;2025-08-23&quot;,
+      &quot;event_location&quot;: &quot;Jizan (17.5N,42.9E)&quot;,
+      &quot;event_headline_value&quot;: &quot;daily_precip_total 254.9 mm&quot;,
+      &quot;similarity_pct&quot;: 0.8,
+      &quot;features_compared&quot;: 5,
+      &quot;event_distance_from_city_km&quot;: 74
+    }
+  ],
+  &quot;excluded_events&quot;: [],
+  &quot;note&quot;: &quot;similarity_pct is a descriptive, z-scored-distance-based measure (100/(1+normalized_distance)), NOT a probability or a claim that this event WILL repeat -- it only says how physically similar the raw indicators are to a known past event. Each event&#x27;s coordinates are its own grid-cell MAXIMUM (the storm/heat centroid), often tens of km from a same-named city&#x27;s center -- a same-city, same-day comparison can still score LOW if the extreme was hyperlocal (see event_distance_from_city_km on each result); that is correct behavior, not an error.&quot;
+}</pre>
+</details></div>
+  <div class="answer"><p>Here&#x27;s the full picture for <b>Jizan on 2025-08-23</b>:</p><p><hr></p><p><h3>🌧️ Jizan — 23 August 2025</h3></p><p><h4>Rainfall Observed</h4>
+- <b>Daily precipitation total:</b> <b>0.62 mm</b> (mostly convective: 0.5 mm)
+- <b>Precip anomaly:</b> +0.62 mm (slightly above the daily norm)
+- <b>CAPE:</b> 2,582 J/kg (strong convective instability)
+- <b>Precipitable water:</b> 63.1 mm
+- <b>Integrated Vapour Transport:</b> 143.3 kg/m/s</p><p>So <b>0.62 mm</b> fell — a modest amount, not an extreme downpour.</p><p><h4>Flash Flood Risk (Model)</h4>
+- <b>Forecast probability:</b> <b>12.5%</b> (low)
+- <b>Model ROC-AUC:</b> 0.873 (well-verified model)</p><p><h4>⚠️ Important Caveat — Detection vs. Model Mismatch</h4>
+The <b>rule-based physical detection engine</b> flagged a <b>risk score of 0.6</b> (above the 0.3 threshold), noting that classic flash-flood drivers <b>were present</b> that day (CAPE ~2,292, IVT ~228, PWAT ~61). The model gave only 12.5% — this is the <b>riskier mismatch direction</b> (detection higher than model), meaning a genuine miss is possible. Worth monitoring.</p><p><h4>Why Jizan is Flood-Prone</h4>
+Jizan sits at just <b>7.7 m elevation</b> on the Red Sea coast, and the key mechanism is the <b>Active Red Sea Trough (ARST)</b> — a low-pressure convergence zone that draws moisture from the Red Sea and Arabian Sea. When a Mediterranean cyclone joins the Sudan low, it can produce extreme convective rainfall (de Vries et al., 2013). Orographic lift over the nearby Asir mountains can further enhance rainfall.</p><p><h4>Historical Context</h4>
+Interestingly, there <b>was</b> a known extreme rain event on <b>2025-08-23</b> near Jizan (17.5°N, 42.9°E) that recorded <b>254.9 mm</b> — but that was <b>74 km away</b> from Jizan city center, a hyperlocal extreme that didn&#x27;t hit the city itself. That&#x27;s why the similarity score to that event is only 0.8% for the city&#x27;s grid cell.</p><p><b>Bottom line:</b> Jizan itself saw only 0.62 mm of rain on this date — a light shower, not a flood event. But the physical ingredients for convection were present, so the detection engine&#x27;s higher alert is worth noting for situational awareness.</p></div>
+</div><div class="card">
+  <div class="q">What is the dust storm risk in Dammam for 2025-07-06, and what physically causes dust storms in Saudi Arabia?</div>
+  <div class="tools"><details class="toolcall">
+  <summary><code>forecast_tool(city=&#x27;Dammam&#x27;, target_date=&#x27;2025-07-06&#x27;, hazard=&#x27;dust_storm&#x27;)</code></summary>
+  <pre>{
+  &quot;city&quot;: &quot;Dammam&quot;,
+  &quot;target_date&quot;: &quot;2025-07-06&quot;,
+  &quot;features_from_date&quot;: &quot;2025-07-05&quot;,
+  &quot;hazard&quot;: &quot;dust_storm&quot;,
+  &quot;probability&quot;: 0.9032,
+  &quot;grid_cell&quot;: {
+    &quot;lat&quot;: 26.3,
+    &quot;lon&quot;: 50.0
+  },
+  &quot;elevation_m&quot;: 12.2,
+  &quot;terrain_note&quot;: null,
+  &quot;impact_context&quot;: {
+    &quot;city_population_2022_census&quot;: 1570000,
+    &quot;source&quot;: &quot;Saudi Census 2022, GASTAT&quot;,
+    &quot;note&quot;: &quot;Reference population only, NOT a model output and NOT an estimate of how many people would actually be exposed to this hazard -- this system does not perform exposure/vulnerability modeling. Provided so risk can be discussed in human terms, per WMO impact-based warning guidance, not to imply a precise affected-population count.&quot;
+  },
+  &quot;reflexive_check&quot;: {
+    &quot;model_probability&quot;: 0.9032,
+    &quot;detection_engine_risk_score&quot;: 0.6,
+    &quot;detection_engine_conditions_fired&quot;: [
+      &quot;wind10_speed=9.0&quot;,
+      &quot;wind850_speed=18.4&quot;
+    ],
+    &quot;threshold_used&quot;: 0.3,
+    &quot;consistency&quot;: &quot;consistent_elevated&quot;,
+    &quot;note&quot;: &quot;Model risk and independent rule-based physical indicators AGREE this is an elevated-risk situation.&quot;
+  },
+  &quot;model_verified_roc_auc&quot;: 0.8866
+}</pre>
+</details>
+<details class="toolcall">
+  <summary><code>causal_kg_tool(hazard=&#x27;dust_storm&#x27;)</code></summary>
+  <pre>{
+  &quot;hazard&quot;: &quot;dust_storm&quot;,
+  &quot;contributing_indicators&quot;: [
+    &quot;vpd_kpa&quot;,
+    &quot;wind850_speed&quot;,
+    &quot;wind_shear_850_200&quot;,
+    &quot;wind10_speed&quot;,
+    &quot;dewpoint_depression_c&quot;
+  ],
+  &quot;mechanisms&quot;: [
+    {
+      &quot;mechanism&quot;: &quot;thermal_low&quot;,
+      &quot;description&quot;: &quot;Arabian thermal low (desert heat low)&quot;,
+      &quot;literature_grounded&quot;: true,
+      &quot;citations&quot;: [
+        {
+          &quot;citation&quot;: &quot;Yu et al. (2016), J. Geophys. Res. Atmos.&quot;,
+          &quot;url&quot;: &quot;https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015jd024063&quot;,
+          &quot;evidence&quot;: [
+            {
+              &quot;subject&quot;: &quot;high pressure over eastern Africa and thermal low-pressure centres over Iran and Pakistan&quot;,
+              &quot;relation&quot;: &quot;drives&quot;,
+              &quot;object&quot;: &quot;summer Shamal&quot;,
+              &quot;quote&quot;: &quot;The summer Shamal, occurring from May to August, is a persistent north-northwesterly wind regime driven by high pressure over eastern Africa and thermal low-pressure centres over Iran and Pakistan.&quot;
+            },
+            {
+              &quot;subject&quot;: &quot;steep pressure gradient between the heat low over Pakistan, Afghanistan and Iran and the high-pressure system over the eastern Mediterranean and northern Saudi Arabia&quot;,
+              &quot;relation&quot;: &quot;causes&quot;,
+              &quot;object&quot;: &quot;summer Shamal&quot;,
+              &quot;quote&quot;: &quot;It forms due to the steep pressure gradient between the heat low over Pakistan, Afghanistan and Iran and the high-pressure system over the eastern Mediterranean and northern Saudi Arabia.&quot;
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}</pre>
+</details>
+<details class="toolcall">
+  <summary><code>conditions_tool(city=&#x27;Dammam&#x27;, date=&#x27;2025-07-05&#x27;)</code></summary>
+  <pre>{
+  &quot;city&quot;: &quot;Dammam&quot;,
+  &quot;date&quot;: &quot;2025-07-05&quot;,
+  &quot;grid_cell&quot;: {
+    &quot;lat&quot;: 26.4,
+    &quot;lon&quot;: 50.1
+  },
+  &quot;indicators&quot;: {
+    &quot;daily_precip_total&quot;: 0.0,
+    &quot;daily_convective_precip&quot;: 0.0,
+    &quot;daily_large_scale_precip&quot;: 0.0,
+    &quot;t2m_c&quot;: 36.48,
+    &quot;tmax_c&quot;: 39.3,
+    &quot;tmin_c&quot;: 33.15,
+    &quot;heat_index_c&quot;: 36.48,
+    &quot;vpd_kpa&quot;: 4.54,
+    &quot;cape&quot;: 0.0,
+    &quot;pwat&quot;: 16.1,
+    &quot;ivt&quot;: 165.4,
+    &quot;wind850_speed&quot;: 18.4,
+    &quot;wind_shear_850_200&quot;: 26.69,
+    &quot;daily_precip_anomaly&quot;: -0.1,
+    &quot;t2m_anomaly_c&quot;: -0.02,
+    &quot;tmax_anomaly_c&quot;: -6.6,
+    &quot;sst_celsius&quot;: 30.83
+  }
+}</pre>
+</details></div>
+  <div class="answer"><p>Here&#x27;s the full picture:</p><p><hr></p><p><h3>🌪️ Dust Storm Risk – Dammam, 2025-07-06</h3></p><p><b>Probability: 90.3%</b> — Very High Risk</p><p>This is based on a verified model (ROC-AUC = <b>0.8866</b>), using indicators from 2025-07-05.</p><p><h4>What the indicators showed on July 5th</h4>
+- <b>10m wind speed:</b> 9.0 m/s
+- <b>850 hPa wind speed:</b> 18.4 m/s (strong low-level winds)
+- <b>Wind shear (850–200 hPa):</b> 26.69 m/s
+- <b>Vapor Pressure Deficit (VPD):</b> 4.54 kPa (very dry air)
+- <b>Temperature max:</b> 39.3°C
+- <b>No precipitation</b> — dry surface conditions</p><p>The independent rule-based detection engine also flagged elevated risk (score 0.6), confirming <b>consistent elevated risk</b> between the model and physical indicators.</p><p><h4>🏙️ Context</h4>
+Dammam has a population of ~1.57 million (2022 census), so this is a significant urban area at risk.</p><p><h4>What Physically Causes Dust Storms in Saudi Arabia</h4></p><p>The primary mechanism is the <b>Summer Shamal</b> — a persistent north-northwesterly wind regime that dominates from <b>May to August</b>. It is driven by:</p><p><li><b>Thermal low (desert heat low)</b> — Intense surface heating over the Arabian Peninsula creates a deep low-pressure system.</li>
+<li><b>Steep pressure gradient</b> — Between the heat low over Pakistan/Afghanistan/Iran and high pressure over the eastern Mediterranean and northern Saudi Arabia.</li>
+<li><b>Strong low-level winds</b> (especially at 850 hPa and 10 m) lift loose, dry desert dust into the atmosphere.</li>
+<li><b>Low humidity / high VPD</b> — Dry conditions keep dust particles suspended longer.</li></p><p><b>Key citation:</b> *Yu et al. (2016), J. Geophys. Res. Atmos.* — &quot;The summer Shamal, occurring from May to August, is a persistent north-northwesterly wind regime driven by high pressure over eastern Africa and thermal low-pressure centres over Iran and Pakistan.&quot;</p><p><h4>✅ Recommendation</h4>
+Given the <b>&gt;90% probability</b>, strong winds, and very dry conditions, residents and authorities in Dammam should prepare for likely dust storm conditions on July 6th — reduced visibility, potential impacts on transportation (especially at King Fahd International Airport and on Gulf roads), and health precautions for those with respiratory conditions.</p></div>
+</div><div class="card">
+  <div class="q">Compare the dust storm risk between Medina and Riyadh for 2025-06-20</div>
+  <div class="tools"><details class="toolcall">
+  <summary><code>forecast_tool(city=&#x27;Medina&#x27;, target_date=&#x27;2025-06-20&#x27;, hazard=&#x27;dust_storm&#x27;)</code></summary>
+  <pre>{
+  &quot;city&quot;: &quot;Medina&quot;,
+  &quot;target_date&quot;: &quot;2025-06-20&quot;,
+  &quot;features_from_date&quot;: &quot;2025-06-19&quot;,
+  &quot;hazard&quot;: &quot;dust_storm&quot;,
+  &quot;probability&quot;: 0.1921,
+  &quot;grid_cell&quot;: {
+    &quot;lat&quot;: 24.5,
+    &quot;lon&quot;: 39.6
+  },
+  &quot;elevation_m&quot;: 687.2,
+  &quot;terrain_note&quot;: null,
+  &quot;impact_context&quot;: {
+    &quot;city_population_2022_census&quot;: 1850000,
+    &quot;source&quot;: &quot;Saudi Census 2022, GASTAT&quot;,
+    &quot;note&quot;: &quot;Reference population only, NOT a model output and NOT an estimate of how many people would actually be exposed to this hazard -- this system does not perform exposure/vulnerability modeling. Provided so risk can be discussed in human terms, per WMO impact-based warning guidance, not to imply a precise affected-population count.&quot;
+  },
+  &quot;reflexive_check&quot;: {
+    &quot;model_probability&quot;: 0.1921,
+    &quot;detection_engine_risk_score&quot;: 0.2,
+    &quot;detection_engine_conditions_fired&quot;: [
+      &quot;dewpoint_depression_c=38.2&quot;
+    ],
+    &quot;threshold_used&quot;: 0.3,
+    &quot;consistency&quot;: &quot;consistent_low&quot;,
+    &quot;note&quot;: &quot;Model risk and independent rule-based physical indicators AGREE this is a low-risk situation.&quot;
+  },
+  &quot;model_verified_roc_auc&quot;: 0.8866
+}</pre>
+</details>
+<details class="toolcall">
+  <summary><code>forecast_tool(city=&#x27;Riyadh&#x27;, target_date=&#x27;2025-06-20&#x27;, hazard=&#x27;dust_storm&#x27;)</code></summary>
+  <pre>{
+  &quot;city&quot;: &quot;Riyadh&quot;,
+  &quot;target_date&quot;: &quot;2025-06-20&quot;,
+  &quot;features_from_date&quot;: &quot;2025-06-19&quot;,
+  &quot;hazard&quot;: &quot;dust_storm&quot;,
+  &quot;probability&quot;: 0.0925,
+  &quot;grid_cell&quot;: {
+    &quot;lat&quot;: 24.7,
+    &quot;lon&quot;: 46.6
+  },
+  &quot;elevation_m&quot;: 630.7,
+  &quot;terrain_note&quot;: null,
+  &quot;impact_context&quot;: {
+    &quot;city_population_2022_census&quot;: 9060000,
+    &quot;source&quot;: &quot;Saudi Census 2022, GASTAT&quot;,
+    &quot;note&quot;: &quot;Reference population only, NOT a model output and NOT an estimate of how many people would actually be exposed to this hazard -- this system does not perform exposure/vulnerability modeling. Provided so risk can be discussed in human terms, per WMO impact-based warning guidance, not to imply a precise affected-population count.&quot;
+  },
+  &quot;reflexive_check&quot;: {
+    &quot;model_probability&quot;: 0.0925,
+    &quot;detection_engine_risk_score&quot;: 0.2,
+    &quot;detection_engine_conditions_fired&quot;: [
+      &quot;dewpoint_depression_c=38.2&quot;
+    ],
+    &quot;threshold_used&quot;: 0.3,
+    &quot;consistency&quot;: &quot;consistent_low&quot;,
+    &quot;note&quot;: &quot;Model risk and independent rule-based physical indicators AGREE this is a low-risk situation.&quot;
+  },
+  &quot;model_verified_roc_auc&quot;: 0.8866
+}</pre>
+</details>
+<details class="toolcall">
+  <summary><code>causal_kg_tool(hazard=&#x27;dust_storm&#x27;)</code></summary>
+  <pre>{
+  &quot;hazard&quot;: &quot;dust_storm&quot;,
+  &quot;contributing_indicators&quot;: [
+    &quot;vpd_kpa&quot;,
+    &quot;wind850_speed&quot;,
+    &quot;wind_shear_850_200&quot;,
+    &quot;wind10_speed&quot;,
+    &quot;dewpoint_depression_c&quot;
+  ],
+  &quot;mechanisms&quot;: [
+    {
+      &quot;mechanism&quot;: &quot;thermal_low&quot;,
+      &quot;description&quot;: &quot;Arabian thermal low (desert heat low)&quot;,
+      &quot;literature_grounded&quot;: true,
+      &quot;citations&quot;: [
+        {
+          &quot;citation&quot;: &quot;Yu et al. (2016), J. Geophys. Res. Atmos.&quot;,
+          &quot;url&quot;: &quot;https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015jd024063&quot;,
+          &quot;evidence&quot;: [
+            {
+              &quot;subject&quot;: &quot;high pressure over eastern Africa and thermal low-pressure centres over Iran and Pakistan&quot;,
+              &quot;relation&quot;: &quot;drives&quot;,
+              &quot;object&quot;: &quot;summer Shamal&quot;,
+              &quot;quote&quot;: &quot;The summer Shamal, occurring from May to August, is a persistent north-northwesterly wind regime driven by high pressure over eastern Africa and thermal low-pressure centres over Iran and Pakistan.&quot;
+            },
+            {
+              &quot;subject&quot;: &quot;steep pressure gradient between the heat low over Pakistan, Afghanistan and Iran and the high-pressure system over the eastern Mediterranean and northern Saudi Arabia&quot;,
+              &quot;relation&quot;: &quot;causes&quot;,
+              &quot;object&quot;: &quot;summer Shamal&quot;,
+              &quot;quote&quot;: &quot;It forms due to the steep pressure gradient between the heat low over Pakistan, Afghanistan and Iran and the high-pressure system over the eastern Mediterranean and northern Saudi Arabia.&quot;
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}</pre>
+</details>
+<details class="toolcall">
+  <summary><code>conditions_tool(city=&#x27;Medina&#x27;, date=&#x27;2025-06-19&#x27;)</code></summary>
+  <pre>{
+  &quot;city&quot;: &quot;Medina&quot;,
+  &quot;date&quot;: &quot;2025-06-19&quot;,
+  &quot;grid_cell&quot;: {
+    &quot;lat&quot;: 24.5,
+    &quot;lon&quot;: 39.6
+  },
+  &quot;indicators&quot;: {
+    &quot;daily_precip_total&quot;: 0.0,
+    &quot;daily_convective_precip&quot;: 0.0,
+    &quot;daily_large_scale_precip&quot;: 0.0,
+    &quot;t2m_c&quot;: 35.8,
+    &quot;tmax_c&quot;: 43.65,
+    &quot;tmin_c&quot;: 29.22,
+    &quot;heat_index_c&quot;: 35.8,
+    &quot;vpd_kpa&quot;: 5.33,
+    &quot;cape&quot;: 0.0,
+    &quot;pwat&quot;: 12.11,
+    &quot;ivt&quot;: 101.37,
+    &quot;wind850_speed&quot;: 5.93,
+    &quot;wind_shear_850_200&quot;: 12.9,
+    &quot;daily_precip_anomaly&quot;: 0.0,
+    &quot;t2m_anomaly_c&quot;: -1.3,
+    &quot;tmax_anomaly_c&quot;: 5.65
+  }
+}</pre>
+</details>
+<details class="toolcall">
+  <summary><code>conditions_tool(city=&#x27;Riyadh&#x27;, date=&#x27;2025-06-19&#x27;)</code></summary>
+  <pre>{
+  &quot;city&quot;: &quot;Riyadh&quot;,
+  &quot;date&quot;: &quot;2025-06-19&quot;,
+  &quot;grid_cell&quot;: {
+    &quot;lat&quot;: 24.7,
+    &quot;lon&quot;: 46.7
+  },
+  &quot;indicators&quot;: {
+    &quot;daily_precip_total&quot;: 0.0,
+    &quot;daily_convective_precip&quot;: 0.0,
+    &quot;daily_large_scale_precip&quot;: 0.0,
+    &quot;t2m_c&quot;: 35.3,
+    &quot;tmax_c&quot;: 41.65,
+    &quot;tmin_c&quot;: 28.04,
+    &quot;heat_index_c&quot;: 35.3,
+    &quot;vpd_kpa&quot;: 5.21,
+    &quot;cape&quot;: 0.0,
+    &quot;pwat&quot;: 11.11,
+    &quot;ivt&quot;: 86.71,
+    &quot;wind850_speed&quot;: 6.84,
+    &quot;wind_shear_850_200&quot;: 5.25,
+    &quot;daily_precip_anomaly&quot;: 0.0,
+    &quot;t2m_anomaly_c&quot;: -0.4,
+    &quot;tmax_anomaly_c&quot;: 4.75
+  }
+}</pre>
+</details></div>
+  <div class="answer"><p>Here&#x27;s the comparison:</p><p><hr></p><p><h3>Dust Storm Risk: Medina vs. Riyadh — 2025-06-20</h3></p><p><h4>Forecast Probabilities</h4></p><p><table class="mdtable"><thead><tr><th>City</th><th>Dust Storm Risk</th><th>Model ROC-AUC</th></tr></thead><tbody><tr><td><b>Medina</b> (pop. ~1.85M)</td><td><b>19.2%</b></td><td>0.8866</td></tr><tr><td><b>Riyadh</b> (pop. ~9.06M)</td><td><b>9.3%</b></td><td>0.8866</td></tr></tbody></table></p><p>Both are <b>low-risk</b> situations. However, Medina shows roughly <b>double</b> the probability of Riyadh.</p><p><h4>Why the difference?</h4></p><p>The key driver for dust storms in Saudi Arabia in June is the <b>summer Shamal</b> — a persistent north-northwesterly wind regime driven by the steep pressure gradient between a thermal low over Iran/Pakistan and high pressure over the eastern Mediterranean (Yu et al., 2016, *J. Geophys. Res. Atmos.*). Key indicators include <b>vapor pressure deficit (VPD)</b>, <b>wind speed at 10m and 850hPa</b>, and <b>dewpoint depression</b>.</p><p>Looking at the June 19 conditions (the day feeding the forecast):</p><p><table class="mdtable"><thead><tr><th>Indicator</th><th>Medina</th><th>Riyadh</th></tr></thead><tbody><tr><td>VPD (kPA)</td><td><b>5.33</b></td><td>5.21</td></tr><tr><td>Wind 850hPa (m/s)</td><td>5.93</td><td><b>6.84</b></td></tr><tr><td>Wind shear 850-200</td><td><b>12.9</b></td><td>5.25</td></tr><tr><td>Tmax (°C)</td><td><b>43.65</b></td><td>41.65</td></tr></tbody></table></p><p>Medina had a <b>higher max temperature</b> (43.65°C vs 41.65°C) and <b>much stronger vertical wind shear</b> (12.9 vs 5.25), which are both conducive to dust lofting and transport. The higher VPD also indicates drier air, favoring dust suspension.</p><p><h4>Reflexive Check</h4></p><p>Both cities&#x27; forecasts are flagged as <b>&quot;consistent_low&quot;</b> — the independent rule-based detection engine agrees these are low-risk situations.</p><p><h4>Recommendation</h4></p><p>Neither city faces a significant dust storm threat on June 20. However, <b>Medina&#x27;s risk is about 2× higher</b> than Riyadh&#x27;s due to hotter, drier conditions and stronger upper-level wind shear. No special precautions are warranted, but if you&#x27;re in Medina, be aware that conditions are marginally more favorable for brief dust events than in Riyadh.</p></div>
 </div>
 </div></body></html>
