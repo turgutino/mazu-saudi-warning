@@ -1,0 +1,17 @@
+======================================================================
+MAZU -- meteorological verification metrics (POD/FAR/CSI/HSS)
+======================================================================
+Computed from the ALREADY-SAVED production models (no retraining) on
+the same held-out Jul-Dec test set each was originally verified on.
+
+--- flash_flood (operational threshold=0.50) ---
+Confusion: TP=839 FP=3412 FN=7519 TN=1607430
+POD=0.100  FAR=0.803  CSI=0.071  HSS=0.130
+
+--- heatwave (operational threshold=0.55) ---
+Confusion: TP=71099 FP=45063 FN=12670 TN=1490368
+POD=0.849  FAR=0.388  CSI=0.552  HSS=0.693
+
+--- dust_storm (operational threshold=0.55) ---
+Confusion: TP=17180 FP=110091 FN=14920 TN=1477009
+POD=0.535  FAR=0.865  CSI=0.121  HSS=0.190

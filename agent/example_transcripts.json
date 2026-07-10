@@ -1323,5 +1323,142 @@
         }
       }
     ]
+  },
+  {
+    "question": "How reliable is the flash flood forecast model? Give me the detection rate and false alarm rate, not just ROC-AUC.",
+    "answer": "Here are the flash flood forecast model's reliability metrics:\n\n---\n\n## Flash Flood Forecast Model — Verification Scores\n\n### Threshold-Independent (Overall Skill)\n- **ROC-AUC**: **0.873** — This is strong. It means the model ranks risky days above non-risky days 87.3% of the time, regardless of where you set the decision threshold.\n\n### Threshold-Dependent Metrics (at operational threshold = 0.5)\nThese are the scores at the fixed threshold the system uses to decide whether to issue an alert:\n\n| Metric | Value | What it means |\n|---|---|---|\n| **POD** (Probability of Detection) | **0.1004** (≈10%) | Only ~10% of actual flash-flood days are correctly flagged. **The model misses ~90% of real events.** |\n| **FAR** (False Alarm Ratio) | **0.8026** (≈80%) | Of all alerts issued, ~80% are false alarms. Only ~20% of alerts correspond to an actual event. |\n| **CSI** (Critical Success Index) | **0.0713** (≈7%) | A combined measure — only 7% of \"flagged or observed\" days are correct hits. |\n| **HSS** (Heidke Skill Score) | **0.1301** (≈13%) | Modest improvement over random chance (0 = no skill, 1 = perfect). |\n\n### Why Are These Scores So Low?\n\nFlash floods are **extremely rare events** in Saudi Arabia. When a hazard is rare, even a well-calibrated model (ROC-AUC = 0.87) will have low POD and high FAR at a fixed threshold, because:\n\n- The model is conservative — it only raises the flag when it's very confident (threshold 0.5).\n- Most days are non-event days, so even a small false-alarm rate produces many false alarms in absolute terms.\n- The ROC-AUC (0.87) tells you the model *ranks* risk well, but the threshold-based scores reflect the inherent difficulty of predicting rare, high-impact convective events.\n\n### Bottom Line\n\nThe model is **good at distinguishing risky from non-risky conditions overall** (ROC-AUC 0.87), but at its operational threshold it **catches only ~1 in 10 real flash-flood events** and **~80% of its alerts are false alarms**. This is a known challenge for rare-hazard forecasting — not a broken model. If you want higher detection, the threshold could be lowered, but that would increase false alarms further.",
+    "trace": [
+      {
+        "tool": "causal_kg_tool",
+        "args": {
+          "hazard": "flash_flood"
+        },
+        "result": {
+          "hazard": "flash_flood",
+          "contributing_indicators": [
+            "daily_precip_total",
+            "daily_convective_precip",
+            "cape",
+            "pwat",
+            "ivt",
+            "wind850_speed",
+            "daily_precip_anomaly",
+            "flash_flood_risk"
+          ],
+          "mechanisms": [
+            {
+              "mechanism": "ARST",
+              "description": "Active Red Sea Trough - low-level convergence over the Red Sea",
+              "literature_grounded": true,
+              "citations": [
+                {
+                  "citation": "de Vries et al. (2013), J. Geophys. Res. Atmos.",
+                  "url": "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/jgrd.50569",
+                  "evidence": [
+                    {
+                      "subject": "eastward-migrating Mediterranean cyclone",
+                      "relation": "joins",
+                      "object": "extension of the Sudan low-pressure zone (the Red Sea Trough)",
+                      "quote": "an eastward-migrating Mediterranean cyclone joined an extension of the Sudan low-pressure zone (the Red Sea Trough)"
+                    },
+                    {
+                      "subject": "stationary anticyclone over the southeastern Arabian Peninsula (the Arabian Anticyclone)",
+                      "relation": "produces",
+                      "object": "clockwise flow that supplied moisture from the Arabian Sea and the Red Sea",
+                      "quote": "a stationary anticyclone over the southeastern Arabian Peninsula (the Arabian Anticyclone) produced a clockwise flow that supplied moisture from the Arabian Sea and the Red Sea"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "mechanism": "moisture_transport",
+              "description": "Red Sea / Arabian Sea moisture transport",
+              "literature_grounded": true,
+              "citations": [
+                {
+                  "citation": "ResearchGate case study",
+                  "url": "https://www.researchgate.net/publication/336928573",
+                  "evidence": [
+                    {
+                      "subject": "Surface fluxes over the Red Sea",
+                      "relation": "regulates",
+                      "object": "low-level moist-air convergence prior to convection initiation and development",
+                      "quote": "Surface fluxes over the Red Sea play an important role in regulating low-level moist-air convergence prior to convection initiation and development"
+                    },
+                    {
+                      "subject": "Red Sea water",
+                      "relation": "affects",
+                      "object": "regional rainfall",
+                      "quote": "Red Sea water is estimated to affect regional rainfall by about 30 to 40 percent"
+                    }
+                  ]
+                },
+                {
+                  "citation": "MDPI Atmosphere (2019)",
+                  "url": "https://www.mdpi.com/2073-4433/10/9/504",
+                  "evidence": [
+                    {
+                      "subject": "stronger winds combined with drier air",
+                      "relation": "produces",
+                      "object": "latent heat losses of up to 410 watts per square metre",
+                      "quote": "stronger winds combined with drier air produce latent heat losses of up to 410 watts per square metre"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "mechanism": "orographic_lift",
+              "description": "Orographic lifting over Hejaz / Asir mountains",
+              "literature_grounded": false,
+              "citations": []
+            }
+          ]
+        }
+      },
+      {
+        "tool": "forecast_tool",
+        "args": {
+          "city": "Jeddah",
+          "target_date": "2025-01-02",
+          "hazard": "flash_flood"
+        },
+        "result": {
+          "city": "Jeddah",
+          "target_date": "2025-01-02",
+          "features_from_date": "2025-01-01",
+          "hazard": "flash_flood",
+          "probability": 0.0155,
+          "grid_cell": {
+            "lat": 21.5,
+            "lon": 39.2
+          },
+          "elevation_m": 30.2,
+          "terrain_note": null,
+          "impact_context": {
+            "city_population_2022_census": 5710000,
+            "source": "Saudi Census 2022, GASTAT",
+            "note": "Reference population only, NOT a model output and NOT an estimate of how many people would actually be exposed to this hazard -- this system does not perform exposure/vulnerability modeling. Provided so risk can be discussed in human terms, per WMO impact-based warning guidance, not to imply a precise affected-population count."
+          },
+          "reflexive_check": {
+            "model_probability": 0.0155,
+            "detection_engine_risk_score": 0.0,
+            "detection_engine_conditions_fired": [],
+            "threshold_used": 0.3,
+            "consistency": "consistent_low",
+            "note": "Model risk and independent rule-based physical indicators AGREE this is a low-risk situation."
+          },
+          "model_verified_roc_auc": 0.8731742776960718,
+          "meteorological_metrics": {
+            "threshold": 0.5,
+            "pod": 0.1004,
+            "far": 0.8026,
+            "csi": 0.0713,
+            "hss": 0.1301
+          }
+        }
+      }
+    ]
   }
 ]

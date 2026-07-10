@@ -646,6 +646,85 @@ check("L", "cap_alert_tool unknown-city error is byte-identical to forecast_tool
 
 print()
 print("=" * 74)
+print("SECTION M — meteorological_metrics (POD/FAR/CSI/HSS), independently re-derived")
+print("=" * 74)
+
+# Full bypass: rebuild the held-out test set from the raw dataset via the SAME
+# model-building modules used at training time, load the ALREADY-SAVED
+# production joblib model (never retrained here), predict, and recompute the
+# confusion-matrix metrics completely independently of both tools.py and
+# model/08_meteorological_metrics.py's own stored model_meta.json values.
+import importlib.util as _ilu
+import joblib as _joblib
+from sklearn.metrics import confusion_matrix as _confusion_matrix
+
+def _load_mod(name, path):
+    spec = _ilu.spec_from_file_location(name, path)
+    mod = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+_de_m = _load_mod("de_m", os.path.join(HERE, "model", "01_detection_engine.py"))
+_fb_m = _load_mod("fb_m", os.path.join(HERE, "model", "03_forecast_baseline.py"))
+_bn_m = _load_mod("bn_m", os.path.join(HERE, "model", "06_baseline_with_neighbors.py"))
+_dust_m = _load_mod("dust_m", os.path.join(HERE, "model", "07_dust_storm_forecast.py"))
+
+_ds_m = xr.open_dataset(_fb_m.DATASET)
+_SAVED_DIR_M = os.path.join(HERE, "agent", "saved_models")
+with open(os.path.join(_SAVED_DIR_M, "model_meta.json"), encoding="utf-8") as f:
+    _stored_meta = json.load(f)
+
+# M1 -- flash_flood: independently rebuild test set, load saved model, predict,
+# recompute POD/FAR/CSI/HSS from scratch, compare to the stored dict exactly.
+_X, _y, _dates, _, _ = _fb_m.build_supervised(_ds_m, "flash_flood")
+_te = _dates > _fb_m.TRAIN_END
+_clf = _joblib.load(os.path.join(_SAVED_DIR_M, "flash_flood_model.joblib"))
+_proba = _clf.predict_proba(_X[_te])[:, 1]
+_thr = _de_m.RULES["flash_flood"]["severity"][1][1]
+_tn, _fp, _fn, _tp = _confusion_matrix(_y[_te], (_proba >= _thr).astype(int)).ravel()
+_pod = _tp / (_tp + _fn) if (_tp + _fn) > 0 else float("nan")
+_far = _fp / (_tp + _fp) if (_tp + _fp) > 0 else float("nan")
+_csi = _tp / (_tp + _fn + _fp) if (_tp + _fn + _fp) > 0 else float("nan")
+check("M", "flash_flood: independently re-derived POD matches model_meta.json's stored value "
+     "(within float tolerance)",
+     abs(_pod - _stored_meta["flash_flood"]["meteorological_metrics"]["pod"]) < 0.001,
+     (_pod, _stored_meta["flash_flood"]["meteorological_metrics"]["pod"]))
+check("M", "flash_flood: independently re-derived FAR matches model_meta.json's stored value",
+     abs(_far - _stored_meta["flash_flood"]["meteorological_metrics"]["far"]) < 0.001,
+     (_far, _stored_meta["flash_flood"]["meteorological_metrics"]["far"]))
+check("M", "flash_flood: independently re-derived CSI matches model_meta.json's stored value",
+     abs(_csi - _stored_meta["flash_flood"]["meteorological_metrics"]["csi"]) < 0.001,
+     (_csi, _stored_meta["flash_flood"]["meteorological_metrics"]["csi"]))
+
+# M2 -- the real, disclosed finding itself: flash_flood's POD at its own
+# operational threshold is genuinely low (rare-event effect), independently
+# confirmed here a 2nd time, not just trusted from the model script's report.
+check("M", "flash_flood: POD genuinely low at operational threshold is independently "
+     "reproduced here too (real rare-event finding, not a one-off fluke)", _pod < 0.3, _pod)
+
+# M3 -- forecast_tool's live output for this exact hazard must match the
+# stored model_meta.json dict exactly (tool must not silently diverge from
+# the source of truth file it reads).
+_fr_m = agent_tools.forecast_tool("Jizan", "2025-08-23", "flash_flood")
+check("M", "forecast_tool's meteorological_metrics field matches model_meta.json exactly",
+     _fr_m.get("meteorological_metrics") == _stored_meta["flash_flood"]["meteorological_metrics"],
+     (_fr_m.get("meteorological_metrics"), _stored_meta["flash_flood"]["meteorological_metrics"]))
+
+# M4 -- all 3 hazards have the full 4-field metric set with no NaN/missing
+# values (a broken hazard would silently produce nan, not crash).
+import math as _math
+all_finite = True
+for hz in ("flash_flood", "heatwave", "dust_storm"):
+    mm = _stored_meta[hz]["meteorological_metrics"]
+    if any(_math.isnan(mm[k]) for k in ("pod", "far", "csi", "hss")):
+        all_finite = False
+check("M", "all 3 hazards' meteorological_metrics are finite (no NaN from a degenerate confusion matrix)",
+     all_finite, {hz: _stored_meta[hz]["meteorological_metrics"] for hz in ("flash_flood", "heatwave", "dust_storm")})
+
+_ds_m.close()
+
+print()
+print("=" * 74)
 print(f"TOTAL: {PASS} passed, {FAIL} failed")
 print("=" * 74)
 if FAILURES:

@@ -300,6 +300,15 @@ def forecast_tool(city: str, target_date: str, hazard: str) -> dict:
         "impact_context": impact_context,
         "reflexive_check": reflexive_check,
         "model_verified_roc_auc": meta[hazard]["roc_auc"],
+        # WMO/national-met-service-standard verification metrics, computed at
+        # this hazard's own operational alert threshold (same value CAP
+        # severity uses -- see model/08_meteorological_metrics.py). These are
+        # THRESHOLD-DEPENDENT, unlike ROC-AUC/PR-AUC above -- read together,
+        # not as a replacement: a hazard can have strong ROC-AUC (good
+        # discrimination across all thresholds) yet weak POD/CSI at this
+        # fixed operational cutoff for genuinely rare events (see
+        # flash_flood in agent/METEOROLOGICAL_METRICS_REPORT.md).
+        "meteorological_metrics": meta[hazard]["meteorological_metrics"],
     }
 
 

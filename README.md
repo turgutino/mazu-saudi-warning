@@ -13,17 +13,19 @@ and an **explainable warning agent** (DeepSeek function calling).
 
 ## Full system audit
 
-`FULL_SYSTEM_AUDIT.py` independently traces 90 numbers — from the consolidated
+`FULL_SYSTEM_AUDIT.py` independently traces 96 numbers — from the consolidated
 dataset, the knowledge graph's event values, the causal citations, an
-agent tool's output, and six post-Layer-4 extensions (terrain elevation,
+agent tool's output, and seven post-Layer-4 extensions (terrain elevation,
 population context, an A/B ablation test re-derived from raw saved
 transcripts, a reflexive self-check whose two headline findings are
 independently re-derived a third time directly from the raw source files,
-a 5th agent tool closing a self-found KG utilization gap, and CAP 1.2 alert
-generation independently re-parsed from the actual XML output)
+a 5th agent tool closing a self-found KG utilization gap, CAP 1.2 alert
+generation independently re-parsed from the actual XML output, and WMO-
+standard POD/FAR/CSI/HSS verification metrics recomputed from a fresh
+confusion matrix against the saved production models)
 — back to the raw 5GB source data (365 daily NetCDF files), plus checks the
 deployed GitHub site matches the local repo exactly.
-**Result: 90/90 passed, zero fabricated values found.** Full log in
+**Result: 96/96 passed, zero fabricated values found.** Full log in
 [`AUDIT_RESULTS.txt`](AUDIT_RESULTS.txt).
 
 ---
@@ -35,8 +37,8 @@ deployed GitHub site matches the local repo exactly.
 | Indicator pipeline | ✅ | Consolidates 365 daily NetCDF files (10 km grid) into one analysis-ready dataset of 22 core reliable indicators. |
 | Knowledge graph | ✅ | 60 nodes / 183 edges — indicators, hazards (now 3: flash flood, heatwave, **dust storm**), mechanisms, regions, **real 2025 events with observed values**, and **6 peer-reviewed citations** grounding 4 of 5 mechanisms in verbatim-verified literature text. Interactive. |
 | Detection engine | ✅ | Weighted multi-condition rules + spatial connected-component clustering. Validated against known 2025 events and a spatial-climatology check. |
-| Forecast (t→t+1) | ✅ | Gradient-boosted spatiotemporal model. Heatwave ROC-AUC 0.971 (PR-AUC 0.795); flash-flood ROC-AUC 0.873. A GNN variant was also tested and honestly reported (mixed result, not deployed). |
-| Explainable agent | ✅ | DeepSeek function-calling agent wiring 6 tools — forecast, causal KG, live conditions, similar events, region risk, and CAP 1.2 alert generation — into grounded answers. 134 tool tests + 4 end-to-end scenarios, all passing. See `agent/LAYER4_REPORT.md` and the [worked examples](agent_view.html). |
+| Forecast (t→t+1) | ✅ | Gradient-boosted spatiotemporal model. Heatwave ROC-AUC 0.971 (PR-AUC 0.795); flash-flood ROC-AUC 0.873 — plus WMO-standard POD/FAR/CSI/HSS at each hazard's operational threshold (see below). A GNN variant was also tested and honestly reported (mixed result, not deployed). |
+| Explainable agent | ✅ | DeepSeek function-calling agent wiring 6 tools — forecast, causal KG, live conditions, similar events, region risk, and CAP 1.2 alert generation — into grounded answers. 143 tool tests + 4 end-to-end scenarios, all passing. See `agent/LAYER4_REPORT.md` and the [worked examples](agent_view.html). |
 
 ---
 
@@ -124,8 +126,18 @@ tested — see `agent/EXTENSIONS_REPORT.md` for full methodology and results:
   a genuine `consistent_elevated` day can still fall below the (deliberately
   higher) CAP alert threshold — the reflexive check and the alert-issuance
   bar answer different questions on purpose. See `agent/CAP_REPORT.md`.
+- **WMO-standard verification metrics (POD/FAR/CSI/HSS).** Adopted after
+  reviewing another team's evaluation methodology. Computed from the
+  already-saved production models (no retraining) at each hazard's own
+  operational threshold — the same value CAP severity already uses.
+  Surfaces a real, disclosed finding threshold-independent ROC-AUC alone
+  cannot: flash_flood has a strong ROC-AUC (0.873) yet a genuinely low POD
+  (0.10) at its fixed threshold, because true flash-flood days are an
+  extremely rare event (~0.5% of test-set cells) — reported honestly rather
+  than only showing the more flattering number. See
+  `agent/METEOROLOGICAL_METRICS_REPORT.md`.
 
-All 134 unit tests pass (`agent/02_test_tools.py`, up from 32).
+All 143 unit tests pass (`agent/02_test_tools.py`, up from 32).
 
 ---
 

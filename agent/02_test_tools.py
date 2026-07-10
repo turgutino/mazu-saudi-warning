@@ -42,6 +42,22 @@ check("uses the PREVIOUS day's indicators", r.get("features_from_date") == "2025
      f"got {r.get('features_from_date')}")
 check("probability in [0,1]", 0.0 <= r.get("probability", -1) <= 1.0)
 check("reports model ROC-AUC", r.get("model_verified_roc_auc") == tools._META["flash_flood"]["roc_auc"])
+check("reports meteorological_metrics matching model_meta.json exactly (bypass, re-read from source dict)",
+     r.get("meteorological_metrics") == tools._META["flash_flood"]["meteorological_metrics"], r.get("meteorological_metrics"))
+check("meteorological_metrics has all 4 fields (pod/far/csi/hss) plus threshold",
+     set(r.get("meteorological_metrics", {}).keys()) == {"threshold", "pod", "far", "csi", "hss"},
+     r.get("meteorological_metrics"))
+for k in ("pod", "far", "csi", "hss"):
+    v = r["meteorological_metrics"][k]
+    check(f"meteorological_metrics.{k} is a valid probability/score in [0,1]", 0.0 <= v <= 1.0, v)
+# flash_flood is an extremely rare event (~0.5% positive rate in the test
+# set) -- a real, disclosed finding: despite a strong ROC-AUC (0.873,
+# threshold-independent), POD at the fixed 0.50 operational threshold is
+# genuinely low. This is not a bug to hide; it demonstrates exactly why
+# ROC-AUC/PR-AUC and POD/FAR/CSI/HSS must be read together, not interchanged.
+check("flash_flood: POD is genuinely low at its operational threshold (real rare-event "
+     "finding, honestly reported rather than hidden)",
+     r["meteorological_metrics"]["pod"] < 0.3, r["meteorological_metrics"])
 
 # Known event day 2025-07-25: checked conditions_tool first and found NONE of our
 # 8 named cities hit the 45C extreme threshold that day (max was Riyadh 43.5C) --
@@ -71,6 +87,9 @@ check("heatwave: city running ABOVE its own climatology (Mecca, +3.68C anomaly) 
      "-- consistent with our anomaly-based label definition",
      r2a.get("probability", 0) > r2b.get("probability", 1),
      f"Mecca={r2a.get('probability')} Abha={r2b.get('probability')}")
+check("heatwave: meteorological_metrics matches model_meta.json exactly",
+     r2a.get("meteorological_metrics") == tools._META["heatwave"]["meteorological_metrics"],
+     r2a.get("meteorological_metrics"))
 
 # Negative control: calm day should give LOW probability
 r3 = tools.forecast_tool("Riyadh", "2025-11-06", "heatwave")
@@ -398,6 +417,9 @@ check("dust_storm: reports its own verified ROC-AUC (0.8866, distinct from flash
      abs(r_dust.get("model_verified_roc_auc", 0) - 0.8866) < 0.001, r_dust.get("model_verified_roc_auc"))
 check("dust_storm: reflexive_check present (reuses the same generic mechanism)",
      r_dust.get("reflexive_check") is not None, r_dust.get("reflexive_check"))
+check("dust_storm: meteorological_metrics matches model_meta.json exactly",
+     r_dust.get("meteorological_metrics") == tools._META["dust_storm"]["meteorological_metrics"],
+     r_dust.get("meteorological_metrics"))
 
 # Real, found-then-independently-verified elevated case: Dammam around the
 # known dust period (06-19 to 07-07) shows BOTH signals agreeing elevated --

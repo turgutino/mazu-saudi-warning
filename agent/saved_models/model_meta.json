@@ -32,7 +32,14 @@
     "label_var": "heatwave_day_flag",
     "label_thr": 1,
     "roc_auc": 0.9705939220629891,
-    "pr_auc": 0.7950497888898979
+    "pr_auc": 0.7950497888898979,
+    "meteorological_metrics": {
+      "threshold": 0.55,
+      "pod": 0.8488,
+      "far": 0.3879,
+      "csi": 0.5519,
+      "hss": 0.6928
+    }
   },
   "flash_flood": {
     "features": [
@@ -60,7 +67,14 @@
     "label_var": "flash_flood_risk",
     "label_thr": 2,
     "roc_auc": 0.8731742776960718,
-    "pr_auc": 0.08906247051431657
+    "pr_auc": 0.08906247051431657,
+    "meteorological_metrics": {
+      "threshold": 0.5,
+      "pod": 0.1004,
+      "far": 0.8026,
+      "csi": 0.0713,
+      "hss": 0.1301
+    }
   },
   "dust_storm": {
     "features": [
@@ -91,7 +105,14 @@
     "label_thr": 0.55,
     "label_source": "Layer 1 DetectionEngine RULES['dust_storm'] (model/01_detection_engine.py), not a separately-invented label",
     "roc_auc": 0.8866,
-    "pr_auc": 0.1635
+    "pr_auc": 0.1635,
+    "meteorological_metrics": {
+      "threshold": 0.55,
+      "pod": 0.5352,
+      "far": 0.865,
+      "csi": 0.1208,
+      "hss": 0.1899
+    }
   },
   "train_end": "2025-06-30",
   "stride": 2
