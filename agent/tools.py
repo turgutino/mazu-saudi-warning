@@ -604,5 +604,159 @@ def region_risk_tool(city: str, date: str = None) -> dict:
     return result
 
 
+# =============================================================================
+# TOOL 6: CAP (Common Alerting Protocol) alert generator
+# =============================================================================
+
+import xml.etree.ElementTree as ET
+
+CAP_NS = "urn:oasis:names:tc:emergency:cap:1.2"
+
+# Maps DetectionEngine's own percentile-derived severity labels (the same
+# thresholds _reflexive_check cross-checks against -- see DETECTION_RULES
+# above) onto the 4 CAP-standard severity values, rather than inventing a
+# second, independent set of cutoffs.
+CAP_SEVERITY_LABELS = {
+    "low": "Minor", "medium": "Moderate", "high": "Severe", "extreme": "Extreme",
+    "caution": "Minor", "warning": "Moderate", "alert": "Severe", "emergency": "Extreme",
+}
+
+
+def _cap_severity(hazard: str, probability: float):
+    """probability -> (CAP severity string, underlying DetectionEngine label)."""
+    levels = DETECTION_RULES[hazard]["severity"]
+    rule_label = levels[0][0]
+    for name, lo in levels:
+        if probability >= lo:
+            rule_label = name
+    return CAP_SEVERITY_LABELS[rule_label], rule_label
+
+
+def _build_cap_xml(identifier, sent, status, event, urgency, severity, certainty,
+                    effective, expires, headline, description, instruction,
+                    area_desc, lat, lon) -> str:
+    """Serialize a CAP 1.2 <alert> via ElementTree (not string formatting) so
+    all free-text fields (headline/description/instruction) are correctly
+    XML-escaped."""
+    ET.register_namespace("", CAP_NS)
+    alert = ET.Element(f"{{{CAP_NS}}}alert")
+
+    def sub(parent, tag, text):
+        el = ET.SubElement(parent, f"{{{CAP_NS}}}{tag}")
+        el.text = text
+        return el
+
+    sub(alert, "identifier", identifier)
+    sub(alert, "sender", "mazu-demo@example.org")
+    sub(alert, "sent", sent)
+    sub(alert, "status", status)
+    sub(alert, "msgType", "Alert")
+    sub(alert, "scope", "Public")
+    info = ET.SubElement(alert, f"{{{CAP_NS}}}info")
+    sub(info, "category", "Met")
+    sub(info, "event", event)
+    sub(info, "urgency", urgency)
+    sub(info, "severity", severity)
+    sub(info, "certainty", certainty)
+    sub(info, "effective", effective)
+    sub(info, "expires", expires)
+    sub(info, "senderName", "MAZU Saudi Multi-Hazard Early Warning (demo system)")
+    sub(info, "headline", headline)
+    sub(info, "description", description)
+    sub(info, "instruction", instruction)
+    area = ET.SubElement(info, f"{{{CAP_NS}}}area")
+    sub(area, "areaDesc", area_desc)
+    sub(area, "circle", f"{lat},{lon} 0")
+
+    ET.indent(alert, space="  ")
+    body = ET.tostring(alert, encoding="unicode")
+    return '<?xml version="1.0" encoding="UTF-8"?>\n' + body
+
+
+def cap_alert_tool(city: str, target_date: str, hazard: str) -> dict:
+    """Generate a CAP 1.2 (Common Alerting Protocol, OASIS international
+    standard) XML alert from a forecast, so a warning can plug into real
+    broadcast/siren/SMS infrastructure -- the same wire format MAZU's own
+    national early-warning framework is built on. Internally calls
+    forecast_tool, so severity/certainty are grounded in the exact same
+    probability and reflexive-check output, not recomputed independently.
+
+    Honesty note: `status` is hardcoded to "Exercise", never "Actual" -- this
+    system runs on the 2025 historical dataset, not a live feed (see this
+    module's top-of-file scope note), so a CAP message claiming "Actual"
+    operational status would misrepresent the system.
+
+    Args:
+        city: one of CITIES keys
+        target_date: "YYYY-MM-DD" -- the date being forecast
+        hazard: "heatwave", "flash_flood", or "dust_storm"
+    Returns dict with `cap_xml` (str) if the probability clears this hazard's
+    lowest severity threshold, else `alert_warranted: False` (no alert issued
+    for a low-probability day, matching real warning-system practice).
+    """
+    fr = forecast_tool(city, target_date, hazard)
+    if "error" in fr:
+        return fr
+
+    probability = fr["probability"]
+    cap_severity, rule_label = _cap_severity(hazard, probability)
+    if rule_label in ("low", "caution"):
+        threshold = DETECTION_RULES[hazard]["severity"][1][1]
+        return {
+            "alert_warranted": False,
+            "city": city, "hazard": hazard, "target_date": fr["target_date"],
+            "probability": probability,
+            "reason": (f"Probability {probability:.2f} is below this hazard's lowest "
+                       f"CAP-worthy threshold ({threshold:.2f}); no alert issued."),
+        }
+
+    with open(KG_JSON, encoding="utf-8") as f:
+        kg = json.load(f)
+    node_by_id = {n["id"]: n for n in kg["nodes"]}
+    event_name = node_by_id.get(hazard, {}).get("label", hazard)
+
+    rc = fr.get("reflexive_check") or {}
+    # "Likely" only when the model AND the independent rule-based detection
+    # engine both flag elevated risk (consistency == "consistent_elevated");
+    # any disagreement, or a missing reflexive check, downgrades to "Possible"
+    # -- CAP's own semantics ("Likely" = >50% confident) shouldn't be claimed
+    # off a single, unconfirmed ML signal.
+    certainty = "Likely" if rc.get("consistency") == "consistent_elevated" else "Possible"
+
+    city_lat, city_lon = CITIES[city]
+    identifier = f"MAZU-{hazard}-{city}-{fr['target_date']}"
+    sent = f"{fr['features_from_date']}T18:00:00+03:00"   # issued end of the feature day, for target_date
+    effective = f"{fr['target_date']}T00:00:00+03:00"
+    expires = f"{fr['target_date']}T23:59:59+03:00"
+
+    headline = f"{event_name} risk for {city}, Saudi Arabia on {fr['target_date']}"
+    description = (
+        f"MAZU multi-hazard early warning system forecasts a {probability:.0%} probability "
+        f"of {event_name.lower()} affecting {city} on {fr['target_date']}, based on "
+        f"indicators from {fr['features_from_date']}. Model verified ROC-AUC: "
+        f"{fr['model_verified_roc_auc']:.3f}. Independent rule-based cross-check: "
+        f"{rc.get('consistency', 'unavailable')}."
+    )
+    instruction = (
+        fr["terrain_note"] if fr.get("terrain_note")
+        else "Follow guidance from the Saudi National Center of Meteorology (NCM) and local authorities."
+    )
+
+    cap_xml = _build_cap_xml(
+        identifier=identifier, sent=sent, status="Exercise", event=event_name,
+        urgency="Expected", severity=cap_severity, certainty=certainty,
+        effective=effective, expires=expires, headline=headline,
+        description=description, instruction=instruction,
+        area_desc=f"{city}, Saudi Arabia", lat=round(city_lat, 2), lon=round(city_lon, 2),
+    )
+
+    return {
+        "alert_warranted": True,
+        "city": city, "hazard": hazard, "target_date": fr["target_date"],
+        "probability": probability, "cap_severity": cap_severity, "cap_certainty": certainty,
+        "cap_xml": cap_xml,
+    }
+
+
 if __name__ == "__main__":
     print("tools.py loaded OK — run test_tools.py for verification.")

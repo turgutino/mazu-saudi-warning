@@ -537,6 +537,90 @@ for c in tools.CITIES:
 
 check("unknown city -> error", "error" in tools.region_risk_tool("Atlantis"))
 
+# =============================================================================
+# TOOL 6: cap_alert_tool -- CAP 1.2 XML generation
+# =============================================================================
+import xml.etree.ElementTree as ET
+
+CAP_NS_MAP = {"cap": "urn:oasis:names:tc:emergency:cap:1.2"}
+
+# High-probability, consistency-DISAGREEING day (independently confirmed via
+# forecast_tool + _reflexive_check above this test file was written): model
+# says 94%, but the independent rule-based engine's risk score is only 0.25
+# (below its own 0.30 elevated threshold) -- a genuine model/rule mismatch,
+# not a test bug. Exercises the "Possible" (not "Likely") certainty path.
+r_cap1 = tools.cap_alert_tool("Jizan", "2025-03-27", "flash_flood")
+check("cap_alert_tool: alert_warranted True for a high-probability day",
+     r_cap1.get("alert_warranted") is True, r_cap1)
+check("cap_alert_tool: probability matches an independent direct forecast_tool call",
+     r_cap1["probability"] == tools.forecast_tool("Jizan", "2025-03-27", "flash_flood")["probability"],
+     r_cap1)
+check("cap_alert_tool: severity 'Extreme' for probability >= 0.85 (flash_flood's own threshold)",
+     r_cap1["cap_severity"] == "Extreme", r_cap1)
+check("cap_alert_tool: certainty 'Possible' when model/rule-engine DISAGREE (model_higher_than_detection)",
+     r_cap1["cap_certainty"] == "Possible", r_cap1)
+
+parsed1 = ET.fromstring(r_cap1["cap_xml"])
+check("cap_alert_tool XML: root tag is CAP-namespaced <alert>",
+     parsed1.tag == "{urn:oasis:names:tc:emergency:cap:1.2}alert", parsed1.tag)
+check("cap_alert_tool XML: status is 'Exercise', never 'Actual' (honesty requirement -- "
+     "this is a historical-dataset demo, not a live feed)",
+     parsed1.find("cap:status", CAP_NS_MAP).text == "Exercise", r_cap1["cap_xml"])
+check("cap_alert_tool XML: <severity> element matches the dict's cap_severity field exactly",
+     parsed1.find("cap:info/cap:severity", CAP_NS_MAP).text == r_cap1["cap_severity"], r_cap1["cap_xml"])
+check("cap_alert_tool XML: <identifier> embeds hazard, city, and target_date",
+     parsed1.find("cap:identifier", CAP_NS_MAP).text == "MAZU-flash_flood-Jizan-2025-03-27",
+     parsed1.find("cap:identifier", CAP_NS_MAP).text)
+check("cap_alert_tool XML: <circle> area matches Jizan's known coordinates",
+     parsed1.find("cap:info/cap:area/cap:circle", CAP_NS_MAP).text == "16.9,42.6 0",
+     parsed1.find("cap:info/cap:area/cap:circle", CAP_NS_MAP).text)
+
+# Consistency-AGREEING day (independently confirmed: dust_storm risk field at
+# Dammam's grid cell exceeds the reflexive-check threshold too) -- exercises
+# the "Likely" certainty path, and a 2nd hazard's CAP <event> label from the
+# KG rather than the raw hazard id.
+r_cap2 = tools.cap_alert_tool("Dammam", "2025-01-02", "dust_storm")
+check("cap_alert_tool: certainty 'Likely' when model/rule-engine AGREE (consistent_elevated)",
+     r_cap2["cap_certainty"] == "Likely", r_cap2)
+parsed2 = ET.fromstring(r_cap2["cap_xml"])
+check("cap_alert_tool XML: <event> uses the KG's human-readable label, not the raw hazard id",
+     parsed2.find("cap:info/cap:event", CAP_NS_MAP).text == "Dust Storm", r_cap2["cap_xml"])
+
+# Low-probability day: no alert should be issued at all (matches real warning
+# systems -- not every day gets a CAP message), and no cap_xml key present.
+r_cap3 = tools.cap_alert_tool("Jizan", "2025-08-20", "flash_flood")
+check("cap_alert_tool: alert_warranted False for a sub-threshold probability day",
+     r_cap3.get("alert_warranted") is False, r_cap3)
+check("cap_alert_tool: no cap_xml key present when no alert is warranted",
+     "cap_xml" not in r_cap3, r_cap3)
+check("cap_alert_tool: reason field explains the threshold that wasn't met",
+     "threshold" in r_cap3.get("reason", ""), r_cap3)
+
+# Error propagation: bad city/date must surface the SAME error forecast_tool
+# itself would produce (cap_alert_tool must not swallow or reword it).
+check("cap_alert_tool: unknown city -> same error as forecast_tool",
+     tools.cap_alert_tool("Atlantis", "2025-08-20", "flash_flood")
+     == tools.forecast_tool("Atlantis", "2025-08-20", "flash_flood"))
+check("cap_alert_tool: out-of-range date -> same error as forecast_tool",
+     tools.cap_alert_tool("Jizan", "2099-01-01", "flash_flood")
+     == tools.forecast_tool("Jizan", "2099-01-01", "flash_flood"))
+
+# Every hazard must produce well-formed, re-parseable XML for a warranted
+# alert (cross-hazard structural coverage, not just flash_flood). Each
+# (city, date) below was independently confirmed above this line to clear
+# its hazard's alert threshold -- asserted as a hard requirement, not
+# silently skipped if a date happens to fall short.
+for city, date, hz in [("Jizan", "2025-03-27", "flash_flood"),
+                       ("Riyadh", "2025-08-27", "heatwave"),
+                       ("Dammam", "2025-01-02", "dust_storm")]:
+    rc = tools.cap_alert_tool(city, date, hz)
+    check(f"cap_alert_tool: {hz}/{city} on {date} clears its own alert threshold "
+         "(all 3 hazards must be covered by this loop, not silently skipped)",
+         rc.get("alert_warranted") is True, rc)
+    p = ET.fromstring(rc["cap_xml"])
+    check(f"cap_alert_tool XML well-formed for {hz}/{city}",
+         p.find("cap:info/cap:event", CAP_NS_MAP) is not None, rc["cap_xml"])
+
 print()
 print("=" * 70)
 print(f"TOTAL: {PASS} passed, {FAIL} failed")

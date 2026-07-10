@@ -1,112 +1,3 @@
-==========================================================================
-SECTION A — raw 5GB source files exist and are readable
-==========================================================================
-  [PASS] 365 raw daily files present
-  [PASS] raw directory matches documented path
-
-==========================================================================
-SECTION B — consolidated dataset (mazu_dataset.nc) matches RAW source
-==========================================================================
-(direct re-read of 3 random raw files, independent of the pipeline code)
-  [PASS] 2025-08-23: all 16 indicators match raw source exactly
-  [PASS] 2025-07-25: all 16 indicators match raw source exactly
-  [PASS] 2025-03-11: all 16 indicators match raw source exactly
-
-==========================================================================
-SECTION C — KG event values trace back to the RAW source (not just consolidated)
-==========================================================================
-  [PASS] 6 event nodes present in KG (5 original + 1 dust_storm added later)
-  [PASS] 08-23 extreme rain: claimed value (254.9) matches raw grid MAX for daily_precip_total on 2025-08-23 (254.9)
-  [PASS] 08-31 convective instability: claimed value (5196.0) matches raw grid MAX for cape on 2025-08-31 (5196.0)
-  [PASS] 08-19 vapour surge: claimed value (728.4) matches raw grid MAX for ivt on 2025-08-19 (728.4)
-  [PASS] 07-25 extreme heat: claimed value (53.7) matches raw grid MAX for tmax_c on 2025-07-25 (53.7)
-  [PASS] 08-16 heat stress: claimed value (54.7) matches raw grid MAX for heat_index_c on 2025-08-16 (54.7)
-  [PASS] 07-26 extreme wind: claimed value (20.7) matches raw grid MAX for wind10_speed on 2025-07-26 (20.7)
-
-==========================================================================
-SECTION D — causal KG citations: quotes still verbatim in corpus.py
-==========================================================================
-  [PASS] 6 Citation nodes present
-  [PASS] cite_ref_devries2013: quote verbatim in source (an eastward-migrating Mediterranean cycl...)
-  [PASS] cite_ref_devries2013: quote verbatim in source (a stationary anticyclone over the southe...)
-  [PASS] cite_ref_devries2013: quote verbatim in source (upper-level tropospheric instability com...)
-  [PASS] cite_ref_devries2013: quote verbatim in source (resulting in a quasi-stationary mesoscal...)
-  [PASS] cite_ref_devries2013: quote verbatim in source (The Red Sea Trough enhances low-level mo...)
-  [PASS] cite_ref_devries2013: quote verbatim in source (often acting as a precursor to deep conv...)
-  [PASS] cite_ref_redsea_topo: quote verbatim in source (Surface fluxes over the Red Sea play an ...)
-  [PASS] cite_ref_redsea_topo: quote verbatim in source (Red Sea water is estimated to affect reg...)
-  [PASS] cite_ref_redsea_topo: quote verbatim in source (strong convergence areas form over the R...)
-  [PASS] cite_ref_redsea_topo: quote verbatim in source (strengthen low-level jets...)
-  [PASS] cite_ref_redsea_topo: quote verbatim in source (create a conditionally unstable atmosphe...)
-  [PASS] cite_ref_heatflux_era5: quote verbatim in source (stronger winds combined with drier air p...)
-  [PASS] cite_ref_heatwave_circulation: quote verbatim in source (Saudi Arabia experiences powerful solar ...)
-  [PASS] cite_ref_heatwave_circulation: quote verbatim in source (The influence of a subtropical high-pres...)
-  [PASS] cite_ref_heatwave_circulation: quote verbatim in source (This subtropical high-pressure system, c...)
-  [PASS] cite_ref_heatwave_variability: quote verbatim in source (the adjacent sea moderates temperature e...)
-  [PASS] cite_ref_shamal_yu2016: quote verbatim in source (The summer Shamal, occurring from May to...)
-  [PASS] cite_ref_shamal_yu2016: quote verbatim in source (It forms due to the steep pressure gradi...)
-  [PASS] cite_ref_shamal_yu2016: quote verbatim in source (The summer Shamal is the major driver of...)
-  [PASS] cite_ref_shamal_yu2016: quote verbatim in source (capable of lifting dust and transporting...)
-  [PASS] total evidence quotes checked: 20 (expect 20)
-
-==========================================================================
-SECTION E — agent tools read the SAME data as the raw source (bypass test)
-==========================================================================
-  [PASS] conditions_tool('Jizan','2025-08-23') matches independent raw-file read
-
-==========================================================================
-SECTION F — deployed GitHub site matches local repo (no drift)
-==========================================================================
-  [PASS] remote kg_data.json node count matches local
-  [PASS] remote kg_data.json edge count matches local
-
-==========================================================================
-SECTION G — post-Layer-4 extensions (terrain, population, A/B ablation)
-==========================================================================
-  [PASS] 'orography' variable present in consolidated dataset
-  [PASS] orography at Jeddah/Abha/Riyadh matches raw source exactly
-  [PASS] Abha: forecast_tool elevation_m matches independent raw lookup
-  [PASS] Abha: terrain_note flag (expected) matches independent elevation (2082m vs 1500m threshold)
-  [PASS] Taif: forecast_tool elevation_m matches independent raw lookup
-  [PASS] Taif: terrain_note flag (expected) matches independent elevation (1774m vs 1500m threshold)
-  [PASS] Jeddah: forecast_tool elevation_m matches independent raw lookup
-  [PASS] Jeddah: terrain_note flag (not expected) matches independent elevation (30m vs 1500m threshold)
-  [PASS] Dammam: forecast_tool elevation_m matches independent raw lookup
-  [PASS] Dammam: terrain_note flag (not expected) matches independent elevation (12m vs 1500m threshold)
-  [PASS] city_population.json exists
-  [PASS] all 8 cities have a population figure
-  [PASS] all population figures are plausible integers (10k-20M range)
-  [PASS] forecast_tool's impact_context population matches city_population.json exactly
-  [PASS] ablation_results.json exists
-  [PASS] ablation covers 4 questions
-  [PASS] re-derived from raw transcripts: WITH kg tool, 4/4 answers cite a mechanism
-  [PASS] re-derived from raw transcripts: WITHOUT kg tool, 0/4 cite a mechanism
-  [PASS] re-derived from raw transcripts: WITHOUT kg tool, 0/4 hallucinated one anyway
-  [PASS] causal_kg_tool never appears in any 'without_kg' trace (ablation was real)
-
-==========================================================================
-SECTION H — reflexive_check (model vs. independent rule-based detection)
-==========================================================================
-  [PASS] reflexive_check present on forecast_tool output
-  [PASS] Jizan precursor-day (08-22) rain had NOT started yet, per raw source
-  [PASS] Jizan detection score independently re-derived from RAW file matches tool output
-  [PASS] Jizan: consistency label correctly reflects model < 0.3 <= detection (independent re-check)
-  [PASS] Mecca precursor-day (07-24) tmax was below the 45C absolute threshold, per raw source
-  [PASS] Mecca detection score independently re-derived from RAW file matches tool output (both 0.0)
-  [PASS] Mecca: consistency label correctly reflects model >= 0.3 > detection (independent re-check)
-
-==========================================================================
-SECTION I — similar_events_tool (KG event similarity)
-==========================================================================
-  [PASS] self-match at exact event coords/date scores exactly 100% (re-verified fresh)
-  [PASS] Mecca 08-04 raw tmax_c matches value read directly from the RAW source file
-  [PASS] Mecca/07-25-event similarity independently re-derived (RAW files + dataset-wide mean/std recomputed fresh, not reusing tools.py's cache) matches tool output
-
-==========================================================================
-SECTION J — dust_storm: a 3rd hazard added across the whole stack
-==========================================================================
-  [PASS] wind10_speed / dewpoint_depression_c in consolidated dataset match RAW source exactly
-  [PASS] dust_storm event headline value (wind10_speed 20.7 m/s on 2025-07-26) matches RAW source grid max
   [PASS] no dangling KG edges after the dust->dust_storm rename + new nodes
   [PASS] no duplicate KG node ids
   [PASS] old 'dust' id fully removed (renamed, not duplicated)
@@ -128,7 +19,17 @@ SECTION K — region_risk_tool (5th agent tool, city-first KG query)
   [PASS] all 8 known cities have >=1 at_risk_of hazard in the KG (no coverage gap)
 
 ==========================================================================
-TOTAL: 84 passed, 0 failed
+SECTION L — cap_alert_tool (6th agent tool, CAP 1.2 XML generation)
+==========================================================================
+  [PASS] cap_alert_tool probability matches a fresh, independent forecast_tool call exactly
+  [PASS] cap_severity independently re-derived from DetectionEngine's own RULES thresholds matches exactly
+  [PASS] all 3 hazards' CAP XML <status> is 'Exercise' (never 'Actual') -- honesty requirement
+  [PASS] CAP XML <event> matches the KG's own hazard node label, re-read directly from kg_data.json
+  [PASS] sub-threshold probability day: alert_warranted is False and no cap_xml key exists
+  [PASS] cap_alert_tool unknown-city error is byte-identical to forecast_tool's own error
+
+==========================================================================
+TOTAL: 90 passed, 0 failed
 ==========================================================================
 
 Every checked number traces back to the raw 5GB source data. No fabrication found.

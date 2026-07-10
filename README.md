@@ -13,15 +13,17 @@ and an **explainable warning agent** (DeepSeek function calling).
 
 ## Full system audit
 
-`FULL_SYSTEM_AUDIT.py` independently traces 84 numbers — from the consolidated
+`FULL_SYSTEM_AUDIT.py` independently traces 90 numbers — from the consolidated
 dataset, the knowledge graph's event values, the causal citations, an
-agent tool's output, and four post-Layer-4 extensions (terrain elevation,
+agent tool's output, and six post-Layer-4 extensions (terrain elevation,
 population context, an A/B ablation test re-derived from raw saved
-transcripts, and a reflexive self-check whose two headline findings are
-independently re-derived a third time directly from the raw source files)
+transcripts, a reflexive self-check whose two headline findings are
+independently re-derived a third time directly from the raw source files,
+a 5th agent tool closing a self-found KG utilization gap, and CAP 1.2 alert
+generation independently re-parsed from the actual XML output)
 — back to the raw 5GB source data (365 daily NetCDF files), plus checks the
 deployed GitHub site matches the local repo exactly.
-**Result: 84/84 passed, zero fabricated values found.** Full log in
+**Result: 90/90 passed, zero fabricated values found.** Full log in
 [`AUDIT_RESULTS.txt`](AUDIT_RESULTS.txt).
 
 ---
@@ -34,7 +36,7 @@ deployed GitHub site matches the local repo exactly.
 | Knowledge graph | ✅ | 60 nodes / 183 edges — indicators, hazards (now 3: flash flood, heatwave, **dust storm**), mechanisms, regions, **real 2025 events with observed values**, and **6 peer-reviewed citations** grounding 4 of 5 mechanisms in verbatim-verified literature text. Interactive. |
 | Detection engine | ✅ | Weighted multi-condition rules + spatial connected-component clustering. Validated against known 2025 events and a spatial-climatology check. |
 | Forecast (t→t+1) | ✅ | Gradient-boosted spatiotemporal model. Heatwave ROC-AUC 0.971 (PR-AUC 0.795); flash-flood ROC-AUC 0.873. A GNN variant was also tested and honestly reported (mixed result, not deployed). |
-| Explainable agent | ✅ | DeepSeek function-calling agent wiring the forecast model, causal KG and live conditions into grounded answers. 27 tool tests + 4 end-to-end scenarios, all passing. See `agent/LAYER4_REPORT.md` and the [worked examples](agent_view.html). |
+| Explainable agent | ✅ | DeepSeek function-calling agent wiring 6 tools — forecast, causal KG, live conditions, similar events, region risk, and CAP 1.2 alert generation — into grounded answers. 134 tool tests + 4 end-to-end scenarios, all passing. See `agent/LAYER4_REPORT.md` and the [worked examples](agent_view.html). |
 
 ---
 
@@ -110,8 +112,20 @@ tested — see `agent/EXTENSIONS_REPORT.md` for full methodology and results:
   with heatwave's actual drivers — traced to the original hand-encoded
   domain knowledge, disclosed rather than silently patched). See
   `agent/REGION_RISK_REPORT.md`.
+- **cap_alert_tool (6th agent tool) — CAP 1.2 standards-compliant alerts.**
+  Converts a forecast into a real CAP 1.2 (Common Alerting Protocol, the
+  OASIS standard MAZU's own national framework is built on) XML alert,
+  ready to plug into broadcast/siren/SMS infrastructure — closing the gap
+  between "scientifically correct" and "operationally integrable". Severity
+  is derived from `DetectionEngine`'s own thresholds (not a second invented
+  scale), certainty from the reflexive check's model/rule-engine agreement,
+  and `status` is hardcoded to `Exercise` (never `Actual`) since this is a
+  historical-dataset demo, not a live feed. A real, investigated finding:
+  a genuine `consistent_elevated` day can still fall below the (deliberately
+  higher) CAP alert threshold — the reflexive check and the alert-issuance
+  bar answer different questions on purpose. See `agent/CAP_REPORT.md`.
 
-All 112 unit tests pass (`agent/02_test_tools.py`, up from 32).
+All 134 unit tests pass (`agent/02_test_tools.py`, up from 32).
 
 ---
 

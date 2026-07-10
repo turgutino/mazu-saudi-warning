@@ -1139,5 +1139,189 @@
         }
       }
     ]
+  },
+  {
+    "question": "Generate a formal CAP alert for the flash flood risk in Jizan on 2025-03-27, and explain the alert fields.",
+    "answer": "Here is the full CAP alert and explanation.\n\n---\n\n## ✅ CAP 1.2 Alert Generated — Flash Flood Risk, Jizan, 2025-03-27\n\n```xml\n<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<alert xmlns=\"urn:oasis:names:tc:emergency:cap:1.2\">\n  <identifier>MAZU-flash_flood-Jizan-2025-03-27</identifier>\n  <sender>mazu-demo@example.org</sender>\n  <sent>2025-03-26T18:00:00+03:00</sent>\n  <status>Exercise</status>\n  <msgType>Alert</msgType>\n  <scope>Public</scope>\n  <info>\n    <category>Met</category>\n    <event>Flash Flood / Wadi Flooding</event>\n    <urgency>Expected</urgency>\n    <severity>Extreme</severity>\n    <certainty>Possible</certainty>\n    <effective>2025-03-27T00:00:00+03:00</effective>\n    <expires>2025-03-27T23:59:59+03:00</expires>\n    <senderName>MAZU Saudi Multi-Hazard Early Warning (demo system)</senderName>\n    <headline>Flash Flood / Wadi Flooding risk for Jizan, Saudi Arabia on 2025-03-27</headline>\n    <description>MAZU multi-hazard early warning system forecasts a 94% probability of flash flood / wadi flooding affecting Jizan on 2025-03-27, based on indicators from 2025-03-26. Model verified ROC-AUC: 0.873. Independent rule-based cross-check: model_higher_than_detection.</description>\n    <instruction>Follow guidance from the Saudi National Center of Meteorology (NCM) and local authorities.</instruction>\n    <area>\n      <areaDesc>Jizan, Saudi Arabia</areaDesc>\n      <circle>16.9,42.6 0</circle>\n    </area>\n  </info>\n</alert>\n```\n\n---\n\n## 📋 Field-by-Field Explanation\n\n| CAP Field | Value | Meaning |\n|---|---|---|\n| **`<identifier>`** | `MAZU-flash_flood-Jizan-2025-03-27` | Unique ID for this alert message |\n| **`<sender>`** | `mazu-demo@example.org` | System originator |\n| **`<sent>`** | `2025-03-26T18:00:00+03:00` | When the alert was issued (evening before the event day) |\n| **`<status>`** | **`Exercise`** | ⚠️ **This is a demo/historical system** — not a live, real-time alert. In a real deployment this would be `Actual`. |\n| **`<msgType>`** | `Alert` | Initial notification of an event |\n| **`<scope>`** | `Public` | Intended for the general public |\n| **`<category>`** | `Met` | Meteorological hazard |\n| **`<event>`** | `Flash Flood / Wadi Flooding` | The specific hazard type |\n| **`<urgency>`** | `Expected` | The event is expected to occur (within the next 24h) |\n| **`<severity>`** | **`Extreme`** | Highest severity — significant threat to life/property |\n| **`<certainty>`** | **`Possible`** | Likely but not certain (~94% probability) |\n| **`<effective>`** | `2025-03-27T00:00:00+03:00` | Alert is active from midnight |\n| **`<expires>`** | `2025-03-27T23:59:59+03:00` | Alert expires at end of day |\n| **`<description>`** | *(see XML)* | Human-readable summary including the **94% probability**, model **ROC-AUC of 0.873** (verified skill), and the **reflexive cross-check note** that the model's signal was higher than the rule-based detection engine — a genuine caveat to treat with added caution |\n| **`<instruction>`** | Follow NCM/local authorities | Standard safety guidance |\n| **`<area>/<circle>`** | `16.9,42.6` | Geographic centroid of the Jizan grid cell |\n\n---\n\n## 🔬 What Drove This Forecast\n\n**Jizan** (pop. ~174,000, 2022 census) sits at just **7.7 m elevation** on the Red Sea coast, making it highly exposed to wadi flooding.\n\n**Key indicators from 2025-03-26** that fed the model:\n- **CAPE** (convective available potential energy): **1,336 J/kg** — strong instability\n- **PWAT** (precipitable water): **40.7 mm** — deep moisture column\n- **IVT** (integrated vapor transport): **54.4 kg/m/s** — moisture flux from the Red Sea\n\n**Physical mechanisms** (from the causal knowledge graph):\n1. **Active Red Sea Trough (ARST)** — low-level convergence over the Red Sea, drawing moisture northward (de Vries et al., 2013)\n2. **Moisture transport** from the Red Sea and Arabian Sea — surface fluxes regulate pre-convection convergence (ResearchGate case study; MDPI Atmosphere, 2019)\n3. **Orographic lift** over the nearby Asir mountains (though Jizan itself is coastal flatland)\n\n**⚠️ Caveat:** The independent rule-based detection engine did *not* flag the same elevated risk (score: 0.25 vs. model's 0.94), noting that classic physical thresholds weren't fully met. The model may be picking up a subtle signal the simpler check misses — treat with added caution.\n\n---\n\n## 🧭 Recommendation\n\nResidents and authorities in **Jizan** should **prepare for possible flash flooding and wadi overflow on March 27**. Monitor Saudi NCM bulletins, avoid low-lying areas and dry riverbeds (wadis), and be ready to move to higher ground if rain intensifies.",
+    "trace": [
+      {
+        "tool": "cap_alert_tool",
+        "args": {
+          "city": "Jizan",
+          "target_date": "2025-03-27",
+          "hazard": "flash_flood"
+        },
+        "result": {
+          "alert_warranted": true,
+          "city": "Jizan",
+          "hazard": "flash_flood",
+          "target_date": "2025-03-27",
+          "probability": 0.9416,
+          "cap_severity": "Extreme",
+          "cap_certainty": "Possible",
+          "cap_xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<alert xmlns=\"urn:oasis:names:tc:emergency:cap:1.2\">\n  <identifier>MAZU-flash_flood-Jizan-2025-03-27</identifier>\n  <sender>mazu-demo@example.org</sender>\n  <sent>2025-03-26T18:00:00+03:00</sent>\n  <status>Exercise</status>\n  <msgType>Alert</msgType>\n  <scope>Public</scope>\n  <info>\n    <category>Met</category>\n    <event>Flash Flood / Wadi Flooding</event>\n    <urgency>Expected</urgency>\n    <severity>Extreme</severity>\n    <certainty>Possible</certainty>\n    <effective>2025-03-27T00:00:00+03:00</effective>\n    <expires>2025-03-27T23:59:59+03:00</expires>\n    <senderName>MAZU Saudi Multi-Hazard Early Warning (demo system)</senderName>\n    <headline>Flash Flood / Wadi Flooding risk for Jizan, Saudi Arabia on 2025-03-27</headline>\n    <description>MAZU multi-hazard early warning system forecasts a 94% probability of flash flood / wadi flooding affecting Jizan on 2025-03-27, based on indicators from 2025-03-26. Model verified ROC-AUC: 0.873. Independent rule-based cross-check: model_higher_than_detection.</description>\n    <instruction>Follow guidance from the Saudi National Center of Meteorology (NCM) and local authorities.</instruction>\n    <area>\n      <areaDesc>Jizan, Saudi Arabia</areaDesc>\n      <circle>16.9,42.6 0</circle>\n    </area>\n  </info>\n</alert>"
+        }
+      },
+      {
+        "tool": "forecast_tool",
+        "args": {
+          "city": "Jizan",
+          "target_date": "2025-03-27",
+          "hazard": "flash_flood"
+        },
+        "result": {
+          "city": "Jizan",
+          "target_date": "2025-03-27",
+          "features_from_date": "2025-03-26",
+          "hazard": "flash_flood",
+          "probability": 0.9416,
+          "grid_cell": {
+            "lat": 16.9,
+            "lon": 42.6
+          },
+          "elevation_m": 7.7,
+          "terrain_note": null,
+          "impact_context": {
+            "city_population_2022_census": 173919,
+            "source": "Saudi Census 2022, GASTAT",
+            "note": "Reference population only, NOT a model output and NOT an estimate of how many people would actually be exposed to this hazard -- this system does not perform exposure/vulnerability modeling. Provided so risk can be discussed in human terms, per WMO impact-based warning guidance, not to imply a precise affected-population count."
+          },
+          "reflexive_check": {
+            "model_probability": 0.9416,
+            "detection_engine_risk_score": 0.25,
+            "detection_engine_conditions_fired": [
+              "cape=1336.0",
+              "pwat=40.7"
+            ],
+            "threshold_used": 0.3,
+            "consistency": "model_higher_than_detection",
+            "note": "Model flags elevated risk, but the classic physical drivers for this hazard (per Layer 1's data-grounded thresholds) were NOT present in that day's indicators at this location -- treat with added caution, the model may be picking up a signal the rule-based check doesn't capture, or may be over-confident."
+          },
+          "model_verified_roc_auc": 0.8731742776960718
+        }
+      },
+      {
+        "tool": "causal_kg_tool",
+        "args": {
+          "hazard": "flash_flood"
+        },
+        "result": {
+          "hazard": "flash_flood",
+          "contributing_indicators": [
+            "daily_precip_total",
+            "daily_convective_precip",
+            "cape",
+            "pwat",
+            "ivt",
+            "wind850_speed",
+            "daily_precip_anomaly",
+            "flash_flood_risk"
+          ],
+          "mechanisms": [
+            {
+              "mechanism": "ARST",
+              "description": "Active Red Sea Trough - low-level convergence over the Red Sea",
+              "literature_grounded": true,
+              "citations": [
+                {
+                  "citation": "de Vries et al. (2013), J. Geophys. Res. Atmos.",
+                  "url": "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/jgrd.50569",
+                  "evidence": [
+                    {
+                      "subject": "eastward-migrating Mediterranean cyclone",
+                      "relation": "joins",
+                      "object": "extension of the Sudan low-pressure zone (the Red Sea Trough)",
+                      "quote": "an eastward-migrating Mediterranean cyclone joined an extension of the Sudan low-pressure zone (the Red Sea Trough)"
+                    },
+                    {
+                      "subject": "stationary anticyclone over the southeastern Arabian Peninsula (the Arabian Anticyclone)",
+                      "relation": "produces",
+                      "object": "clockwise flow that supplied moisture from the Arabian Sea and the Red Sea",
+                      "quote": "a stationary anticyclone over the southeastern Arabian Peninsula (the Arabian Anticyclone) produced a clockwise flow that supplied moisture from the Arabian Sea and the Red Sea"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "mechanism": "moisture_transport",
+              "description": "Red Sea / Arabian Sea moisture transport",
+              "literature_grounded": true,
+              "citations": [
+                {
+                  "citation": "ResearchGate case study",
+                  "url": "https://www.researchgate.net/publication/336928573",
+                  "evidence": [
+                    {
+                      "subject": "Surface fluxes over the Red Sea",
+                      "relation": "regulates",
+                      "object": "low-level moist-air convergence prior to convection initiation and development",
+                      "quote": "Surface fluxes over the Red Sea play an important role in regulating low-level moist-air convergence prior to convection initiation and development"
+                    },
+                    {
+                      "subject": "Red Sea water",
+                      "relation": "affects",
+                      "object": "regional rainfall",
+                      "quote": "Red Sea water is estimated to affect regional rainfall by about 30 to 40 percent"
+                    }
+                  ]
+                },
+                {
+                  "citation": "MDPI Atmosphere (2019)",
+                  "url": "https://www.mdpi.com/2073-4433/10/9/504",
+                  "evidence": [
+                    {
+                      "subject": "stronger winds combined with drier air",
+                      "relation": "produces",
+                      "object": "latent heat losses of up to 410 watts per square metre",
+                      "quote": "stronger winds combined with drier air produce latent heat losses of up to 410 watts per square metre"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "mechanism": "orographic_lift",
+              "description": "Orographic lifting over Hejaz / Asir mountains",
+              "literature_grounded": false,
+              "citations": []
+            }
+          ]
+        }
+      },
+      {
+        "tool": "conditions_tool",
+        "args": {
+          "city": "Jizan",
+          "date": "2025-03-26"
+        },
+        "result": {
+          "city": "Jizan",
+          "date": "2025-03-26",
+          "grid_cell": {
+            "lat": 16.9,
+            "lon": 42.6
+          },
+          "indicators": {
+            "daily_precip_total": 0.5,
+            "daily_convective_precip": 0.44,
+            "daily_large_scale_precip": 0.0,
+            "t2m_c": 29.19,
+            "tmax_c": 31.87,
+            "tmin_c": 27.31,
+            "heat_index_c": 32.28,
+            "vpd_kpa": 1.4,
+            "cape": 1336.0,
+            "pwat": 40.71,
+            "ivt": 54.44,
+            "wind850_speed": 2.79,
+            "wind_shear_850_200": 31.6,
+            "daily_precip_anomaly": -1.0,
+            "t2m_anomaly_c": -0.11,
+            "tmax_anomaly_c": -1.43
+          }
+        }
+      }
+    ]
   }
 ]

@@ -1,12 +1,12 @@
 # =============================================================================
 # MAZU — Layer 4: Agent orchestration (DeepSeek function calling)
 #
-# The LLM receives a natural-language question, decides which of the 5
+# The LLM receives a natural-language question, decides which of the 6
 # verified tools to call (forecast_tool, causal_kg_tool, conditions_tool,
-# similar_events_tool, region_risk_tool), and composes a final answer
-# grounded in their real outputs. The model is instructed to NEVER invent a
-# probability or a citation — every number and every mechanism/citation in
-# its answer must come from a tool call.
+# similar_events_tool, region_risk_tool, cap_alert_tool), and composes a
+# final answer grounded in their real outputs. The model is instructed to
+# NEVER invent a probability or a citation — every number and every
+# mechanism/citation in its answer must come from a tool call.
 # =============================================================================
 
 import os
@@ -21,7 +21,7 @@ KEY_FILE = os.path.join(HERE, "..", "kg", "causal", ".deepseek_key")
 
 SYSTEM_PROMPT = """You are the MAZU early-warning assistant for Saudi Arabia extreme weather.
 
-You answer questions about flash-flood, heatwave, and dust-storm risk using FIVE tools:
+You answer questions about flash-flood, heatwave, and dust-storm risk using SIX tools:
   - forecast_tool(city, target_date, hazard): risk probability ON target_date,
     from a trained, verified model (ROC-AUC reported with each call). It
     internally uses the PREVIOUS day's indicators -- always pass the exact
@@ -62,6 +62,17 @@ You answer questions about flash-flood, heatwave, and dust-storm risk using FIVE
     is empty, say the KG doesn't have a specific city-mechanism link for that
     combination rather than inventing one -- this is a known, disclosed gap
     for a few city/hazard pairs, not an error to hide or guess around.
+  - cap_alert_tool(city, target_date, hazard): generates a CAP 1.2 (Common
+    Alerting Protocol, the OASIS international standard MAZU's own national
+    framework is built on) XML alert message, ready to plug into real
+    broadcast/siren/SMS warning infrastructure. Internally calls
+    forecast_tool, so only call this when the user specifically wants a
+    formal/machine-readable alert message, not for ordinary risk questions.
+    If alert_warranted is False, no alert was issued (probability too low for
+    this hazard's own threshold) -- say so plainly, do not fabricate an XML
+    message. The <status> field is always "Exercise", never "Actual" --
+    mention this if the user asks whether the alert is "real" or "live": this
+    is a historical-dataset demo, not a live feed.
 
 Rules (strict):
 1. NEVER state a probability, indicator value, mechanism name, or citation that
@@ -155,6 +166,22 @@ TOOL_SCHEMAS = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "cap_alert_tool",
+            "description": "Generate a formal CAP 1.2 (Common Alerting Protocol) XML alert message for a hazard forecast, suitable for real broadcast/siren/SMS infrastructure. Only call when the user explicitly wants a formal/machine-readable alert, not for ordinary risk questions.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "city": {"type": "string", "enum": list(tools.CITIES.keys())},
+                    "target_date": {"type": "string", "description": "YYYY-MM-DD, the exact date whose risk is being forecast (2025 only)"},
+                    "hazard": {"type": "string", "enum": ["heatwave", "flash_flood", "dust_storm"]},
+                },
+                "required": ["city", "target_date", "hazard"],
+            },
+        },
+    },
 ]
 
 TOOL_FUNCS = {
@@ -163,6 +190,7 @@ TOOL_FUNCS = {
     "conditions_tool": tools.conditions_tool,
     "similar_events_tool": tools.similar_events_tool,
     "region_risk_tool": tools.region_risk_tool,
+    "cap_alert_tool": tools.cap_alert_tool,
 }
 
 

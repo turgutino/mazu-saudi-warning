@@ -575,6 +575,77 @@ cons.close()
 # =============================================================================
 print()
 print("=" * 74)
+print("SECTION L — cap_alert_tool (6th agent tool, CAP 1.2 XML generation)")
+print("=" * 74)
+import xml.etree.ElementTree as ET
+CAP_NS_MAP_L = {"cap": "urn:oasis:names:tc:emergency:cap:1.2"}
+
+# L1 -- probability inside cap_alert_tool's dict matches a fresh, independent
+# forecast_tool call exactly (cap_alert_tool must not recompute or drift).
+r_cap_l = agent_tools.cap_alert_tool("Jizan", "2025-03-27", "flash_flood")
+fr_direct_l = agent_tools.forecast_tool("Jizan", "2025-03-27", "flash_flood")
+check("L", "cap_alert_tool probability matches a fresh, independent forecast_tool call exactly",
+     r_cap_l["probability"] == fr_direct_l["probability"], (r_cap_l["probability"], fr_direct_l["probability"]))
+
+# L2 -- severity mapping independently re-derived straight from
+# model/01_detection_engine.py's RULES thresholds (bypassing tools.py's own
+# _cap_severity helper entirely), not just re-reading its output.
+de_rules = agent_tools.DETECTION_RULES["flash_flood"]["severity"]
+expected_label = de_rules[0][0]
+for name, lo in de_rules:
+    if fr_direct_l["probability"] >= lo:
+        expected_label = name
+expected_cap_sev = {"low": "Minor", "medium": "Moderate", "high": "Severe", "extreme": "Extreme"}[expected_label]
+check("L", "cap_severity independently re-derived from DetectionEngine's own RULES thresholds matches exactly",
+     r_cap_l["cap_severity"] == expected_cap_sev, (r_cap_l["cap_severity"], expected_cap_sev, fr_direct_l["probability"]))
+
+# L3 -- across all 3 hazards' own known alert-warranted (city, date) pairs,
+# <status> must ALWAYS be "Exercise", never "Actual" -- this is a hard
+# honesty requirement (historical-dataset demo, not a live feed), checked by
+# parsing the real XML, not by trusting the dict.
+cap_cases = [("Jizan", "2025-03-27", "flash_flood"), ("Riyadh", "2025-08-27", "heatwave"),
+            ("Dammam", "2025-01-02", "dust_storm")]
+status_ok = True
+for city, date, hz in cap_cases:
+    rr = agent_tools.cap_alert_tool(city, date, hz)
+    if not rr.get("alert_warranted"):
+        status_ok = False
+        continue
+    parsed = ET.fromstring(rr["cap_xml"])
+    if parsed.find("cap:status", CAP_NS_MAP_L).text != "Exercise":
+        status_ok = False
+check("L", "all 3 hazards' CAP XML <status> is 'Exercise' (never 'Actual') -- honesty requirement", status_ok, cap_cases)
+
+# L4 -- <event> label in the XML matches the KG's own node label for that
+# hazard, independently re-read from kg_data.json directly (not via
+# causal_kg_tool or any cached lookup).
+kg_hazard_labels = {n["id"]: n.get("label", n["id"]) for n in kg["nodes"] if n.get("ntype") == "Hazard"}
+event_labels_ok = True
+for city, date, hz in cap_cases:
+    rr = agent_tools.cap_alert_tool(city, date, hz)
+    if not rr.get("alert_warranted"):
+        continue
+    parsed = ET.fromstring(rr["cap_xml"])
+    xml_event = parsed.find("cap:info/cap:event", CAP_NS_MAP_L).text
+    if xml_event != kg_hazard_labels.get(hz, hz):
+        event_labels_ok = False
+check("L", "CAP XML <event> matches the KG's own hazard node label, re-read directly from kg_data.json",
+     event_labels_ok, kg_hazard_labels)
+
+# L5 -- a known sub-threshold day produces NO cap_xml and alert_warranted is
+# explicitly False (never silently omitted or defaulted to True).
+r_cap_low = agent_tools.cap_alert_tool("Jizan", "2025-08-20", "flash_flood")
+check("L", "sub-threshold probability day: alert_warranted is False and no cap_xml key exists",
+     r_cap_low.get("alert_warranted") is False and "cap_xml" not in r_cap_low, r_cap_low)
+
+# L6 -- error propagation: an unknown city must produce the EXACT same error
+# dict as calling forecast_tool directly (no rewording, no swallowing).
+check("L", "cap_alert_tool unknown-city error is byte-identical to forecast_tool's own error",
+     agent_tools.cap_alert_tool("Atlantis", "2025-08-20", "flash_flood")
+     == agent_tools.forecast_tool("Atlantis", "2025-08-20", "flash_flood"))
+
+print()
+print("=" * 74)
 print(f"TOTAL: {PASS} passed, {FAIL} failed")
 print("=" * 74)
 if FAILURES:
