@@ -775,6 +775,104 @@ check("N", "all 3 hazards show genuine overconfidence in their top probability b
 
 print()
 print("=" * 74)
+print("SECTION O — ensemble uncertainty field (5-model spread), independently re-derived")
+print("=" * 74)
+
+# Full bypass: reload the 15 raw ensemble .joblib files straight from disk
+# (NOT via agent_tools._get_ensemble_models's module-level cache), recompute
+# ROC-AUC for each seed on an independently rebuilt test set, and separately
+# reconstruct one live city/date feature row from scratch to verify the
+# forecast_tool's returned uncertainty.mean/std/range match a from-scratch
+# ensemble prediction on that exact row.
+with open(os.path.join(HERE, "agent", "saved_models", "ensemble", "manifest.json"), encoding="utf-8") as f:
+    _ens_manifest = json.load(f)
+
+from sklearn.metrics import roc_auc_score as _roc_auc_score
+
+# O1 -- all 15 files exist and each seed's ROC-AUC, recomputed from scratch on
+# flash_flood's held-out test set (reusing the independently-rebuilt _X/_y/_te
+# from Section M), matches manifest.json's stored value.
+_ens_dir_o = os.path.join(HERE, "agent", "saved_models", "ensemble")
+_ff_seed_aucs = {}
+for _seed in (42, 43, 44, 45, 46):
+    _path = os.path.join(_ens_dir_o, f"flash_flood_seed{_seed}.joblib")
+    check("O", f"flash_flood seed{_seed} ensemble member file exists on disk",
+         os.path.isfile(_path), _path)
+    _m = _joblib.load(_path)
+    _p = _m.predict_proba(_X[_te])[:, 1]
+    _ff_seed_aucs[_seed] = _roc_auc_score(_y[_te], _p)
+
+_manifest_ff = {e["seed"]: e["roc_auc"] for e in _ens_manifest["hazards"]["flash_flood"]}
+_auc_match = all(abs(_ff_seed_aucs[s] - _manifest_ff[s]) < 0.001 for s in (42, 43, 44, 45, 46))
+check("O", "flash_flood: all 5 ensemble members' independently re-derived ROC-AUC match manifest.json exactly",
+     _auc_match, (_ff_seed_aucs, _manifest_ff))
+
+# O2 -- the 5 flash_flood members are genuinely distinct trained model objects
+# (different random_state seeds), not 5 copies of the same file.
+_ff_members_o = [_joblib.load(os.path.join(_ens_dir_o, f"flash_flood_seed{s}.joblib")) for s in (42, 43, 44, 45, 46)]
+check("O", "flash_flood: 5 ensemble member objects are distinct (not accidentally identical/duplicated files)",
+     len({id(m) for m in _ff_members_o}) == 5 and
+     len({round(float(m.predict_proba(_X[_te])[:1, 1][0]), 6) for m in _ff_members_o}) > 1,
+     [round(float(m.predict_proba(_X[_te])[:1, 1][0]), 6) for m in _ff_members_o])
+
+# O3 -- live bypass: reconstruct the exact Jizan/2025-08-23 flash_flood feature
+# row from raw dataset arrays using the same public building blocks tools.py
+# itself uses (CITIES, FEATURE_VARS, _nearest_stride2_index), completely
+# independent of forecast_tool's own internal cached call path, then compute
+# ensemble mean/std/range from scratch and compare to the live tool output.
+_meta_o, _ds_o = agent_tools._load_resources()
+_times_o = np.array([str(t)[:10] for t in _ds_o.time.values])
+_ti_target_o = int(np.where(_times_o == "2025-08-23")[0][0])
+_ti_o = _ti_target_o - 1
+_lat_full_o, _lon_full_o = _ds_o.latitude.values, _ds_o.longitude.values
+_stride_o = _meta_o["stride"]
+_yi_s_o = np.arange(0, len(_lat_full_o), _stride_o)
+_xi_s_o = np.arange(0, len(_lon_full_o), _stride_o)
+_lat_s_o, _lon_s_o = _lat_full_o[_yi_s_o], _lon_full_o[_xi_s_o]
+_city_lat_o, _city_lon_o = agent_tools.CITIES["Jizan"]
+_cyi_o, _cxi_o = agent_tools._nearest_stride2_index(_lat_s_o, _lon_s_o, _city_lat_o, _city_lon_o)
+_doy_o = _ds_o.time.values[_ti_o].astype("datetime64[D]").item().timetuple().tm_yday
+_raw_o = {v: _ds_o[v].values[_ti_o][_yi_s_o][:, _xi_s_o] for v in agent_tools.FEATURE_VARS}
+_feat_row_o = [_raw_o[v][_cyi_o, _cxi_o] for v in agent_tools.FEATURE_VARS]
+_feat_row_o += [_city_lat_o, _city_lon_o, _doy_o]
+_Xo = np.array(_feat_row_o, dtype="float64").reshape(1, -1)
+_ds_o.close()
+
+_probs_o = np.array([float(m.predict_proba(_Xo)[0, 1]) for m in _ff_members_o])
+_mean_o, _std_o = round(float(_probs_o.mean()), 4), round(float(_probs_o.std()), 4)
+_range_o = [round(float(_probs_o.min()), 4), round(float(_probs_o.max()), 4)]
+
+_live_o = agent_tools.forecast_tool("Jizan", "2025-08-23", "flash_flood")
+check("O", "uncertainty.mean independently re-derived from raw ensemble files matches forecast_tool's live output",
+     abs(_mean_o - _live_o["uncertainty"]["mean"]) < 0.0005, (_mean_o, _live_o["uncertainty"]["mean"]))
+check("O", "uncertainty.std independently re-derived from raw ensemble files matches forecast_tool's live output",
+     abs(_std_o - _live_o["uncertainty"]["std"]) < 0.0005, (_std_o, _live_o["uncertainty"]["std"]))
+check("O", "uncertainty.range independently re-derived from raw ensemble files matches forecast_tool's live output",
+     _range_o == _live_o["uncertainty"]["range"], (_range_o, _live_o["uncertainty"]["range"]))
+
+# O4 -- structural sanity: uncertainty.mean must NOT equal the top-level
+# probability field -- they come from genuinely different model objects (the
+# single production model vs. the 5-member ensemble), so equality would
+# indicate the field is a fake/copy rather than a real independent signal.
+check("O", "uncertainty.mean is computed from the ensemble, distinct from the production model's top-level probability",
+     _live_o["uncertainty"]["mean"] != _live_o["probability"],
+     (_live_o["uncertainty"]["mean"], _live_o["probability"]))
+
+# O5 -- all 3 hazards have exactly 5 ensemble files each on disk, matching
+# manifest.json's seed list, so the feature isn't silently partial for
+# heatwave/dust_storm even though the live-row bypass above only re-derives
+# flash_flood in full depth.
+_all_ens_ok = True
+for _hz in ("flash_flood", "heatwave", "dust_storm"):
+    for _seed in (42, 43, 44, 45, 46):
+        _p = os.path.join(_ens_dir_o, f"{_hz}_seed{_seed}.joblib")
+        if not os.path.isfile(_p):
+            _all_ens_ok = False
+check("O", "all 3 hazards have all 5 ensemble member files present on disk (15 total)",
+     _all_ens_ok, sorted(os.listdir(_ens_dir_o)))
+
+print()
+print("=" * 74)
 print(f"TOTAL: {PASS} passed, {FAIL} failed")
 print("=" * 74)
 if FAILURES:

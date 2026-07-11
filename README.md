@@ -13,20 +13,22 @@ and an **explainable warning agent** (DeepSeek function calling).
 
 ## Full system audit
 
-`FULL_SYSTEM_AUDIT.py` independently traces 100 numbers — from the consolidated
+`FULL_SYSTEM_AUDIT.py` independently traces 112 numbers — from the consolidated
 dataset, the knowledge graph's event values, the causal citations, an
-agent tool's output, and eight post-Layer-4 extensions (terrain elevation,
+agent tool's output, and nine post-Layer-4 extensions (terrain elevation,
 population context, an A/B ablation test re-derived from raw saved
 transcripts, a reflexive self-check whose two headline findings are
 independently re-derived a third time directly from the raw source files,
 a 5th agent tool closing a self-found KG utilization gap, CAP 1.2 alert
 generation independently re-parsed from the actual XML output, WMO-
 standard POD/FAR/CSI/HSS verification metrics recomputed from a fresh
-confusion matrix against the saved production models, and a reliability-
-diagram calibration check recomputed from scratch against the saved models)
+confusion matrix against the saved production models, a reliability-
+diagram calibration check recomputed from scratch against the saved models,
+and a 5-model ensemble uncertainty field re-derived from the 15 raw
+ensemble model files, bypassing every internal cache)
 — back to the raw 5GB source data (365 daily NetCDF files), plus checks the
 deployed GitHub site matches the local repo exactly.
-**Result: 100/100 passed, zero fabricated values found.** Full log in
+**Result: 112/112 passed, zero fabricated values found.** Full log in
 [`AUDIT_RESULTS.txt`](AUDIT_RESULTS.txt).
 
 ---
@@ -39,7 +41,7 @@ deployed GitHub site matches the local repo exactly.
 | Knowledge graph | ✅ | 60 nodes / 183 edges — indicators, hazards (now 3: flash flood, heatwave, **dust storm**), mechanisms, regions, **real 2025 events with observed values**, and **6 peer-reviewed citations** grounding 4 of 5 mechanisms in verbatim-verified literature text. Interactive. |
 | Detection engine | ✅ | Weighted multi-condition rules + spatial connected-component clustering. Validated against known 2025 events and a spatial-climatology check. |
 | Forecast (t→t+1) | ✅ | Gradient-boosted spatiotemporal model. Heatwave ROC-AUC 0.971 (PR-AUC 0.795); flash-flood ROC-AUC 0.873 — plus WMO-standard POD/FAR/CSI/HSS at each hazard's operational threshold (see below). A GNN variant was also tested and honestly reported (mixed result, not deployed). |
-| Explainable agent | ✅ | DeepSeek function-calling agent wiring 6 tools — forecast, causal KG, live conditions, similar events, region risk, and CAP 1.2 alert generation — into grounded answers. 143 tool tests + 4 end-to-end scenarios, all passing. See `agent/LAYER4_REPORT.md` and the [worked examples](agent_view.html). |
+| Explainable agent | ✅ | DeepSeek function-calling agent wiring 6 tools — forecast, causal KG, live conditions, similar events, region risk, and CAP 1.2 alert generation — into grounded answers. 151 tool tests + 4 end-to-end scenarios, all passing. See `agent/LAYER4_REPORT.md` and the [worked examples](agent_view.html). |
 
 ---
 
@@ -149,12 +151,36 @@ tested — see `agent/EXTENSIONS_REPORT.md` for full methodology and results:
   confirmed isotonic recalibration genuinely improves Brier score for all 3
   hazards, but was kept as a tested, documented finding rather than
   deployed — swapping in calibrated probabilities would shift ~150
-  already-verified test numbers and CAP's own severity thresholds. See
+  already-verified test numbers and CAP's own severity thresholds. A full
+  production-migration attempt was actually built and tested end-to-end in
+  an isolated sandbox copy of the whole repo (not just simulated) — and
+  confirmed it would make alert quality worse, not better. See
   `agent/CALIBRATION_REPORT.md`.
+- **Does a 5-model ensemble fix the overconfidence instead?** A natural
+  follow-up: average 5 independently-seeded models of the same architecture
+  rather than recalibrate. Brier score improved for all 3 hazards (a real,
+  if modest, gain), but POD got worse for all 3 hazards too — the same
+  trade-off direction as isotonic recalibration, just smaller in magnitude —
+  and dust storm's ECE actually got slightly worse. **Not deployed**, same
+  reasoning as the calibration fix. See `agent/ENSEMBLE_REPORT.md`.
+- **Ensemble uncertainty (deployed) — the actual resolution.** Rather than
+  trying to fix the point estimate (both attempts above changed it and both
+  hurt decision quality), `forecast_tool` now returns a 4th field,
+  `uncertainty` (mean/std/range/n_members), from the same 5-model ensemble —
+  but purely as added context, never substituted for the production
+  probability. Large `std` means the 5 otherwise-identical models disagree
+  on this specific input; this is a genuinely distinct signal from
+  `reflexive_check` (model vs. rule-engine) and `meteorological_metrics`
+  (threshold-dependent track record). Because no decision-relevant number
+  moves, no existing verified number or alert threshold changes — the
+  overconfidence problem gets an honest, additive answer instead of a
+  point-estimate rewrite that trades away detection quality. See
+  `agent/UNCERTAINTY_REPORT.md`.
 
-All 143 unit tests pass (`agent/02_test_tools.py`, up from 32); 50 further
-independent checks verify the calibration analysis (`model/09b_test_calibration.py`,
-`model/10b_test_calibration_fix.py`).
+All 151 unit tests pass (`agent/02_test_tools.py`, up from 32); 68 further
+independent checks verify the calibration and ensemble analyses
+(`model/09b_test_calibration.py`, `model/10b_test_calibration_fix.py`,
+`model/12b_test_ensemble.py`).
 
 ---
 

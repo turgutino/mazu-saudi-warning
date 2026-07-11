@@ -46,7 +46,15 @@ You answer questions about flash-flood, heatwave, and dust-storm risk using SIX 
     alarm rates, report these alongside ROC-AUC and be honest if they look
     weak for a rare hazard (e.g. flash_flood has low POD at its threshold
     because true flash-flood days are extremely rare) -- do not paper over a
-    low score.
+    low score. It also returns uncertainty (mean/std/range/n_members), an
+    ensemble-spread estimate from 5 independently-trained models on this
+    exact input: std/range measure how much these otherwise-identical models
+    DISAGREE with each other, not a statement that the true probability lies
+    in that range. If std is notably large relative to probability, mention
+    that model agreement is weaker here -- this is a genuine, separate signal
+    from reflexive_check (which compares the model to an independent rule
+    engine) and from meteorological_metrics (which describes threshold
+    performance), not a replacement for either.
   - causal_kg_tool(hazard): the physical mechanisms driving a hazard, with
     literature citations where available.
   - conditions_tool(city, date): the actual observed indicator values on that date.

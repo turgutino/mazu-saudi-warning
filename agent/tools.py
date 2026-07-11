@@ -64,10 +64,12 @@ FEATURE_VARS = [
 DUST_EXTRA_VARS = ["wind10_speed", "dewpoint_depression_c"]
 
 _MODELS = {}
+_ENSEMBLES = {}
 _META = None
 _DS = None
 _POP = None
 _DE = None
+ENSEMBLE_DIR = os.path.join(SAVED_DIR, "ensemble")
 
 
 def _load_resources():
@@ -92,6 +94,42 @@ def _get_model(hazard):
     if hazard not in _MODELS:
         _MODELS[hazard] = joblib.load(os.path.join(SAVED_DIR, f"{hazard}_model.joblib"))
     return _MODELS[hazard]
+
+
+# 5-member bagging ensembles (model/13_train_ensemble_members.py), same
+# hyperparameters/training window as the single production model above,
+# differing only in random_state (42-46; seed 42 is trained identically to
+# the production model, i.e. a 6th, redundant copy of it -- included
+# deliberately for symmetry/simplicity, not because it adds information).
+# Used ONLY to compute an ensemble-spread uncertainty estimate around the
+# production model's own point probability -- these members' predictions are
+# never substituted for the production model's probability itself.
+_ENSEMBLE_SEEDS = [42, 43, 44, 45, 46]
+
+
+def _get_ensemble_models(hazard):
+    if hazard not in _ENSEMBLES:
+        members = []
+        for seed in _ENSEMBLE_SEEDS:
+            path = os.path.join(ENSEMBLE_DIR, f"{hazard}_seed{seed}.joblib")
+            members.append(joblib.load(path))
+        _ENSEMBLES[hazard] = members
+    return _ENSEMBLES[hazard]
+
+
+def _ensemble_uncertainty(hazard, X):
+    """Returns (mean_proba, uncertainty_dict) from the 5-member ensemble's
+    spread on this single feature row. mean_proba is reported separately from
+    (not used to replace) the production model's own point probability --
+    see forecast_tool, which keeps the two clearly distinct."""
+    members = _get_ensemble_models(hazard)
+    probs = np.array([float(m.predict_proba(X)[0, 1]) for m in members])
+    return {
+        "mean": round(float(probs.mean()), 4),
+        "std": round(float(probs.std()), 4),
+        "range": [round(float(probs.min()), 4), round(float(probs.max()), 4)],
+        "n_members": len(members),
+    }
 
 
 def _get_detection_engine():
@@ -251,6 +289,7 @@ def forecast_tool(city: str, target_date: str, hazard: str) -> dict:
     X = np.array(feat_row, dtype="float64").reshape(1, -1)
     model = _get_model(hazard)
     proba = float(model.predict_proba(X)[0, 1])
+    uncertainty = _ensemble_uncertainty(hazard, X)
 
     # Use FULL-resolution orography (not the model's stride-2 feature grid) for
     # elevation context: terrain is a static geographic fact and should reflect
@@ -309,6 +348,21 @@ def forecast_tool(city: str, target_date: str, hazard: str) -> dict:
         # fixed operational cutoff for genuinely rare events (see
         # flash_flood in agent/METEOROLOGICAL_METRICS_REPORT.md).
         "meteorological_metrics": meta[hazard]["meteorological_metrics"],
+        # Ensemble-spread uncertainty (model/13_train_ensemble_members.py): 5
+        # independently-trained classifiers (same hyperparameters/training
+        # window as the production model, different random seeds) scored on
+        # this exact feature row. "std"/"range" describe how much these 5
+        # otherwise-identical models disagree with each other -- a MODEL-
+        # DISAGREEMENT signal, not a statement that the true probability lies
+        # in this range. Deliberately does NOT touch "probability" above
+        # (the production model's own point estimate is reported unchanged,
+        # exactly as before this field existed) -- this adds context around
+        # the number rather than attempting to "fix" it, unlike the isotonic-
+        # calibration/ensemble-averaging experiments in
+        # agent/CALIBRATION_REPORT.md and agent/ENSEMBLE_REPORT.md, both of
+        # which changed the point estimate itself and were found to hurt
+        # operational alert quality.
+        "uncertainty": uncertainty,
     }
 
 

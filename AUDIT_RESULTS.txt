@@ -156,7 +156,23 @@ SECTION N — calibration reliability diagram (ECE/Brier), independently re-derive
   [PASS] all 3 hazards show genuine overconfidence in their top probability bin [0.9,1.0] -- a real, disclosed calibration limitation distinct from the low aggregate ECE
 
 ==========================================================================
-TOTAL: 100 passed, 0 failed
+SECTION O — ensemble uncertainty field (5-model spread), independently re-derived
+==========================================================================
+  [PASS] flash_flood seed42 ensemble member file exists on disk
+  [PASS] flash_flood seed43 ensemble member file exists on disk
+  [PASS] flash_flood seed44 ensemble member file exists on disk
+  [PASS] flash_flood seed45 ensemble member file exists on disk
+  [PASS] flash_flood seed46 ensemble member file exists on disk
+  [PASS] flash_flood: all 5 ensemble members' independently re-derived ROC-AUC match manifest.json exactly
+  [PASS] flash_flood: 5 ensemble member objects are distinct (not accidentally identical/duplicated files)
+  [PASS] uncertainty.mean independently re-derived from raw ensemble files matches forecast_tool's live output
+  [PASS] uncertainty.std independently re-derived from raw ensemble files matches forecast_tool's live output
+  [PASS] uncertainty.range independently re-derived from raw ensemble files matches forecast_tool's live output
+  [PASS] uncertainty.mean is computed from the ensemble, distinct from the production model's top-level probability
+  [PASS] all 3 hazards have all 5 ensemble member files present on disk (15 total)
+
+==========================================================================
+TOTAL: 112 passed, 0 failed
 ==========================================================================
 
 Every checked number traces back to the raw 5GB source data. No fabrication found.

@@ -1,0 +1,108 @@
+{
+  "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+  ],
+  "train_end": "2025-06-30",
+  "hazards": {
+    "heatwave": [
+      {
+        "seed": 42,
+        "roc_auc": 0.9706,
+        "pr_auc": 0.795,
+        "file": "heatwave_seed42.joblib"
+      },
+      {
+        "seed": 43,
+        "roc_auc": 0.9719,
+        "pr_auc": 0.793,
+        "file": "heatwave_seed43.joblib"
+      },
+      {
+        "seed": 44,
+        "roc_auc": 0.9701,
+        "pr_auc": 0.7943,
+        "file": "heatwave_seed44.joblib"
+      },
+      {
+        "seed": 45,
+        "roc_auc": 0.9579,
+        "pr_auc": 0.7637,
+        "file": "heatwave_seed45.joblib"
+      },
+      {
+        "seed": 46,
+        "roc_auc": 0.9702,
+        "pr_auc": 0.7945,
+        "file": "heatwave_seed46.joblib"
+      }
+    ],
+    "flash_flood": [
+      {
+        "seed": 42,
+        "roc_auc": 0.8732,
+        "pr_auc": 0.0891,
+        "file": "flash_flood_seed42.joblib"
+      },
+      {
+        "seed": 43,
+        "roc_auc": 0.8655,
+        "pr_auc": 0.0848,
+        "file": "flash_flood_seed43.joblib"
+      },
+      {
+        "seed": 44,
+        "roc_auc": 0.8608,
+        "pr_auc": 0.0814,
+        "file": "flash_flood_seed44.joblib"
+      },
+      {
+        "seed": 45,
+        "roc_auc": 0.8522,
+        "pr_auc": 0.0797,
+        "file": "flash_flood_seed45.joblib"
+      },
+      {
+        "seed": 46,
+        "roc_auc": 0.8603,
+        "pr_auc": 0.0903,
+        "file": "flash_flood_seed46.joblib"
+      }
+    ],
+    "dust_storm": [
+      {
+        "seed": 42,
+        "roc_auc": 0.8866,
+        "pr_auc": 0.1635,
+        "file": "dust_storm_seed42.joblib"
+      },
+      {
+        "seed": 43,
+        "roc_auc": 0.885,
+        "pr_auc": 0.1513,
+        "file": "dust_storm_seed43.joblib"
+      },
+      {
+        "seed": 44,
+        "roc_auc": 0.8877,
+        "pr_auc": 0.1536,
+        "file": "dust_storm_seed44.joblib"
+      },
+      {
+        "seed": 45,
+        "roc_auc": 0.8872,
+        "pr_auc": 0.1611,
+        "file": "dust_storm_seed45.joblib"
+      },
+      {
+        "seed": 46,
+        "roc_auc": 0.8837,
+        "pr_auc": 0.1713,
+        "file": "dust_storm_seed46.joblib"
+      }
+    ]
+  }
+}
