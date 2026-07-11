@@ -90,11 +90,15 @@
     <div class="stat"><div class="n">0.887</div><div class="l">dust-storm ROC-AUC</div></div>
   </div>
   <ul class="pts">
-    <li><b>Heatwave:</b> strong, well-calibrated one-day-ahead skill (ROC-AUC 0.971, PR-AUC 0.795 with a spatial-context feature) — calm days stay near-zero risk.</li>
+    <li><b>Heatwave:</b> strong one-day-ahead skill (ROC-AUC 0.971, PR-AUC 0.795 with a spatial-context feature) — calm days stay near-zero risk.</li>
     <li><b>Flash flood:</b> real but modest skill (ROC-AUC 0.873) given extreme rarity (0.5% of grid-days) and one year of training data; correctly ranks CAPE as the dominant driver.</li>
     <li><b>Dust storm:</b> real, out-of-sample-validated skill (ROC-AUC 0.887) for a similarly rare event (~2% of grid-days); the label itself was built from the detection engine's own already-validated rule rather than a separately invented definition.</li>
     <li><b>Also tested, disclosed honestly:</b> a spatiotemporal GNN improved flash-flood spatial recall on one event but degraded calibration overall — kept as a documented research direction, not deployed.</li>
   </ul>
+  <div class="fig" style="margin-top:20px">
+    <img src="img/calibration_reliability_diagram.png" alt="Reliability diagrams for all 3 hazards, showing systematic overconfidence">
+    <div class="cap"><b>Reliability diagrams (is the probability itself trustworthy, not just its ranking?).</b> Every point for all 3 hazards falls below the diagonal — the model is systematically overconfident: flash flood's "95.7%" bucket only sees the event 54.3% of the time; dust storm's "94.9%" bucket only 20.4%. Flash flood's aggregate ECE (0.006) looks best in isolation but is misleading — ~97% of samples sit in the near-zero bucket, masking the same overconfidence at the high end. Tested whether isotonic recalibration fixes this (leak-free 3-way split, <code>model/10_calibration_fix.py</code>): Brier score improved for all 3 hazards, but kept as a documented, tested finding rather than deployed to production — swapping calibrated probabilities would shift ~150 already-verified test/audit numbers and CAP's own severity thresholds, which are tuned to the raw scale. See <code>agent/CALIBRATION_REPORT.md</code>.</div>
+  </div>
 </div></section>
 
 <section><div class="wrap">

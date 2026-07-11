@@ -13,19 +13,20 @@ and an **explainable warning agent** (DeepSeek function calling).
 
 ## Full system audit
 
-`FULL_SYSTEM_AUDIT.py` independently traces 96 numbers — from the consolidated
+`FULL_SYSTEM_AUDIT.py` independently traces 100 numbers — from the consolidated
 dataset, the knowledge graph's event values, the causal citations, an
-agent tool's output, and seven post-Layer-4 extensions (terrain elevation,
+agent tool's output, and eight post-Layer-4 extensions (terrain elevation,
 population context, an A/B ablation test re-derived from raw saved
 transcripts, a reflexive self-check whose two headline findings are
 independently re-derived a third time directly from the raw source files,
 a 5th agent tool closing a self-found KG utilization gap, CAP 1.2 alert
-generation independently re-parsed from the actual XML output, and WMO-
+generation independently re-parsed from the actual XML output, WMO-
 standard POD/FAR/CSI/HSS verification metrics recomputed from a fresh
-confusion matrix against the saved production models)
+confusion matrix against the saved production models, and a reliability-
+diagram calibration check recomputed from scratch against the saved models)
 — back to the raw 5GB source data (365 daily NetCDF files), plus checks the
 deployed GitHub site matches the local repo exactly.
-**Result: 96/96 passed, zero fabricated values found.** Full log in
+**Result: 100/100 passed, zero fabricated values found.** Full log in
 [`AUDIT_RESULTS.txt`](AUDIT_RESULTS.txt).
 
 ---
@@ -136,8 +137,24 @@ tested — see `agent/EXTENSIONS_REPORT.md` for full methodology and results:
   extremely rare event (~0.5% of test-set cells) — reported honestly rather
   than only showing the more flattering number. See
   `agent/METEOROLOGICAL_METRICS_REPORT.md`.
+- **Reliability diagrams — is the probability itself trustworthy?** ROC-AUC
+  and POD/FAR/CSI/HSS answer different questions than "when the model says
+  70%, does it happen ~70% of the time?" Binning every test-set prediction
+  by probability found that all 3 hazards are **systematically
+  overconfident** at the high end (flash flood's "95.7%" bucket only sees
+  the event 54.3% of the time) — and that flash flood's low aggregate ECE
+  in isolation is itself misleading, since ~97% of samples sit in one
+  near-zero bucket that masks the same pattern. A follow-up experiment
+  (`model/10_calibration_fix.py`, leak-free 3-way chronological split)
+  confirmed isotonic recalibration genuinely improves Brier score for all 3
+  hazards, but was kept as a tested, documented finding rather than
+  deployed — swapping in calibrated probabilities would shift ~150
+  already-verified test numbers and CAP's own severity thresholds. See
+  `agent/CALIBRATION_REPORT.md`.
 
-All 143 unit tests pass (`agent/02_test_tools.py`, up from 32).
+All 143 unit tests pass (`agent/02_test_tools.py`, up from 32); 50 further
+independent checks verify the calibration analysis (`model/09b_test_calibration.py`,
+`model/10b_test_calibration_fix.py`).
 
 ---
 

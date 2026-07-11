@@ -1,0 +1,482 @@
+{
+  "heatwave": {
+    "isolated_classifier_train_period": "2025-01-01 to 2025-05-31 (1320000 rows)",
+    "calibration_period": "2025-06-01 to 2025-06-30 (264000 rows)",
+    "test_period": "2025-07-01 to 2025-12-31 (1619200 rows, UNCHANGED from every other report)",
+    "isolated_classifier_roc_auc": 0.9548,
+    "isolated_classifier_pr_auc": 0.7077,
+    "roc_auc_after_calibration": 0.9551,
+    "before": {
+      "ece": 0.0143,
+      "brier": 0.0273,
+      "bins": [
+        {
+          "bin_lo": 0.0,
+          "bin_hi": 0.1,
+          "count": 1440539,
+          "mean_predicted": 0.010551498672423675,
+          "observed_freq": 0.009121585739782122
+        },
+        {
+          "bin_lo": 0.1,
+          "bin_hi": 0.2,
+          "count": 50023,
+          "mean_predicted": 0.13901194226648617,
+          "observed_freq": 0.09847470163724686
+        },
+        {
+          "bin_lo": 0.2,
+          "bin_hi": 0.3,
+          "count": 20253,
+          "mean_predicted": 0.24620824969182395,
+          "observed_freq": 0.17962770947513948
+        },
+        {
+          "bin_lo": 0.3,
+          "bin_hi": 0.4,
+          "count": 14031,
+          "mean_predicted": 0.3476431698979918,
+          "observed_freq": 0.26163495117953106
+        },
+        {
+          "bin_lo": 0.4,
+          "bin_hi": 0.5,
+          "count": 10992,
+          "mean_predicted": 0.4486916749710295,
+          "observed_freq": 0.3078602620087336
+        },
+        {
+          "bin_lo": 0.5,
+          "bin_hi": 0.6,
+          "count": 9384,
+          "mean_predicted": 0.5492111553643101,
+          "observed_freq": 0.3711636828644501
+        },
+        {
+          "bin_lo": 0.6,
+          "bin_hi": 0.7,
+          "count": 8814,
+          "mean_predicted": 0.6493552776963448,
+          "observed_freq": 0.4480372135239392
+        },
+        {
+          "bin_lo": 0.7,
+          "bin_hi": 0.8,
+          "count": 10415,
+          "mean_predicted": 0.7529165158644819,
+          "observed_freq": 0.49793566970715314
+        },
+        {
+          "bin_lo": 0.8,
+          "bin_hi": 0.9,
+          "count": 14603,
+          "mean_predicted": 0.854366828024746,
+          "observed_freq": 0.5741970827912073
+        },
+        {
+          "bin_lo": 0.9,
+          "bin_hi": 1.0,
+          "count": 40146,
+          "mean_predicted": 0.964694496843088,
+          "observed_freq": 0.8470831465152194
+        }
+      ]
+    },
+    "after": {
+      "ece": 0.0232,
+      "brier": 0.0265,
+      "bins": [
+        {
+          "bin_lo": 0.0,
+          "bin_hi": 0.1,
+          "count": 1420069,
+          "mean_predicted": 0.02322579645340149,
+          "observed_freq": 0.008299596709737343
+        },
+        {
+          "bin_lo": 0.1,
+          "bin_hi": 0.2,
+          "count": 47081,
+          "mean_predicted": 0.13075382972793975,
+          "observed_freq": 0.07510460695397295
+        },
+        {
+          "bin_lo": 0.2,
+          "bin_hi": 0.3,
+          "count": 35582,
+          "mean_predicted": 0.23209345996241748,
+          "observed_freq": 0.13529312573773256
+        },
+        {
+          "bin_lo": 0.3,
+          "bin_hi": 0.4,
+          "count": 21192,
+          "mean_predicted": 0.3538635888403697,
+          "observed_freq": 0.23461683654209137
+        },
+        {
+          "bin_lo": 0.4,
+          "bin_hi": 0.5,
+          "count": 12331,
+          "mean_predicted": 0.4444443504522034,
+          "observed_freq": 0.3076798313194388
+        },
+        {
+          "bin_lo": 0.5,
+          "bin_hi": 0.6,
+          "count": 20660,
+          "mean_predicted": 0.5385224975750504,
+          "observed_freq": 0.41737657308809295
+        },
+        {
+          "bin_lo": 0.6,
+          "bin_hi": 0.7,
+          "count": 19062,
+          "mean_predicted": 0.6522499102945319,
+          "observed_freq": 0.5369321162522296
+        },
+        {
+          "bin_lo": 0.7,
+          "bin_hi": 0.8,
+          "count": 12387,
+          "mean_predicted": 0.7229665262466853,
+          "observed_freq": 0.6795834342455801
+        },
+        {
+          "bin_lo": 0.8,
+          "bin_hi": 0.9,
+          "count": 10548,
+          "mean_predicted": 0.871539284060786,
+          "observed_freq": 0.8203450891164201
+        },
+        {
+          "bin_lo": 0.9,
+          "bin_hi": 1.0,
+          "count": 20288,
+          "mean_predicted": 0.9455214979143263,
+          "observed_freq": 0.9334582018927445
+        }
+      ]
+    }
+  },
+  "flash_flood": {
+    "isolated_classifier_train_period": "2025-01-01 to 2025-05-31 (1320000 rows)",
+    "calibration_period": "2025-06-01 to 2025-06-30 (264000 rows)",
+    "test_period": "2025-07-01 to 2025-12-31 (1619200 rows, UNCHANGED from every other report)",
+    "isolated_classifier_roc_auc": 0.9039,
+    "isolated_classifier_pr_auc": 0.0975,
+    "roc_auc_after_calibration": 0.8974,
+    "before": {
+      "ece": 0.0216,
+      "brier": 0.011,
+      "bins": [
+        {
+          "bin_lo": 0.0,
+          "bin_hi": 0.1,
+          "count": 1507407,
+          "mean_predicted": 0.007468546757735121,
+          "observed_freq": 0.002365651745016442
+        },
+        {
+          "bin_lo": 0.1,
+          "bin_hi": 0.2,
+          "count": 51206,
+          "mean_predicted": 0.14210507812797435,
+          "observed_freq": 0.025016599617232356
+        },
+        {
+          "bin_lo": 0.2,
+          "bin_hi": 0.3,
+          "count": 23710,
+          "mean_predicted": 0.244792572320507,
+          "observed_freq": 0.035596794601433994
+        },
+        {
+          "bin_lo": 0.3,
+          "bin_hi": 0.4,
+          "count": 12894,
+          "mean_predicted": 0.3457929971593973,
+          "observed_freq": 0.04226772142081588
+        },
+        {
+          "bin_lo": 0.4,
+          "bin_hi": 0.5,
+          "count": 8349,
+          "mean_predicted": 0.44725833899274314,
+          "observed_freq": 0.047071505569529284
+        },
+        {
+          "bin_lo": 0.5,
+          "bin_hi": 0.6,
+          "count": 5437,
+          "mean_predicted": 0.5473599017127332,
+          "observed_freq": 0.05646496229538348
+        },
+        {
+          "bin_lo": 0.6,
+          "bin_hi": 0.7,
+          "count": 4010,
+          "mean_predicted": 0.6469421634400429,
+          "observed_freq": 0.06907730673316709
+        },
+        {
+          "bin_lo": 0.7,
+          "bin_hi": 0.8,
+          "count": 2462,
+          "mean_predicted": 0.7476534448322045,
+          "observed_freq": 0.08610885458976442
+        },
+        {
+          "bin_lo": 0.8,
+          "bin_hi": 0.9,
+          "count": 1867,
+          "mean_predicted": 0.8494771806032687,
+          "observed_freq": 0.16068559185859668
+        },
+        {
+          "bin_lo": 0.9,
+          "bin_hi": 1.0,
+          "count": 1858,
+          "mean_predicted": 0.9489164543899575,
+          "observed_freq": 0.34068891280947255
+        }
+      ]
+    },
+    "after": {
+      "ece": 0.0025,
+      "brier": 0.0049,
+      "bins": [
+        {
+          "bin_lo": 0.0,
+          "bin_hi": 0.1,
+          "count": 1613855,
+          "mean_predicted": 0.002020345760273344,
+          "observed_freq": 0.004513416632844958
+        },
+        {
+          "bin_lo": 0.1,
+          "bin_hi": 0.2,
+          "count": 4460,
+          "mean_predicted": 0.1458029407457307,
+          "observed_freq": 0.1562780269058296
+        },
+        {
+          "bin_lo": 0.2,
+          "bin_hi": 0.3,
+          "count": 406,
+          "mean_predicted": 0.27029757828198286,
+          "observed_freq": 0.3275862068965517
+        },
+        {
+          "bin_lo": 0.3,
+          "bin_hi": 0.4,
+          "count": 1,
+          "mean_predicted": 0.3668177186981196,
+          "observed_freq": 1.0
+        },
+        {
+          "bin_lo": 0.4,
+          "bin_hi": 0.5,
+          "count": 194,
+          "mean_predicted": 0.42924692854988683,
+          "observed_freq": 0.42783505154639173
+        },
+        {
+          "bin_lo": 0.5,
+          "bin_hi": 0.6,
+          "count": 59,
+          "mean_predicted": 0.5635733790182774,
+          "observed_freq": 0.4745762711864407
+        },
+        {
+          "bin_lo": 0.6,
+          "bin_hi": 0.7,
+          "count": 99,
+          "mean_predicted": 0.6257898338614115,
+          "observed_freq": 0.5454545454545454
+        },
+        {
+          "bin_lo": 0.7,
+          "bin_hi": 0.8,
+          "count": 126,
+          "mean_predicted": 0.7073170731707313,
+          "observed_freq": 0.6190476190476191
+        },
+        {
+          "bin_lo": 0.8,
+          "bin_hi": 0.9,
+          "count": 0,
+          "mean_predicted": null,
+          "observed_freq": null
+        },
+        {
+          "bin_lo": 0.9,
+          "bin_hi": 1.0,
+          "count": 0,
+          "mean_predicted": null,
+          "observed_freq": null
+        }
+      ]
+    }
+  },
+  "dust_storm": {
+    "isolated_classifier_train_period": "2025-01-01 to 2025-05-31 (1320000 rows)",
+    "calibration_period": "2025-06-01 to 2025-06-30 (264000 rows)",
+    "test_period": "2025-07-01 to 2025-12-31 (1619200 rows, UNCHANGED from every other report)",
+    "isolated_classifier_roc_auc": 0.8018,
+    "isolated_classifier_pr_auc": 0.1399,
+    "roc_auc_after_calibration": 0.801,
+    "before": {
+      "ece": 0.0989,
+      "brier": 0.0643,
+      "bins": [
+        {
+          "bin_lo": 0.0,
+          "bin_hi": 0.1,
+          "count": 1212091,
+          "mean_predicted": 0.01820824209900697,
+          "observed_freq": 0.008057975845047938
+        },
+        {
+          "bin_lo": 0.1,
+          "bin_hi": 0.2,
+          "count": 115945,
+          "mean_predicted": 0.14335622117503463,
+          "observed_freq": 0.018206908447971022
+        },
+        {
+          "bin_lo": 0.2,
+          "bin_hi": 0.3,
+          "count": 66037,
+          "mean_predicted": 0.2469225405974467,
+          "observed_freq": 0.029619758620167483
+        },
+        {
+          "bin_lo": 0.3,
+          "bin_hi": 0.4,
+          "count": 48594,
+          "mean_predicted": 0.3475002329723898,
+          "observed_freq": 0.042680166275671894
+        },
+        {
+          "bin_lo": 0.4,
+          "bin_hi": 0.5,
+          "count": 38290,
+          "mean_predicted": 0.44817281882035964,
+          "observed_freq": 0.04559937320449203
+        },
+        {
+          "bin_lo": 0.5,
+          "bin_hi": 0.6,
+          "count": 32157,
+          "mean_predicted": 0.5488472673870721,
+          "observed_freq": 0.04754796778306434
+        },
+        {
+          "bin_lo": 0.6,
+          "bin_hi": 0.7,
+          "count": 27578,
+          "mean_predicted": 0.6483736736600572,
+          "observed_freq": 0.0526869243599971
+        },
+        {
+          "bin_lo": 0.7,
+          "bin_hi": 0.8,
+          "count": 23270,
+          "mean_predicted": 0.7490287630029748,
+          "observed_freq": 0.07576278470133219
+        },
+        {
+          "bin_lo": 0.8,
+          "bin_hi": 0.9,
+          "count": 23119,
+          "mean_predicted": 0.8506253747066198,
+          "observed_freq": 0.12124226826419827
+        },
+        {
+          "bin_lo": 0.9,
+          "bin_hi": 1.0,
+          "count": 32119,
+          "mean_predicted": 0.9507002298416596,
+          "observed_freq": 0.21476384694417636
+        }
+      ]
+    },
+    "after": {
+      "ece": 0.0142,
+      "brier": 0.0193,
+      "bins": [
+        {
+          "bin_lo": 0.0,
+          "bin_hi": 0.1,
+          "count": 1496181,
+          "mean_predicted": 0.019443071145959546,
+          "observed_freq": 0.012236487430330956
+        },
+        {
+          "bin_lo": 0.1,
+          "bin_hi": 0.2,
+          "count": 60398,
+          "mean_predicted": 0.14319960040175503,
+          "observed_freq": 0.05680651677207855
+        },
+        {
+          "bin_lo": 0.2,
+          "bin_hi": 0.3,
+          "count": 40425,
+          "mean_predicted": 0.22221198972573733,
+          "observed_freq": 0.1240321583178726
+        },
+        {
+          "bin_lo": 0.3,
+          "bin_hi": 0.4,
+          "count": 14803,
+          "mean_predicted": 0.3254432690683118,
+          "observed_freq": 0.17962575153685065
+        },
+        {
+          "bin_lo": 0.4,
+          "bin_hi": 0.5,
+          "count": 7133,
+          "mean_predicted": 0.46943284143081143,
+          "observed_freq": 0.36113837095191365
+        },
+        {
+          "bin_lo": 0.5,
+          "bin_hi": 0.6,
+          "count": 260,
+          "mean_predicted": 0.5,
+          "observed_freq": 0.4307692307692308
+        },
+        {
+          "bin_lo": 0.6,
+          "bin_hi": 0.7,
+          "count": 0,
+          "mean_predicted": null,
+          "observed_freq": null
+        },
+        {
+          "bin_lo": 0.7,
+          "bin_hi": 0.8,
+          "count": 0,
+          "mean_predicted": null,
+          "observed_freq": null
+        },
+        {
+          "bin_lo": 0.8,
+          "bin_hi": 0.9,
+          "count": 0,
+          "mean_predicted": null,
+          "observed_freq": null
+        },
+        {
+          "bin_lo": 0.9,
+          "bin_hi": 1.0,
+          "count": 0,
+          "mean_predicted": null,
+          "observed_freq": null
+        }
+      ]
+    }
+  }
+}
