@@ -148,7 +148,15 @@ SECTION M — meteorological_metrics (POD/FAR/CSI/HSS), independently re-derived
   [PASS] all 3 hazards' meteorological_metrics are finite (no NaN from a degenerate confusion matrix)
 
 ==========================================================================
-TOTAL: 96 passed, 0 failed
+SECTION N — calibration reliability diagram (ECE/Brier), independently re-derived
+==========================================================================
+  [PASS] flash_flood: independently re-derived ECE matches calibration_report.json's stored value
+  [PASS] flash_flood: independently re-derived Brier score matches calibration_report.json's stored value
+  [PASS] flash_flood: independently re-derived bin counts match calibration_report.json exactly, bin by bin
+  [PASS] all 3 hazards show genuine overconfidence in their top probability bin [0.9,1.0] -- a real, disclosed calibration limitation distinct from the low aggregate ECE
+
+==========================================================================
+TOTAL: 100 passed, 0 failed
 ==========================================================================
 
 Every checked number traces back to the raw 5GB source data. No fabrication found.
