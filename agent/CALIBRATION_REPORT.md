@@ -134,6 +134,55 @@ tested research finding** — the same treatment given to the GNN variant and
 the neighbor-mean feature earlier in this project: real, honestly reported,
 not deployed.
 
+### A full production-migration attempt was actually built and tested, in an isolated sandbox — and it made alert quality *worse*
+
+To settle the question properly rather than only reason about it abstractly,
+a complete calibrated production pipeline (`CalibratedModel` wrapper class,
+retrained-and-calibrated `.joblib` files, refreshed `model_meta.json`) was
+actually built and evaluated end-to-end in a fully isolated copy of the
+repository (`mazu-system-sandbox/`, a plain file copy with no `.git` history
+— this real system, this repo, and GitHub were never touched during the
+experiment).
+
+First attempt reused the old 0.50/0.55 thresholds unchanged on the newly
+calibrated probabilities, and surfaced a second, more serious real finding:
+**dust storm's calibrated probability never exceeds 0.50 anywhere in the
+entire Jul–Dec test set** — meaning the old 0.55 threshold would make it
+*structurally impossible* for the calibrated model to ever issue a dust
+storm alert. This is a genuine, investigated consequence of calibration
+compressing an overconfident rare-event model's high-end probabilities
+toward what the June calibration month's true positive rate actually
+supports — not a bug in the wrapper.
+
+The thresholds were then properly re-derived per hazard, CSI-maximized on
+the calibration set only (June — never the test set, to avoid tuning
+thresholds on the same data used to report their performance), a standard
+meteorological forecast-verification technique:
+
+| Hazard | Old threshold | New (CSI-optimal) threshold | POD: before → after | CSI: before → after | HSS: before → after |
+|---|---|---|---|---|---|
+| Heatwave | 0.55 | 0.32 | 0.849 → **0.749** | 0.552 → **0.472** | 0.693 → **0.619** |
+| Flash flood | 0.50 | 0.18 | 0.100 → **0.045** | 0.071 → **0.043** | 0.130 → **0.081** |
+| Dust storm | 0.55 | 0.18 | 0.535 → **0.341** | 0.121 → 0.119 | 0.190 → 0.191 |
+
+**Even at each hazard's own best possible threshold, real alert-issuance
+quality (POD/CSI/HSS) got worse for every hazard**, not better — heatwave
+and flash flood clearly, dust storm roughly flat. Calibration fixed the
+*honesty* of the probability numbers (Brier score genuinely improved, see
+above) but did not preserve — and in this case measurably hurt — the
+*decision quality* of the resulting alerts, because (a) the isolated
+classifier underlying the calibrated pipeline was trained on one month less
+data than production, and (b) an honestly-calibrated rare-event model
+necessarily produces lower peak probabilities, which a fixed or even a
+re-optimized threshold cannot fully compensate for.
+
+**Conclusion: calibration and operational alert quality are separate
+concerns, and improving one does not automatically improve the other.**
+This is the deciding factor, on top of the blast-radius argument above, for
+why production was not migrated — confirmed by actually building and
+testing the migration, not only by reasoning about its risk in the
+abstract.
+
 ## Testing
 
 `model/09b_test_calibration.py` — 24 checks, independent of the main script's own
