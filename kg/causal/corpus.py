@@ -130,6 +130,106 @@ CORPUS = [
             "atmosphere over this period."
         ),
     },
+    # -------------------------------------------------------------------------
+    # Entries below (2026-07-13) were added for the literature_evidence_tool
+    # extension. Same methodology as above: each text is a faithful paraphrase
+    # of a real, open-access paper, fetched and read directly (not from
+    # search-snippet summaries) before being written here. Confirmed
+    # accessible: all 5 are MDPI open-access articles, verified by loading the
+    # actual abstract page.
+    # -------------------------------------------------------------------------
+    {
+        "id": "ref_jeddah_uhi_addas2023",
+        "citation": "Addas (2023), Land (MDPI)",
+        "title": "Machine Learning Techniques to Map the Impact of Urban Heat Island: "
+                  "Investigating the City of Jeddah",
+        "url": "https://doi.org/10.3390/land12061159",
+        "mechanism": "urban_heat_island",
+        "text": (
+            "In the megacity of Jeddah, Saudi Arabia, from 2000 to 2021, the "
+            "urban area enlarged by about 80%, while the urban heat island (UHI) "
+            "effect increased overall. Impervious surfaces significantly impact "
+            "the UHI effect, while vegetation and water bodies have negative "
+            "implications for the UHI effect. More than 80% of the total parts "
+            "in Jeddah have been classified by extremely high UHI conditions, "
+            "with the megacity's south, north, and central-east parts "
+            "categorized by very high UHI conditions."
+        ),
+    },
+    {
+        "id": "ref_sw_orographic_alharbi2026",
+        "citation": "Alharbi (2026), Atmosphere (MDPI)",
+        "title": "Development of Region-Specific Rainfall Design Storms Using Machine "
+                  "Learning in Southwestern Saudi Arabia",
+        "url": "https://doi.org/10.3390/atmos17050443",
+        "mechanism": "orographic_lifting",
+        "text": (
+            "The mountainous southwest of Saudi Arabia exhibits complex, highly "
+            "seasonal precipitation driven by Indian Ocean monsoon inflows and "
+            "orographic lifting. Cluster analysis of 8972 rainfall events "
+            "recorded at 151 gauges found two primary storm clusters -- one "
+            "with early, intense peaks and another with later peak intensities "
+            "-- broadly reflecting windward versus leeward storm behavior. High "
+            "risk from hydrologic extremes has been reported in this region, "
+            "including local flash floods and short-duration high-intensity "
+            "convective storms."
+        ),
+    },
+    {
+        "id": "ref_dust_transport_alzaid2024",
+        "citation": "Alzaid, Anil & Aga (2024), Atmosphere (MDPI)",
+        "title": "Simulation and Assessment of Episodic Dust Storms in Eastern Saudi "
+                  "Arabia Using HYSPLIT Trajectory Model and Satellite Observations",
+        "url": "https://doi.org/10.3390/atmos15121515",
+        "mechanism": "cross_border_dust_transport",
+        "text": (
+            "The 'dust belt' region extending from the western Sahara to the "
+            "Gobi Desert frequently generates severe dust storms that cause "
+            "hazardous air quality. Using the HYSPLIT trajectory model "
+            "calibrated for eastern Saudi Arabia (R-squared of 0.9965 between "
+            "measured and predicted values), source apportionment via air "
+            "particle backward trajectories and frequency analyses indicated "
+            "that the northern regions, specifically Iraq and Syria, were the "
+            "primary sources of the severe dust storms observed in the "
+            "receptor area of eastern Saudi Arabia."
+        ),
+    },
+    {
+        "id": "ref_sst_teleconnection_almaashi2024",
+        "citation": "Almaashi, Hasanean & Labban (2024), Atmosphere (MDPI)",
+        "title": "Long-Term Teleconnections Between Global Circulation Patterns and "
+                  "Interannual Variability of Surface Air Temperature over Kingdom "
+                  "of Saudi Arabia",
+        "url": "https://doi.org/10.3390/atmos15111310",
+        "mechanism": "sst_teleconnection",
+        "text": (
+            "Surface air temperature (SAT) variability over the Kingdom of Saudi "
+            "Arabia reveals significant warming trends, particularly from 1994 "
+            "onward. The first empirical orthogonal function mode explains more "
+            "than 45% of the variance and is correlated with global sea surface "
+            "temperature (SST) patterns. The Pacific Warm Pool (PWP) "
+            "consistently enhances surface warming in both winter and summer "
+            "seasons through upper air convergence, and the Tropical North "
+            "Atlantic (TNA) SST contributes warming over central and northern "
+            "parts of Saudi Arabia during both winter and summer seasons."
+        ),
+    },
+    {
+        "id": "ref_jeddah2022_flood_sofia2024",
+        "citation": "Sofia et al. (2024), Water (MDPI)",
+        "title": "A Nationwide Flood Forecasting System for Saudi Arabia: Insights "
+                  "from the Jeddah 2022 Event",
+        "url": "https://doi.org/10.3390/w16141939",
+        "mechanism": "orographic_lifting",
+        "text": (
+            "Saudi Arabia is threatened by recurrent flash floods caused by "
+            "extreme precipitation events. An extreme precipitation event "
+            "struck Jeddah on 24 November 2022, recorded as the heaviest "
+            "rainfall in the region's history, leading to widespread flash "
+            "floods and highlighting the critical need for accurate and "
+            "timely forecasting."
+        ),
+    },
 ]
 
 

@@ -681,6 +681,105 @@ for city, date, hz in [("Jizan", "2025-03-27", "flash_flood"),
     check(f"cap_alert_tool XML well-formed for {hz}/{city}",
          p.find("cap:info/cap:event", CAP_NS_MAP) is not None, rc["cap_xml"])
 
+# --- literature_evidence_tool (7th tool, model/13-adjacent extension) ---
+import json as _json_lit
+import numpy as _np_lit
+r_lit = tools.literature_evidence_tool("Jeddah", "heatwave")
+check("literature_evidence_tool: no error for a known city/hazard combo",
+     "error" not in r_lit, r_lit)
+check("literature_evidence_tool: top-level keys are exactly the documented set",
+     set(r_lit.keys()) == {"city", "hazard", "query_used", "candidates_found",
+                           "candidates", "disclaimer"}, set(r_lit.keys()))
+check("literature_evidence_tool: candidates_found matches len(candidates)",
+     r_lit["candidates_found"] == len(r_lit["candidates"]), r_lit)
+check("literature_evidence_tool: every candidate has verified == False (never silently upgraded)",
+     all(c["verified"] is False for c in r_lit["candidates"]), r_lit["candidates"])
+check("literature_evidence_tool: every candidate's similarity_score is above the documented minimum",
+     all(c["similarity_score"] >= tools.LITERATURE_MIN_SIMILARITY for c in r_lit["candidates"]),
+     [c["similarity_score"] for c in r_lit["candidates"]])
+check("literature_evidence_tool: candidates are sorted by similarity_score, descending",
+     [c["similarity_score"] for c in r_lit["candidates"]] ==
+     sorted([c["similarity_score"] for c in r_lit["candidates"]], reverse=True), r_lit["candidates"])
+check("literature_evidence_tool: hazard underscore is normalised to a space in the query "
+     "(regression test -- 'flash_flood'/'dust_storm' must match corpus text, not the raw enum value)",
+     "_" not in r_lit["query_used"], r_lit["query_used"])
+check("literature_evidence_tool: each candidate's excerpt is the REAL, unmodified corpus text "
+     "(not paraphrased/truncated by the tool itself)",
+     all(any(c["excerpt"] == entry["text"] for entry in tools._load_literature_corpus()[2])
+         for c in r_lit["candidates"]), r_lit["candidates"])
+check("literature_evidence_tool: each candidate's url is a real, non-empty string",
+     all(isinstance(c["url"], str) and c["url"].startswith("http") for c in r_lit["candidates"]),
+     r_lit["candidates"])
+check("literature_evidence_tool: disclaimer explicitly says 'UNVERIFIED'",
+     "UNVERIFIED" in r_lit["disclaimer"], r_lit["disclaimer"])
+
+# already_in_formal_kg must correctly distinguish the 7 original (KG-grounded)
+# mechanisms from the 5 new (candidate-only) ones added for this tool --
+# independently re-derived from kg_data.json's own grounded_by edges, not
+# just trusted from the tool's internal cache.
+with open(os.path.join(tools.HERE, "..", "kg", "kg_data.json"), encoding="utf-8") as f:
+    _kg_check = _json_lit.load(f)
+_grounded_mechs = {l["source"] for l in _kg_check["links"] if l.get("etype") == "grounded_by"}
+_new_only_mechs = {"urban_heat_island", "orographic_lifting", "cross_border_dust_transport", "sst_teleconnection"}
+check("literature_evidence_tool: the 4 brand-new mechanism tags are correctly NOT in the formal KG "
+     "(independently re-derived from kg_data.json, not the tool's own cached set)",
+     _new_only_mechs.isdisjoint(_grounded_mechs), (_new_only_mechs, _grounded_mechs))
+_r_dust = tools.literature_evidence_tool("Dammam", "dust_storm")
+_shamal_hit = [c for c in _r_dust["candidates"] if c["mechanism_tag"] == "thermal_low"]
+check("literature_evidence_tool: a candidate whose mechanism IS already formally grounded "
+     "(thermal_low/Shamal) correctly reports already_in_formal_kg == True",
+     len(_shamal_hit) > 0 and _shamal_hit[0]["already_in_formal_kg"] is True, _r_dust["candidates"])
+
+# Bypass: independently rebuild the TF-IDF matrix from raw corpus.py (fresh
+# vectorizer instance, not tools.py's cached one) and confirm the top result
+# for a real query matches exactly -- proves the tool isn't returning stale
+# or hand-picked results.
+from sklearn.feature_extraction.text import TfidfVectorizer as _TfidfVectorizer_bp
+from sklearn.metrics.pairwise import cosine_similarity as _cosine_similarity_bp
+_vec_bp, _mat_bp, _corpus_bp, _ = tools._load_literature_corpus()
+_texts_bp = [c["text"] for c in _corpus_bp]
+_vec2_bp = _TfidfVectorizer_bp(stop_words="english")
+_mat2_bp = _vec2_bp.fit_transform(_texts_bp)
+_q_bp = "heatwave risk in Jeddah, Saudi Arabia"
+_sims_bp = _cosine_similarity_bp(_vec2_bp.transform([_q_bp]), _mat2_bp)[0]
+_top_idx_bp = int(_np_lit.argmax(_sims_bp))
+check("literature_evidence_tool: independently rebuilt TF-IDF (fresh vectorizer, raw corpus.py) "
+     "top match agrees with the live tool's top candidate",
+     _corpus_bp[_top_idx_bp]["citation"] == r_lit["candidates"][0]["citation"],
+     (_corpus_bp[_top_idx_bp]["citation"], r_lit["candidates"][0]["citation"]))
+
+# Mechanically confirm the below-threshold ("no candidates") path is real and
+# reachable, not dead code -- a deliberately off-topic query must score 0.0
+# and correctly be excluded (real city/hazard combos never hit this path
+# since the corpus is entirely Saudi-weather-focused; see
+# LITERATURE_EVIDENCE_REPORT.md for the full 24-combo score distribution).
+_off_topic_sims = _cosine_similarity_bp(_vec2_bp.transform(["chocolate cake baking recipe"]), _mat2_bp)[0]
+check("literature_evidence_tool: a deliberately off-topic query scores 0.0 and would be "
+     "correctly excluded by LITERATURE_MIN_SIMILARITY (below-threshold path is live, not dead code)",
+     float(_off_topic_sims.max()) < tools.LITERATURE_MIN_SIMILARITY, float(_off_topic_sims.max()))
+
+check("literature_evidence_tool: unknown city produces the same-shaped error as other tools",
+     tools.literature_evidence_tool("Atlantis", "heatwave") ==
+     {"error": f"Unknown city 'Atlantis'. Known cities: {list(tools.CITIES.keys())}"})
+check("literature_evidence_tool: unknown hazard produces the same-shaped error as other tools",
+     tools.literature_evidence_tool("Jeddah", "tornado") ==
+     {"error": "Unknown hazard 'tornado'. Must be 'heatwave', 'flash_flood', or 'dust_storm'."})
+
+check("literature_evidence_tool: result is deterministic across repeated calls (no randomness)",
+     tools.literature_evidence_tool("Jizan", "flash_flood") ==
+     tools.literature_evidence_tool("Jizan", "flash_flood"))
+
+# All 8 known cities x 3 hazards must resolve without error and return >=1
+# candidate (structural coverage -- not silently broken for a subset).
+_all_ok = True
+for _city in tools.CITIES:
+    for _hz in ("heatwave", "flash_flood", "dust_storm"):
+        _r = tools.literature_evidence_tool(_city, _hz)
+        if "error" in _r or _r["candidates_found"] < 1:
+            _all_ok = False
+check("literature_evidence_tool: all 24 city x hazard combinations resolve without error "
+     "and return >=1 candidate", _all_ok)
+
 print()
 print("=" * 70)
 print(f"TOTAL: {PASS} passed, {FAIL} failed")

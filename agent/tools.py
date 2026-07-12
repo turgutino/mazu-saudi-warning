@@ -821,5 +821,115 @@ def cap_alert_tool(city: str, target_date: str, hazard: str) -> dict:
     }
 
 
+# =============================================================================
+# TOOL 7: literature evidence search (CANDIDATE, not a verified KG fact)
+#
+# Motivation (disclosed limitation, see agent/REGION_RISK_REPORT.md and
+# LITERATURE_EVIDENCE_REPORT.md): the formal causal KG has only 6-7
+# hand-verified citations grounding 5 mechanisms -- some city/mechanism
+# combinations have no grounding at all (e.g. the Jeddah/heatwave gap: Jeddah
+# is at_risk_of heatwave but its exposed_to mechanisms don't overlap with
+# heatwave's actual driven_by mechanisms). Rather than silently guessing or
+# leaving a flat "no data", this tool searches a WIDER literature pool
+# (kg/causal/corpus.py, 12 entries incl. 5 added specifically for this tool)
+# via plain TF-IDF text similarity and surfaces candidate passages -- always
+# labeled "verified: false", never merged into the formal KG automatically.
+# This mirrors the human-review-required "relation upgrade" pattern from the
+# Relink paper (arXiv, DMiC-Lab-HFUT/Relink) that inspired this tool, adapted
+# to a lightweight TF-IDF search instead of Relink's own Neo4j+Redis+trained-
+# ranker stack, which is unnecessary at this corpus size and would add
+# unverifiable LLM-predicted-relation risk this project has avoided
+# throughout (see kg/causal/02_extract_causal.py's verbatim-quote gate).
+# =============================================================================
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+CAUSAL_DIR = os.path.join(HERE, "..", "kg", "causal")
+
+_LIT_CORPUS = None
+_LIT_VECTORIZER = None
+_LIT_MATRIX = None
+_LIT_VERIFIED_MECHS = None
+
+# Below this cosine-similarity score, a match is text-similarity noise, not a
+# meaningful candidate -- empirically chosen (see LITERATURE_EVIDENCE_REPORT.md
+# for the score distribution this was picked from), not tuned to force any
+# particular query's result to pass or fail.
+LITERATURE_MIN_SIMILARITY = 0.08
+
+
+def _load_literature_corpus():
+    global _LIT_CORPUS, _LIT_VECTORIZER, _LIT_MATRIX, _LIT_VERIFIED_MECHS
+    if _LIT_CORPUS is None:
+        spec = importlib.util.spec_from_file_location(
+            "lit_corpus", os.path.join(CAUSAL_DIR, "corpus.py"))
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        _LIT_CORPUS = mod.CORPUS
+        texts = [c["text"] for c in _LIT_CORPUS]
+        _LIT_VECTORIZER = TfidfVectorizer(stop_words="english")
+        _LIT_MATRIX = _LIT_VECTORIZER.fit_transform(texts)
+        with open(KG_JSON, encoding="utf-8") as f:
+            kg = json.load(f)
+        # mechanisms with >=1 triple that already passed the formal
+        # verbatim-quote-verified extraction pipeline (kg_data.json's
+        # grounded_by edges) -- distinguishes "already a verified KG citation,
+        # just not linked to this exact city" from "candidate-only, never run
+        # through the verified-extraction pipeline at all"
+        _LIT_VERIFIED_MECHS = {l["source"] for l in kg["links"] if l.get("etype") == "grounded_by"}
+    return _LIT_VECTORIZER, _LIT_MATRIX, _LIT_CORPUS, _LIT_VERIFIED_MECHS
+
+
+def literature_evidence_tool(city: str, hazard: str) -> dict:
+    """Search a wider, NOT-fully-verified literature pool for candidate
+    passages that might explain a city/hazard combination the formal KG
+    doesn't ground. Use ONLY as a fallback when causal_kg_tool /
+    region_risk_tool show a genuine gap -- every result here is a CANDIDATE
+    (verified: false), found by plain TF-IDF cosine similarity, NOT checked
+    for whether it actually causally explains this specific city/hazard pair.
+    Never state a candidate result as an established fact.
+    """
+    if city not in CITIES:
+        return {"error": f"Unknown city '{city}'. Known cities: {list(CITIES.keys())}"}
+    if hazard not in ("heatwave", "flash_flood", "dust_storm"):
+        return {"error": f"Unknown hazard '{hazard}'. Must be 'heatwave', 'flash_flood', or 'dust_storm'."}
+
+    vectorizer, matrix, corpus, verified_mechs = _load_literature_corpus()
+    hazard_words = hazard.replace("_", " ")   # "flash_flood" -> "flash flood" so it
+                                               # actually matches corpus text tokens
+    query = f"{hazard_words} risk in {city}, Saudi Arabia"
+    qvec = vectorizer.transform([query])
+    sims = cosine_similarity(qvec, matrix)[0]
+
+    order = np.argsort(-sims)[:3]
+    candidates = []
+    for idx in order:
+        score = float(sims[idx])
+        if score < LITERATURE_MIN_SIMILARITY:
+            continue
+        entry = corpus[idx]
+        candidates.append({
+            "citation": entry["citation"], "title": entry["title"], "url": entry["url"],
+            "mechanism_tag": entry["mechanism"],
+            "similarity_score": round(score, 4),
+            "already_in_formal_kg": entry["mechanism"] in verified_mechs,
+            "excerpt": entry["text"],
+            "verified": False,
+        })
+
+    return {
+        "city": city, "hazard": hazard, "query_used": query,
+        "candidates_found": len(candidates),
+        "candidates": candidates,
+        "disclaimer": (
+            "These are UNVERIFIED candidate passages found via text-similarity "
+            "search over a wider literature pool, not extracted-and-verified KG "
+            "facts. Present as 'literature suggests, not formally verified' at "
+            "most -- never as an established fact."
+        ),
+    }
+
+
 if __name__ == "__main__":
     print("tools.py loaded OK — run test_tools.py for verification.")

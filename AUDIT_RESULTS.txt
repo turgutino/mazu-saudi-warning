@@ -172,7 +172,20 @@ SECTION O — ensemble uncertainty field (5-model spread), independently re-derive
   [PASS] all 3 hazards have all 5 ensemble member files present on disk (15 total)
 
 ==========================================================================
-TOTAL: 112 passed, 0 failed
+SECTION P — literature_evidence_tool (7th agent tool), independently re-derived
+==========================================================================
+  [PASS] literature corpus has exactly 12 entries (7 original + 5 added for this tool)
+  [PASS] every corpus entry has non-empty id/citation/title/url/mechanism/text fields
+  [PASS] no duplicate corpus entry ids
+  [PASS] Jeddah/heatwave: independently re-derived top-3 candidates (fresh TF-IDF, raw corpus.py) match the live tool's output exactly, in order
+  [PASS] Jeddah/heatwave: independently re-derived similarity scores match the live tool's output exactly (within float tolerance)
+  [PASS] every live candidate's excerpt is byte-for-byte identical to the raw corpus.py text for that citation (not paraphrased or altered)
+  [PASS] all 24 city x hazard combinations: independently re-derived candidate counts match the live tool exactly (bypasses agent_tools' cached vectorizer entirely)
+  [PASS] the 4 new candidate-only mechanisms are independently confirmed absent from kg_data.json's real grounded_by edges (re-read fresh, not cached)
+  [PASS] every live candidate's already_in_formal_kg flag matches an independent, fresh re-check against kg_data.json
+
+==========================================================================
+TOTAL: 121 passed, 0 failed
 ==========================================================================
 
 Every checked number traces back to the raw 5GB source data. No fabrication found.

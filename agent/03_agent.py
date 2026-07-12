@@ -1,12 +1,12 @@
 # =============================================================================
 # MAZU — Layer 4: Agent orchestration (DeepSeek function calling)
 #
-# The LLM receives a natural-language question, decides which of the 6
+# The LLM receives a natural-language question, decides which of the 7
 # verified tools to call (forecast_tool, causal_kg_tool, conditions_tool,
-# similar_events_tool, region_risk_tool, cap_alert_tool), and composes a
-# final answer grounded in their real outputs. The model is instructed to
-# NEVER invent a probability or a citation — every number and every
-# mechanism/citation in its answer must come from a tool call.
+# similar_events_tool, region_risk_tool, cap_alert_tool, literature_evidence_tool),
+# and composes a final answer grounded in their real outputs. The model is
+# instructed to NEVER invent a probability or a citation — every number and
+# every mechanism/citation in its answer must come from a tool call.
 # =============================================================================
 
 import os
@@ -21,7 +21,7 @@ KEY_FILE = os.path.join(HERE, "..", "kg", "causal", ".deepseek_key")
 
 SYSTEM_PROMPT = """You are the MAZU early-warning assistant for Saudi Arabia extreme weather.
 
-You answer questions about flash-flood, heatwave, and dust-storm risk using SIX tools:
+You answer questions about flash-flood, heatwave, and dust-storm risk using SEVEN tools:
   - forecast_tool(city, target_date, hazard): risk probability ON target_date,
     from a trained, verified model (ROC-AUC reported with each call). It
     internally uses the PREVIOUS day's indicators -- always pass the exact
@@ -89,6 +89,19 @@ You answer questions about flash-flood, heatwave, and dust-storm risk using SIX 
     message. The <status> field is always "Exercise", never "Actual" --
     mention this if the user asks whether the alert is "real" or "live": this
     is a historical-dataset demo, not a live feed.
+  - literature_evidence_tool(city, hazard): searches a WIDER literature pool
+    (beyond the formally verified KG citations) for candidate passages that
+    might explain a city/hazard combination. ONLY call this as a fallback,
+    after causal_kg_tool/region_risk_tool show a genuine gap (e.g.
+    mechanisms_affecting_this_city is empty). Every result has
+    "verified": false -- these are found by plain text-similarity search and
+    have NOT been checked for whether they actually causally explain this
+    specific city/hazard pair. You MUST present any result from this tool as
+    "literature suggests, not formally verified" or similar hedged language --
+    NEVER state a candidate as an established fact, and NEVER mix it into the
+    same sentence as a causal_kg_tool citation without distinguishing the two.
+    If candidates_found is 0, say plainly that no literature candidate was
+    found either, rather than guessing.
 
 Rules (strict):
 1. NEVER state a probability, indicator value, mechanism name, or citation that
@@ -198,6 +211,21 @@ TOOL_SCHEMAS = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "literature_evidence_tool",
+            "description": "Search a wider, NOT-fully-verified literature pool for candidate passages that might explain a city/hazard combination the formal KG doesn't ground. Use ONLY as a fallback when causal_kg_tool/region_risk_tool show a genuine gap.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "city": {"type": "string", "enum": list(tools.CITIES.keys())},
+                    "hazard": {"type": "string", "enum": ["heatwave", "flash_flood", "dust_storm"]},
+                },
+                "required": ["city", "hazard"],
+            },
+        },
+    },
 ]
 
 TOOL_FUNCS = {
@@ -207,6 +235,7 @@ TOOL_FUNCS = {
     "similar_events_tool": tools.similar_events_tool,
     "region_risk_tool": tools.region_risk_tool,
     "cap_alert_tool": tools.cap_alert_tool,
+    "literature_evidence_tool": tools.literature_evidence_tool,
 }
 
 
