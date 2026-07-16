@@ -102,7 +102,28 @@
 </div></section>
 
 <section><div class="wrap">
-  <h2><span>04 · Agent</span>Ask it a question</h2>
+  <h2><span>04 · Spatiotemporal Validation</span>Real vs. predicted, all 8 cities, across days</h2>
+  <p class="lead">Per-city time series answer "was this city's forecast right on this day" — they don't show whether the risk field's <i>shape</i> across the map is right. These maps pair two independently-computed layers for 3 real, officially-reported 2025 events: <b>REAL</b> (the rule-engine ground-truth risk score, computed at every grid cell independently of the ML model) and <b>PREDICTED</b> (the trained model's forecast probability, evaluated at every grid cell rather than just the 8 city points — verified to reproduce the live agent's own forecast tool exactly, to 4 decimal places, across 10 spot checks before being trusted here).</p>
+  <div class="fig">
+    <img src="img/map_dammam_dust.png" alt="Dammam dust storm, real vs predicted risk maps, 16-19 May 2025">
+    <div class="cap"><b>Dust storm (Dammam), 16&ndash;19 May.</b> REAL shows an orange/red band tracking the Gulf coast near Dammam on the 17th&ndash;18th, matching the city-level detection already reported. PREDICTED is broader and noisier &mdash; an honest difference, not a bug: the model's probability surface is continuous, the rule engine's is threshold-based.</div>
+  </div>
+  <div class="fig" style="margin-top:20px">
+    <img src="img/map_dammam_heat.png" alt="Dammam heatwave, real vs predicted risk maps, 11-14 June 2025">
+    <div class="cap"><b>Heatwave (Dammam), 11&ndash;14 June.</b> This map surfaced a real inconsistency a single-city time series hid: REAL stays green/yellow at Dammam all 4 days (the rule engine requires tmax&ge;45&deg;C locally; Dammam peaked at 44.2&deg;C), while PREDICTED shows sustained high risk. The model's call was directionally right and matched the reported regional event (whose 49.3&deg;C record was at Al-Ahsa, not one of this system's 8 cities) &mdash; but unlike the dust storm, the rule-engine ground-truth doesn't independently confirm it at Dammam's exact coordinates. Caught while building this map, disclosed here rather than smoothed over.</div>
+  </div>
+  <div class="fig" style="margin-top:20px">
+    <img src="img/map_jeddah_flood.png" alt="Jeddah flash flood, real vs predicted risk maps, 8-11 December 2025">
+    <div class="cap"><b>Flash flood (Jeddah), 8&ndash;11 Dec.</b> Both layers stay green at Jeddah itself across all 4 days, consistent with the disclosed resolution limitation below. One caveat stated plainly: REAL shows a red cell on 9 Dec, but it sits ~165&nbsp;km north of Jeddah and reflects a separate, genuine rain signal in the raw data (18&nbsp;mm precipitation, CAPE 1700, IVT 339) &mdash; not the Jeddah event. Kept unedited so the map doesn't understate what the raw grid contains, but flagged so it isn't mistaken for confirmation at Jeddah.</div>
+  </div>
+  <ul class="pts" style="margin-top:20px">
+    <li><b>Animated versions.</b> Day-by-day GIFs of all 3 maps: <a href="img/dammam_dust.gif">dust storm</a>, <a href="img/dammam_heat.gif">heatwave</a>, <a href="img/jeddah_flood.gif">flood</a>.</li>
+    <li><b>Full write-up.</b> Complete mid-term report with this section in context: <a href="reports/MAZU_MidTerm_Report_EN.pdf">English PDF</a> / <a href="reports/MAZU_MidTerm_Report_CN.pdf">中文 PDF</a>. Per-event, per-city verification detail (including the heatwave verification-rigor correction described above): <a href="reports/MAZU_Real_Hadise_Dogrulama_CN.pdf">中文核验报告 PDF</a>.</li>
+  </ul>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span>05 · Agent</span>Ask it a question</h2>
   <p class="lead">A DeepSeek function-calling agent wires the forecast model, the literature-grounded causal knowledge graph, and live conditions into one assistant. Every probability, mechanism and citation it states comes from an actual tool call — never invented. This is what makes the knowledge graph <i>functional</i> rather than just browsable: the agent queries it programmatically on every question, the same way a production detection system would.</p>
   <a class="cta" href="agent_view.html">See real worked examples &rarr;</a>
   <ul class="pts" style="margin-top:20px">
@@ -121,7 +142,7 @@
 </div></section>
 
 <section><div class="wrap">
-  <h2><span>05 · Approach</span>From data to warning</h2>
+  <h2><span>06 · Approach</span>From data to warning</h2>
   <div class="flow">
     <div class="step done"><div class="num">✓</div><h3>Indicator data</h3><p>365 daily files, 10 km grid, 20 core reliable indicators.</p><span class="tag d">done</span></div>
     <div class="step done"><div class="num">✓</div><h3>Knowledge graph</h3><p>Causal, mechanism-aware, data-grounded events.</p><span class="tag d">done</span></div>
