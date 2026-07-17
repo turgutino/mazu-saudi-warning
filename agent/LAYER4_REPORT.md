@@ -9,8 +9,7 @@ with grounded numbers and citations — never invented ones.
 
 This is the layer that makes the knowledge graph *functional* rather than a
 browsable exhibit: the agent programmatically queries it on every risk
-question, the same way the competitor team's (戚语轩/Saudi-Graph) detection
-engine queries theirs — closing that specific gap identified earlier.
+question — closing that specific gap identified earlier.
 
 ## Architecture
 

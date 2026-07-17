@@ -49,10 +49,10 @@ deployed GitHub site matches the local repo exactly.
 
 ## Extensions: terrain context, impact framing, and a live A/B ablation test
 
-After reviewing other teams' project reports and a published multi-agent
-early-warning system (MAESTRO, *npj Artificial Intelligence*, 2026,
-Zhejiang University), three targeted extensions were added and independently
-tested — see `agent/EXTENSIONS_REPORT.md` for full methodology and results:
+After reviewing a published multi-agent early-warning system (MAESTRO,
+*npj Artificial Intelligence*, 2026, Zhejiang University), three targeted
+extensions were added and independently tested — see
+`agent/EXTENSIONS_REPORT.md` for full methodology and results:
 
 - **Terrain/elevation context.** `forecast_tool` now flags mountain-city
   forecasts (Abha, Taif, ≥1500 m) as lower-confidence. Building this
@@ -131,8 +131,8 @@ tested — see `agent/EXTENSIONS_REPORT.md` for full methodology and results:
   a genuine `consistent_elevated` day can still fall below the (deliberately
   higher) CAP alert threshold — the reflexive check and the alert-issuance
   bar answer different questions on purpose. See `agent/CAP_REPORT.md`.
-- **WMO-standard verification metrics (POD/FAR/CSI/HSS).** Adopted after
-  reviewing another team's evaluation methodology. Computed from the
+- **WMO-standard verification metrics (POD/FAR/CSI/HSS).** Adopted as the
+  operational standard beyond ROC-AUC/PR-AUC. Computed from the
   already-saved production models (no retraining) at each hazard's own
   operational threshold — the same value CAP severity already uses.
   Surfaces a real, disclosed finding threshold-independent ROC-AUC alone

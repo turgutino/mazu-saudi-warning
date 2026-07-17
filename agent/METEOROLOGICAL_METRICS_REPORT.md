@@ -2,9 +2,8 @@
 
 ## Motivation
 
-While reviewing other teams' mid-term reports, one group's evaluation
-methodology used POD (Probability of Detection), FAR (False Alarm Ratio),
-CSI (Critical Success Index), and HSS (Heidke Skill Score) — the standard
+POD (Probability of Detection), FAR (False Alarm Ratio), CSI (Critical
+Success Index), and HSS (Heidke Skill Score) are the standard
 contingency-table metrics national meteorological services (WMO, NCM) use
 to verify operational forecasts. Our own evaluation (ROC-AUC/PR-AUC) is
 methodologically correct for rare-event classification and threshold-

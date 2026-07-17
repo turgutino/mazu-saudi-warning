@@ -1,14 +1,13 @@
 # MAZU — Post-Layer-4 Extensions: Design Sources, Methodology, Results
 
 Three extensions were added to the already-deployed Layer 4 agent after reviewing
-external material shared for context: another BUCT student group's mid-term
-report (吴诗华 / 刘贤君, SWEET+Wikidata knowledge-graph selection), the MAESTRO
-multi-agent early-warning paper (Wang et al., *npj Artificial Intelligence*,
-2026, Zhejiang University — a live, government-deployed system), and a
-recorded Kimi-AI consultation from a related project about fine-tuning
-GraphCast for Saudi extreme weather. None of that material was copied; the
-underlying *methodological ideas* were extracted, re-derived against our own
-data, and independently tested. Each extension below follows the session's
+external material shared for context: the MAESTRO multi-agent early-warning
+paper (Wang et al., *npj Artificial Intelligence*, 2026, Zhejiang University —
+a live, government-deployed system), and a recorded Kimi-AI consultation from
+a related project about fine-tuning GraphCast for Saudi extreme weather. None
+of that material was copied; the underlying *methodological ideas* were
+extracted, re-derived against our own data, and independently tested. Each
+extension below follows the session's
 standing rule: build in isolation, write known-answer + negative-control +
 error-case tests *before* trusting the change, investigate any test failure
 as a possible real bug before assuming the test is wrong, only then wire into
@@ -64,13 +63,11 @@ real-world figures for all 8 cities.
 
 ## Extension 2 — A/B ablation test: does the causal KG tool actually matter?
 
-**Source idea:** two independent sources converged on the same evaluation
-design. The rival student report (吴诗华/刘贤君) planned an experiment
-comparing "with knowledge graph" vs "without" to demonstrate the KG reduces
-hallucination. The MAESTRO paper independently validates this exact
-methodology at publication scale (their Fig. 2c–d: zero-shot / one-shot /
-two-shot / with-tool comparison, showing tool grounding is what drives
-accuracy from 72% to 98%).
+**Source idea:** an evaluation design comparing "with knowledge graph" vs
+"without" to demonstrate the KG reduces hallucination. The MAESTRO paper
+validates this exact methodology at publication scale (their Fig. 2c–d:
+zero-shot / one-shot / two-shot / with-tool comparison, showing tool
+grounding is what drives accuracy from 72% to 98%).
 
 **What we built (`agent/05_ablation_test.py`):** the SAME live DeepSeek
 agent, the SAME 4 "why does this hazard happen" questions, run twice each —

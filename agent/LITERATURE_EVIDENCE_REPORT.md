@@ -2,8 +2,10 @@
 
 ## Motivation
 
-The causal KG's citation coverage is genuinely limited: only 6-7 hand-verified
-citations ground 5 mechanisms (`kg/causal/corpus.py`), each individually
+The causal KG's citation coverage is genuinely limited: only 6 hand-verified
+citations (from 7 candidates extracted; 1 excluded after manual quality
+review — see `kg/causal/causal_kg_report.txt`) ground 5 mechanisms
+(`kg/causal/corpus.py`), each individually
 extracted and verbatim-quote-checked (`kg/causal/02_extract_causal.py`). Some
 city/hazard combinations have no formal mechanism link at all —
 `region_risk_tool`'s own disclosed finding is that Jeddah is `at_risk_of`
