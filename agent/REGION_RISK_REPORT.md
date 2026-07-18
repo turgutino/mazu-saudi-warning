@@ -79,3 +79,29 @@ Still not 100% (`correlates_with`, `sourced_from`, `manifests_as`,
 `occurs_at`, `observed_value` remain unused by any tool) — disclosed here
 rather than overstated, consistent with this project's standing practice of
 reporting real numbers rather than rounding up.
+
+### Why these 5 remain unused
+
+Not an oversight — tracing each edge back to where `01_build_structural_kg.py`
+creates it shows they fall into two categories neither of the 7 live tools'
+question types currently needs:
+
+1. **Historical-Event metadata** (`manifests_as`: Event→Hazard,
+   `occurs_at`: Event→Region, `observed_value`: Event→Indicator with its
+   real recorded value — all built at lines 287-296). These describe *past*
+   logged events. Every current tool answers a forward-looking question
+   (forecast, current risk, driving mechanism) — none does "look up what
+   happened in stored Event X," so these edges have no caller yet.
+2. **Provenance and raw statistics, not causal links** (`sourced_from`:
+   Indicator→DataSource, a pure data-lineage pointer; `correlates_with`:
+   Indicator↔Indicator, a data-driven Pearson correlation at r≥0.6 —
+   built at lines 252-255 and 298-301). `correlates_with` in particular is
+   deliberately not surfaced by any tool: this project's own standing
+   principle is causal grounding (`driven_by`, verbatim-cited) over
+   statistical co-occurrence, so a tool exposing raw correlation as if it
+   were a mechanism would cut against that discipline.
+
+A city-first "what happened historically here" tool would be the natural way
+to activate category 1; category 2 would need a deliberate decision to
+expose correlation as a distinct, clearly-labeled (non-causal) signal — both
+noted as possible future work, not built in this pass.
