@@ -74,6 +74,10 @@
 <section><div class="wrap">
   <h2><span>02 · Knowledge Graph</span>Why hazards form</h2>
   <p class="lead">An interactive causal knowledge graph links indicators, hazards, driving mechanisms (Red Sea Trough, moisture transport, orographic lifting) and real events — with data-driven correlations that recover known physics (e.g. sea-surface temperature ↔ convective instability). 4 of 5 mechanisms are now grounded in verbatim-verified quotes from 6 real, peer-reviewed publications (e.g. de Vries et al. 2013, JGR-Atmospheres, on the Active Red Sea Trough) — not just domain assertions.</p>
+  <div class="fig">
+    <img src="img/kg_view_preview.png" alt="Interactive knowledge graph preview: 60 nodes, 183 edges, filterable by type">
+    <div class="cap"><b>60 nodes, 183 edges, fully filterable and searchable.</b> Node types: Indicator, Hazard, Mechanism, Region, Event, DataSource, Citation. Click any node in the live version to see its relationships and metadata.</div>
+  </div>
   <a class="cta" href="kg_view.html">Open the interactive knowledge graph →</a>
 </div></section>
 
@@ -126,6 +130,10 @@
 <section><div class="wrap">
   <h2><span>05 · Agent</span>Ask it a question</h2>
   <p class="lead">A DeepSeek function-calling agent wires the forecast model, the literature-grounded causal knowledge graph, and live conditions into one assistant. Every probability, mechanism and citation it states comes from an actual tool call — never invented. This is what makes the knowledge graph <i>functional</i> rather than just browsable: the agent queries it programmatically on every question, the same way a production detection system would.</p>
+  <div class="fig">
+    <img src="img/agent_view_preview.png" alt="Agent worked example: a real tool-calling transcript answering a flash-flood risk question">
+    <div class="cap"><b>Real transcript, not a mockup.</b> Every tool call shown (<code>forecast_tool</code>, <code>causal_kg_tool</code>, etc.) is expandable to its exact input/output — click through to verify any number yourself.</div>
+  </div>
   <a class="cta" href="agent_view.html">See real worked examples &rarr;</a>
   <ul class="pts" style="margin-top:20px">
     <li><b>Grounded, not generative.</b> The system prompt forbids stating any number or citation without a tool result backing it — verified across 169 unit tests and 4 end-to-end test scenarios, including honest refusal on out-of-range dates and unknown cities.</li>
@@ -144,6 +152,10 @@
 
 <section><div class="wrap">
   <h2><span>06 · Approach</span>From data to warning</h2>
+  <div class="fig">
+    <img src="img/architecture_diagram.png" alt="System architecture: raw data pipeline and knowledge graph feed the detection engine and forecast model, which supply 7 agent tools behind a DeepSeek function-calling agent, producing a grounded natural-language answer or a CAP 1.2 XML alert">
+    <div class="cap"><b>Full dependency graph, traced from the actual source code</b> (not a conceptual sketch) — every arrow verified against real function calls in <code>agent/tools.py</code>. The reflexive cross-check between the rule-based detection engine and the ML forecast model runs both ways: each independently validates the other.</div>
+  </div>
   <div class="flow">
     <div class="step done"><div class="num">✓</div><h3>Indicator data</h3><p>365 daily files, 10 km grid, 20 core reliable indicators.</p><span class="tag d">done</span></div>
     <div class="step done"><div class="num">✓</div><h3>Knowledge graph</h3><p>Causal, mechanism-aware, data-grounded events.</p><span class="tag d">done</span></div>
