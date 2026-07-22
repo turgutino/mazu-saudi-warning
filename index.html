@@ -36,6 +36,10 @@
   .tag{display:inline-block;font-size:11px;padding:2px 9px;border-radius:9px;margin-top:8px;font-weight:700}
   .tag.d{background:rgba(29,219,160,.15);color:var(--green)}
   .tag.n{background:rgba(255,209,102,.15);color:var(--gold)}
+  .verdict{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:9px;margin-right:6px}
+  .verdict.good{background:rgba(29,219,160,.15);color:var(--green)}
+  .verdict.bad{background:rgba(255,125,69,.15);color:var(--orange)}
+  .verdict.partial{background:rgba(255,209,102,.15);color:var(--gold)}
   ul.pts{list-style:none;margin-top:8px}
   ul.pts li{padding:6px 0 6px 26px;position:relative;color:var(--mut)}
   ul.pts li:before{content:"▸";position:absolute;left:0;color:var(--cyan)}
@@ -120,10 +124,48 @@
     <img src="img/map_jeddah_flood.png" alt="Jeddah flash flood, real vs predicted risk maps, 8-11 December 2025">
     <div class="cap"><b>Flash flood (Jeddah), 8&ndash;11 Dec.</b> Both layers stay green at Jeddah itself across all 4 days, consistent with the disclosed resolution limitation below. One caveat stated plainly: REAL shows a red cell on 9 Dec, but it sits ~165&nbsp;km north of Jeddah and reflects a separate, genuine rain signal in the raw data (18&nbsp;mm precipitation, CAPE 1700, IVT 339) &mdash; not the Jeddah event. Kept unedited so the map doesn't understate what the raw grid contains, but flagged so it isn't mistaken for confirmation at Jeddah.</div>
   </div>
+  <p class="lead" style="margin-top:24px"><b>Not just these 3.</b> Reviewers provided a full 2025 calendar of 4 heatwave waves, 3 dust storms, and 5 flood events (the source text itself says "6," but only 5 date windows are actually listed). All 12 are mapped below, the same way as the 3 above &mdash; 3 clean hits, 3 clean misses, 4 partial/mixed, and 2 inconclusive for stated methodological reasons &mdash; an honest, uneven distribution, not a curated sample.</p>
+
+  <div class="fig" style="margin-top:20px">
+    <img src="img/map_haboob_dust.png" alt="Haboob dust storm, real vs predicted risk maps, 4-6 May 2025">
+    <div class="cap"><b>Dust storm (Haboob), 4&ndash;5 May.</b> <span class="verdict partial">Inconclusive</span> All 8 modeled cities show no real signal (max at Jeddah: 0.35, below threshold). The genuine high-risk zone for this national event sits 400&ndash;800&nbsp;km away, near the Sudan/Jordan/Iraq border &mdash; outside this system's 8-city footprint. An honest finding, not a miss: not every calendar event lands within this system's coverage.</div>
+  </div>
+  <div class="fig" style="margin-top:20px">
+    <img src="img/map_junjul_dust.png" alt="Dust storm, real vs predicted risk maps, 30 June to 5 July 2025, Riyadh and Dammam">
+    <div class="cap"><b>Dust storm, 30 Jun&ndash;5 Jul.</b> <span class="verdict good">Strong HIT</span> The cleanest hit in this verification round. Riyadh, 30 June: real score 1.00, model 0.99. Dammam, 1&ndash;5 July: real sustained 0.35&ndash;0.60, model 0.77&ndash;0.91 throughout &mdash; real signal and model judgment align closely in both space and time.</div>
+  </div>
+  <div class="fig" style="margin-top:20px">
+    <img src="img/map_heatwave2_miss.png" alt="Heatwave 2nd wave, real vs predicted risk maps, 29 June to 2 July 2025, Dammam">
+    <div class="cap"><b>Heatwave, 2nd wave, 28 Jun&ndash;5 Jul.</b> <span class="verdict bad">MISS</span> A genuine model miss. On 30 June, Dammam's real rule score reached 0.55 (exactly at threshold) &mdash; the rule engine independently confirms local conditions met the heatwave standard &mdash; but the model gave only 0.045, far below threshold. Disclosed as a real miss, not smoothed over.</div>
+  </div>
+  <div class="fig" style="margin-top:20px">
+    <img src="img/map_heatwave3.png" alt="Heatwave 3rd wave, real vs predicted risk maps, 21-24 July 2025, Dammam, Riyadh, Mecca">
+    <div class="cap"><b>Heatwave, 3rd wave, 20&ndash;27 Jul.</b> <span class="verdict partial">Partial hit</span> Named cities miss, independent hit at Mecca. Officially reported 48&ndash;50&deg;C at Dammam/Khobar/Al-Ahsa; but Dammam's own raw data only reached 40.2&ndash;43.8&deg;C, below the rule engine's 45&deg;C threshold &mdash; zero real signal at the named cities. An independent, genuine hit was found instead at Mecca: 22 July real 0.60/model 0.97, 23 July real 0.45/model 0.98.</div>
+  </div>
+  <div class="fig" style="margin-top:20px">
+    <img src="img/map_heatwave4.png" alt="Heatwave 4th wave, real vs predicted risk maps, 2-5 August 2025, Dammam and Mecca">
+    <div class="cap"><b>Heatwave, 4th wave, 29 Jul&ndash;5 Aug.</b> <span class="verdict partial">Partial hit</span> A weak but genuine agreement at Dammam (real 0.2, model 0.01&ndash;0.05 &mdash; both below threshold, not the "stable 50&deg;C+" the source described), and again an independent hit at Mecca (4 August: real 0.60, model 0.90).</div>
+  </div>
+  <div class="fig" style="margin-top:20px">
+    <img src="img/map_flood_jan.png" alt="Flood, real vs predicted risk maps, 5-8 January 2025, Mecca">
+    <div class="cap"><b>Flood, 6&ndash;7 Jan.</b> <span class="verdict partial">Inconclusive</span> Mecca's real score reaches 1.00 on 6 January, but this rests on severely incomplete data: CAPE, IVT and PWAT are all missing (NaN) that day, a known Jan&ndash;Mar data gap, so the rule engine's own-weight normalization inflates a single available indicator to 1.00. The date also falls inside the model's training window, not the held-out test period &mdash; an unreliable sample, honestly labeled inconclusive rather than forced into a verdict.</div>
+  </div>
+  <div class="fig" style="margin-top:20px">
+    <img src="img/map_flood_mar.png" alt="Flood, real vs predicted risk maps, 5-8 March 2025, Hail and Buraidah">
+    <div class="cap"><b>Flood, 6&ndash;7 Mar (Hail/Buraidah).</b> <span class="verdict bad">MISS, plus a new finding</span> Real score stays 0.0 throughout at both locations (checked at their own raw coordinates, since neither is among this system's 8 cities). But building this map surfaced something the original written verification didn't check: the model's predicted probability reaches 0.94&ndash;0.98 at these same coordinates on 6&ndash;7 March &mdash; a real, previously-undisclosed model/rule-engine disagreement, caught only once the full grid was visualized.</div>
+  </div>
+  <div class="fig" style="margin-top:20px">
+    <img src="img/map_flood_taif.png" alt="Flood, real vs predicted risk maps, 12-15 August 2025, Taif">
+    <div class="cap"><b>Flood, 14 Aug (Taif).</b> <span class="verdict partial">Model/real disagreement</span> The model runs ahead of the real signal. 13 August: real 0.35, model 0.52. 14 August: real 0.15, model 0.51 &mdash; above the operational threshold both days, while the real rule-engine signal stays weak. Possibly the model picking up terrain-related signals in Taif's mountainous setting (already flagged elsewhere with a dedicated terrain-confidence caveat) &mdash; but the rule engine cannot independently confirm this specific alert.</div>
+  </div>
+  <div class="fig" style="margin-top:20px">
+    <img src="img/map_flood_aug2728.png" alt="Flood, real vs predicted risk maps, 26-29 August 2025, Abha and Jizan">
+    <div class="cap"><b>Flood, 27&ndash;28 Aug (Asir/Jizan).</b> <span class="verdict partial">Mixed result</span> A genuinely mixed, multi-day result. Abha, 26 August: real 0.75, model 0.84 &mdash; a hit. But by 28&ndash;29 August real stays just as high (0.75) while the model drops to 0.37&ndash;0.44, failing to sustain the call. Jizan, 26&ndash;27 August: real 0.60, model only 0.18&ndash;0.22 &mdash; a miss. The model captured Abha's first day but missed the event's persistence and its Jizan-side impact.</div>
+  </div>
+
   <ul class="pts" style="margin-top:20px">
-    <li><b>Not just these 3.</b> Reviewers provided a full 2025 calendar of 4 heatwave waves, 3 dust storms, and 5 flood events (the source text itself says "6," but only 5 date windows are actually listed). All 12 were verified the same way: 3 clean hits, 3 clean misses, 4 partial/mixed, and 2 inconclusive for stated methodological reasons (outside the 8-city coverage, or a data gap within the training period) &mdash; an honest, uneven distribution, not a curated sample.</li>
-    <li><b>Animated versions.</b> Day-by-day GIFs of all 3 maps: <a href="img/dammam_dust.gif">dust storm</a>, <a href="img/dammam_heat.gif">heatwave</a>, <a href="img/jeddah_flood.gif">flood</a>.</li>
-    <li><b>Full write-up.</b> Complete mid-term report with this section in context: <a href="reports/MAZU_MidTerm_Report_EN.pdf">English PDF</a> / <a href="reports/MAZU_MidTerm_Report_CN.pdf">中文 PDF</a>. Per-event, per-city verification detail for all 12 reviewer-provided calendar events (not just the 3 mapped above), including the heatwave verification-rigor correction described here and a second instance of the same issue caught in the extended pass: <a href="reports/MAZU_Real_Hadise_Dogrulama_EN.pdf">English verification PDF</a> / <a href="reports/MAZU_Real_Hadise_Dogrulama_CN.pdf">中文核验报告 PDF</a>.</li>
+    <li><b>Animated versions.</b> Day-by-day GIFs of all 12 maps: dust storms &mdash; <a href="img/dammam_dust.gif">Dammam</a>, <a href="img/haboob_dust.gif">Haboob</a>, <a href="img/junjul_dust.gif">30 Jun&ndash;5 Jul</a>; heatwaves &mdash; <a href="img/dammam_heat.gif">Dammam</a>, <a href="img/heatwave2_miss.gif">2nd wave</a>, <a href="img/heatwave3.gif">3rd wave</a>, <a href="img/heatwave4.gif">4th wave</a>; floods &mdash; <a href="img/jeddah_flood.gif">Jeddah</a>, <a href="img/flood_jan.gif">6&ndash;7 Jan</a>, <a href="img/flood_mar.gif">6&ndash;7 Mar</a>, <a href="img/flood_taif.gif">Taif</a>, <a href="img/flood_aug2728.gif">27&ndash;28 Aug</a>.</li>
+    <li><b>Full write-up.</b> Complete mid-term report with this section in context: <a href="reports/MAZU_MidTerm_Report_EN.pdf">English PDF</a> / <a href="reports/MAZU_MidTerm_Report_CN.pdf">中文 PDF</a>. Per-event, per-city verification detail for all 12 reviewer-provided calendar events, including the heatwave verification-rigor correction described above and a second instance of the same issue caught in the extended pass: <a href="reports/MAZU_Real_Hadise_Dogrulama_EN.pdf">English verification PDF</a> / <a href="reports/MAZU_Real_Hadise_Dogrulama_CN.pdf">中文核验报告 PDF</a>.</li>
   </ul>
 </div></section>
 
