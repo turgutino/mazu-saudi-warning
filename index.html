@@ -51,7 +51,7 @@
 <header><div class="wrap">
   <div class="kicker">Multi-hazard · Alert · Zero-gap · Universal</div>
   <h1><b>MAZU-FENGYUN</b> <span style="font-size:0.55em;font-weight:400;color:var(--mut)">妈祖风云</span> · Saudi Arabia</h1>
-  <p>Extreme-weather early-warning system for flash floods, heatwaves, and dust storms — built on CMA 10&nbsp;km meteorological indicators, a causal knowledge graph, and data-grounded detection.</p>
+  <p>Extreme-weather early-warning system for flash floods, heatwaves, and dust storms — built on CMA 10&nbsp;km meteorological indicators, a literature-grounded knowledge graph, and data-grounded detection.</p>
   <div class="stats">
     <div class="stat"><div class="n">365</div><div class="l">days · 2025</div></div>
     <div class="stat"><div class="n">10 km</div><div class="l">resolution</div></div>
@@ -77,7 +77,7 @@
 
 <section><div class="wrap">
   <h2><span>02 · Knowledge Graph</span>Why hazards form</h2>
-  <p class="lead">An interactive causal knowledge graph links indicators, hazards, driving mechanisms (Red Sea Trough, moisture transport, orographic lifting) and real events — with data-driven correlations that recover known physics (e.g. sea-surface temperature ↔ convective instability). 4 of 5 mechanisms are now grounded in verbatim-verified quotes from 6 real, peer-reviewed publications (e.g. de Vries et al. 2013, JGR-Atmospheres, on the Active Red Sea Trough) — not just domain assertions.</p>
+  <p class="lead">An interactive knowledge graph links indicators, hazards, driving mechanisms (Red Sea Trough, moisture transport, orographic lifting) and real events — with data-driven correlations that recover known physics (e.g. sea-surface temperature ↔ convective instability). 4 of 5 mechanisms are now grounded in verbatim-verified quotes from 6 real, peer-reviewed publications (e.g. de Vries et al. 2013, JGR-Atmospheres, on the Active Red Sea Trough) — not just domain assertions. <b>What "causal" means here:</b> each mechanism edge is a claim taken directly from published atmospheric-science literature and checked against the paper's own wording — not causality independently derived from this project's own data. The separate data-driven correlation edges (Pearson r on our own time series) are kept distinct and are never labeled causal.</p>
   <div class="fig">
     <img src="img/kg_view_preview.png" alt="Interactive knowledge graph preview: 60 nodes, 183 edges, filterable by type">
     <div class="cap"><b>60 nodes, 183 edges, fully filterable and searchable.</b> Node types: Indicator, Hazard, Mechanism, Region, Event, DataSource, Citation. Click any node in the live version to see its relationships and metadata.</div>
@@ -111,7 +111,7 @@
 
 <section><div class="wrap">
   <h2><span>04 · Spatiotemporal Validation</span>Real vs. predicted, all 8 cities, across days</h2>
-  <p class="lead">Per-city time series answer "was this city's forecast right on this day" — they don't show whether the risk field's <i>shape</i> across the map is right. These maps pair two independently-computed layers for 3 real, officially-reported 2025 events: <b>REAL</b> (the rule-engine ground-truth risk score, computed at every grid cell independently of the ML model) and <b>PREDICTED</b> (the trained model's forecast probability, evaluated at every grid cell rather than just the 8 city points — verified to reproduce the live agent's own forecast tool exactly, to 4 decimal places, across 10 spot checks before being trusted here).</p>
+  <p class="lead">Per-city time series answer "was this city's forecast right on this day" — they don't show whether the risk field's <i>shape</i> across the map is right. These maps pair two independently-computed layers for 3 real, officially-reported 2025 events: <b>REAL</b> (the rule-engine ground-truth risk score, computed at every grid cell independently of the ML model) and <b>PREDICTED</b> (the trained model's forecast probability, evaluated at every grid cell rather than just the 8 city points — verified to reproduce the live agent's own forecast tool exactly, to 4 decimal places, across 10 spot checks before being trusted here). <b>The two layers are never expected to look pixel-identical:</b> REAL is a hard rule-based threshold (either 0 or a score above the operational cutoff), PREDICTED is a smooth, continuous probability — so where a case below is called a "HIT," it means the two layers agree on the <i>location and direction</i> of elevated risk, not that their exact values match.</p>
   <div class="fig">
     <img src="img/map_dammam_dust.png" alt="Dammam dust storm, real vs predicted risk maps, 16-19 May 2025">
     <div class="cap"><b>Dust storm (Dammam), 16&ndash;19 May.</b> REAL shows an orange/red band tracking the Gulf coast near Dammam on the 17th&ndash;18th, matching the city-level detection already reported. PREDICTED is broader and noisier &mdash; an honest difference, not a bug: the model's probability surface is continuous, the rule engine's is threshold-based.</div>
@@ -200,14 +200,14 @@
   </div>
   <div class="flow">
     <div class="step done"><div class="num">✓</div><h3>Indicator data</h3><p>365 daily files, 10 km grid, 20 core reliable indicators.</p><span class="tag d">done</span></div>
-    <div class="step done"><div class="num">✓</div><h3>Knowledge graph</h3><p>Causal, mechanism-aware, data-grounded events.</p><span class="tag d">done</span></div>
+    <div class="step done"><div class="num">✓</div><h3>Knowledge graph</h3><p>Literature-grounded, mechanism-aware, data-grounded events.</p><span class="tag d">done</span></div>
     <div class="step done"><div class="num">✓</div><h3>Detection</h3><p>Weighted rules + spatial clustering, verified.</p><span class="tag d">done</span></div>
     <div class="step done"><div class="num">✓</div><h3>Forecast</h3><p>t→t+1 spatiotemporal model, verified against known events.</p><span class="tag d">done</span></div>
     <div class="step done"><div class="num">✓</div><h3>Agent</h3><p>DeepSeek function-calling, grounded in the model + KG.</p><span class="tag d">done</span></div>
   </div>
   <ul class="pts">
     <li><b>Beyond detection.</b> The forecast layer predicts tomorrow's extreme risk (t→t+1), not just today's conditions.</li>
-    <li><b>Causal, not just statistical.</b> The knowledge graph encodes mechanisms and physics, not only co-occurrence.</li>
+    <li><b>Literature-grounded, not just statistical.</b> The knowledge graph's mechanism edges cite verbatim-verified claims from peer-reviewed papers; correlation edges computed from our own data are kept separate and never labeled causal.</li>
     <li><b>Explainable.</b> Every alert traces back to its driving indicators and mechanism — and now, the agent generates that explanation automatically.</li>
   </ul>
 </div></section>
