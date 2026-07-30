@@ -468,7 +468,99 @@ overlay would look wrong and add visual noise, not clarity.
 
 ---
 
+## Post-push follow-up: Knowledge Graph updated to reflect current site state (2026-07-30)
+
+**Trigger:** after the first push (all 5 Priorities), user asked whether `kg_data.json`/`kg_view.html`
+actually reflected the site's current findings. Investigation found it did not — its 6 "Event" nodes
+were auto-detected annual-extreme values, unrelated to the 12 real, individually-verified events in
+`index.html`'s map-verification section, and none of this session's findings (Jan-Mar data-gap, the
+flood_mar model/rule disagreement, compound-hazard co-occurrence) were represented anywhere in the KG.
+Also confirmed the KG is a real production dependency, not just a viewable diagram: `agent/tools.py`'s
+`causal_kg_tool` and `similar_events_tool` query `kg_data.json` directly, and `FULL_SYSTEM_AUDIT.py` /
+`agent/02_test_tools.py` assert its exact structure (node/edge counts, per-hazard event counts).
+
+**Change made (`kg/01_build_structural_kg.py`):** added all 12 site-verified events as new `Event`
+nodes (id prefix `EV_`, distinct from the original `E_`-prefixed auto-detected events, so nothing
+existing was renamed or removed — purely additive). Each new event carries its real date, region(s),
+exact verdict text copied from its `index.html` caption, and real driver-indicator values freshly read
+from `mazu_dataset.nc` at that fixed date/location (never copied from caption prose). Added 2 new
+`Region` nodes (Hail, Buraidah) for the `flood_mar` event, since neither is one of the original 8
+modeled cities.
+
+**Precision work on the event dates themselves** (not just accepting the caption's date range at face
+value):
+- `dammam_heat`'s caption gives a "11-14 June" range and a "44.2°C" peak but names no single day.
+  Independently re-derived from `mazu_dataset.nc`: the actual peak is **16 June** (44.22°C) — one day
+  *after* both the caption's stated window and the rendered map/GIF's 10-15 June frame range. Flagged
+  as a real, disclosed range/peak mismatch in the KG node's own description, not silently corrected
+  elsewhere.
+- `dammam_dust`'s date (17 May) was cross-checked against `wind10_speed`/`wind850_speed` at Dammam and
+  confirmed to be the window's actual peak (8.5 m/s / 13.9 m/s), not just the caption's stated day.
+- `haboob_dust` (a genuinely national event, no city-level signal) was deliberately given **no**
+  Region-node location rather than forced onto the nearest city — matches
+  `model/12_timeline_manifest.py`'s own `focus_points=None` treatment of this event.
+
+**Bugs this surfaced and fixed (in order found):**
+1. `agent/tools.py`'s `_parse_event_location` had no error handling and crashed (`IndexError`) the
+   instant `similar_events_tool` was called for ANY hazard, because it iterates over every Event node
+   of that hazard with no fallback — the new events' location strings didn't match the old
+   "Name (LATN,LONE)" pattern it expects. Fixed at both ends: the new events' `location` field was
+   made to follow that exact pattern (multi-city events like `flood_mar` keep only the primary
+   region in `location`, with the rest described in the node's own `desc` text instead of appended
+   into a string the parser would choke on); `_parse_event_location` was also made to return `None`
+   on a genuinely non-point location (e.g. `haboob_dust`) instead of crashing, so the tool excludes
+   it with a clear reason instead of failing the whole call.
+2. `similar_events_tool` also crashed with `KeyError: 'value'` — the new events had no `value` field
+   (the auto-detected events' `"peak_var peak_val unit"` format doesn't fit a verified-event's real
+   story). Fixed by giving every verified event a `value` field of `"verdict: {verdict text}"`, and
+   made the tool's own access defensive (`.get()`) so a future Event node missing this field degrades
+   gracefully instead of crashing the whole call.
+3. **Pre-existing, unrelated drift discovered while regenerating:** the *committed* `kg_data.json`'s
+   `dust_storm` Hazard node had `label="Dust Storm"` and a custom `desc`, but the current
+   `01_build_structural_kg.py` script's `HAZARDS` dict would generate `label="Dust Storm / Strong
+   Wind"` instead — meaning the script, if run as-is, could NOT reproduce what was actually shipped.
+   `agent/02_test_tools.py`'s `cap_alert_tool` XML check depends on the exact `"Dust Storm"` label and
+   would have silently broken on any future regeneration. Fixed by aligning the script
+   (`HAZARDS["dust_storm"] = "Dust Storm"` + a `HAZARD_DESC_OVERRIDE` dict preserving the richer desc)
+   to match the previously-shipped, tested value — not by weakening the test.
+4. `kg/02_make_dashboard.py`'s own `OUT_HTML` path pointed at `deploy/dashboard/kg_view.html`, a
+   directory that has never existed — the live `deploy/kg_view.html` was not actually reproducible
+   from this script as committed. Fixed the path to write directly to `deploy/kg_view.html`, matching
+   where `index.html` actually links it.
+5. `kg/02_make_dashboard.py`'s `NODE_COLORS`/`NODE_SHAPES`/`EDGE_COLORS` dicts were missing entries
+   for `Citation` nodes and `grounded_by` edges (6 of each) — both existed in the data and rendered as
+   generic grey fallback, invisible in the dashboard's own legend. Fixed by adding both.
+
+**Verification (independent, not just re-running the same code):**
+- `agent/02_test_tools.py`: updated 3 hardcoded per-hazard event-count assertions to match the new
+  totals (flash_flood 3→8, heatwave 2→6, dust_storm 1→4 — old auto-detected counts plus the newly
+  added site-verified events per hazard) — **169/169 pass**, including the pre-existing self-match,
+  hyperlocal-distance, and Mecca cross-hazard-profile checks, all still passing unchanged since no
+  existing event was touched.
+- `FULL_SYSTEM_AUDIT.py`: updated the hardcoded `60 nodes / 183 edges` → `74 nodes / 264 edges`
+  assertion (Section J), fixed Section C's event-count check to separately count the 6 auto-detected
+  vs. 12 site-verified events (18 total) instead of crashing on the new value format, and **added a
+  new Section C2** that independently re-derives every new event's `observed_value` driver readings
+  directly from the RAW per-day source files (`E:\Data\New data\indicators\saudi_indicators_*.nc`) at
+  that event's fixed date/region coordinates — the same independence standard already used for the 6
+  auto-detected events, extended to cover the new content rather than left unchecked. **163/165 pass**;
+  the only 2 failures are Section F's remote-vs-local GitHub sync check, which compares against the
+  *currently pushed* `kg_data.json` (60/183) — expected to fail until this update is pushed, not a
+  real defect.
+- `kg_view.html` (the live interactive dashboard) and `img/kg_view_preview.png` (its static preview on
+  `index.html`) regenerated via Playwright (headless Chromium screenshot, since the Browser pane
+  wasn't displayed to take an interactive screenshot) and visually confirmed: all 12 new event stars
+  present (including Hail/Buraidah as new triangle Region nodes), Citation/grounded_by now visible in
+  the legend, header stat reads "Nodes 74  Edges 264" matching every other count above.
+- `index.html`'s "60 nodes, 183 edges" text (2 places: image alt text + caption) updated to
+  "74 nodes, 264 edges", with the caption also now explaining what the 18 Event nodes cover.
+
+**Still pending:** commit + push (this update was NOT pushed automatically — same explicit-approval
+policy as the first push; Section F's 2 audit failures will resolve on push, not before).
+
+---
+
 ## Pending / not yet started
 
-- Git commit/push to make the live site reflect these changes — explicitly deferred by the user until more priorities are bundled together
+- Git commit/push for the Knowledge Graph update above — awaiting explicit user go-ahead.
 - Sharing results with the teacher — deferred, decision pending

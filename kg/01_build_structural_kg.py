@@ -5,7 +5,9 @@
 #   1. Indicator metadata      (formula, unit, meaning, data source)
 #   2. Hazard detection logic   (flash_flood_risk formula -> contributes_to)
 #   3. Domain mechanisms        (ARST, moisture transport... -> triggers)
-#   4. Real 2025 events         (event instances with actual values)
+#   4. Real 2025 events         (6 auto-detected annual-extreme instances,
+#                                 plus the 12 site-verified events from
+#                                 deploy/index.html's map-verification section)
 #   5. Data-driven correlations (computed from mazu_dataset.nc)
 #
 # Node types : Indicator, Hazard, DataSource, Region, Mechanism, Event
@@ -71,8 +73,11 @@ INDICATORS = {
 HAZARDS = {
     "flash_flood": "Flash Flood / Wadi Flooding",
     "heatwave":    "Extreme Heat / Heatwave",
-    "dust_storm":        "Dust Storm / Strong Wind",
+    "dust_storm":        "Dust Storm",
     "coastal":     "Coastal / Marine Risk",
+}
+HAZARD_DESC_OVERRIDE = {
+    "dust_storm": "Dust Storm (wind-lifted, per Shamal-driven mechanism)",
 }
 
 # ── Regions: cities + geographic features (lat, lon, kind) ───────────────
@@ -89,6 +94,10 @@ REGIONS = {
     "Persian Gulf": (26.5, 51.5, "sea"),
     "Arabian Sea":  (15.5, 55.0, "sea"),
     "Empty Quarter":(19.5, 52.0, "desert"),
+    # Added for the 12 site-verified events below (not among the original 8
+    # modeled cities, but real locations named in their captions).
+    "Hail":         (27.52, 41.70, "city"),
+    "Buraidah":     (26.33, 43.97, "city"),
 }
 
 # region -> hazards it is exposed to (domain knowledge)
@@ -163,6 +172,118 @@ def detect_events():
     return events
 
 
+# =============================================================================
+# 4b. THE 12 SITE-VERIFIED REAL 2025 EVENTS (deploy/index.html "03 · Map
+# Verification" section) -- distinct from the 6 auto-detected annual-extreme
+# events above. Each entry's date/region/verdict is taken directly from the
+# published caption text; dates for events where the caption gave a range but
+# not a single peak day were independently re-derived from mazu_dataset.nc
+# itself (documented per-event below), never guessed.
+# =============================================================================
+
+# (key, date, hazard, regions, label, verdict, note)
+# date: the single most-representative day (see per-event note for how it was
+#   pinned down); regions: list of Region node ids this event occurred at/near
+#   (empty list = genuinely no city-level location, disclosed as such, not a
+#   guess); verdict: exact text of the site's own verdict badge, or None where
+#   the site published no badge (the 3 earliest-verified events).
+VERIFIED_EVENTS = [
+    ("dammam_dust", "2025-05-17", "dust_storm", ["Dammam"],
+     "Dust storm (Dammam), 16-19 May", None,
+     "REAL and PREDICTED both show a Gulf-coast band at Dammam on 17-18 May; "
+     "date pinned to 17 May, the window's actual wind10_speed/wind850_speed peak "
+     "(8.5 m/s / 13.9 m/s at Dammam, independently confirmed from mazu_dataset.nc)."),
+    ("dammam_heat", "2025-06-16", "heatwave", ["Dammam"],
+     "Heatwave (Dammam), 11-14 June", None,
+     "Site caption states Dammam peaked at 44.2C (below the 45C rule-engine "
+     "threshold) but names no single day; independently re-derived from "
+     "mazu_dataset.nc: 16 June is the actual peak (44.22C) -- one day after the "
+     "caption's stated 11-14 June window and the rendered map's 10-15 June "
+     "frame range, a real range/peak mismatch worth flagging, not smoothed over."),
+    ("jeddah_flood", "2025-12-09", "flash_flood", ["Jeddah"],
+     "Flash flood (Jeddah), 8-11 Dec", None,
+     "Caption's own date (9 Dec is when a red cell appears in the raw grid), "
+     "but that signal sits ~165km north of Jeddah itself -- a genuine, "
+     "disclosed non-confirmation at the named city, kept for that reason."),
+    ("haboob_dust", "2025-05-04", "dust_storm", [],
+     "Dust storm (Haboob), 4-5 May", "Inconclusive",
+     "National event with no single focal point (matches "
+     "model/12_timeline_manifest.py's focus_points=None for this event); the "
+     "real high-risk zone sits 400-800km away near the Sudan/Jordan/Iraq "
+     "border, outside all 8 modeled cities -- no region edge added, since "
+     "forcing one onto an existing city node would misstate the finding."),
+    ("junjul_dust", "2025-06-30", "dust_storm", ["Riyadh"],
+     "Dust storm, 30 Jun-5 Jul", "Strong HIT",
+     "Riyadh, 30 June: real 1.00, model 0.99 -- the cleanest agreement in the "
+     "whole 12-event verification set."),
+    ("heatwave2_miss", "2025-06-30", "heatwave", ["Dammam"],
+     "Heatwave, 2nd wave, 28 Jun-5 Jul", "MISS",
+     "Dammam, 30 June: real rule score 0.55 (at threshold) but model only "
+     "0.045 -- a genuine model miss the rule engine independently confirmed."),
+    ("heatwave3", "2025-07-22", "heatwave", ["Mecca"],
+     "Heatwave, 3rd wave, 20-27 Jul", "Partial hit",
+     "Named cities (Dammam/Khobar/Al-Ahsa) missed -- an independent hit was "
+     "found instead at Mecca: 22 Jul real 0.60/model 0.97."),
+    ("heatwave4", "2025-08-04", "heatwave", ["Mecca"],
+     "Heatwave, 4th wave, 29 Jul-5 Aug", "Partial hit",
+     "Weak agreement at Dammam (both below threshold); a second, independent "
+     "hit again at Mecca: 4 Aug real 0.60/model 0.90."),
+    ("flood_jan", "2025-01-06", "flash_flood", ["Mecca"],
+     "Flood, 6-7 Jan", "Inconclusive",
+     "Mecca real score 1.00, but CAPE/IVT/PWAT are all NaN this date (known "
+     "Jan-Mar data gap) and the date falls inside the model's training window "
+     "-- an unreliable sample, honestly labeled rather than forced into HIT."),
+    ("flood_mar", "2025-03-06", "flash_flood", ["Hail", "Buraidah"],
+     "Flood, 6-7 Mar (Hail/Buraidah)", "MISS, plus a new finding",
+     "Real score 0.0 throughout, but the model's predicted probability reaches "
+     "0.94-0.98 at the same coordinates on 6-7 Mar -- an undisclosed model/rule "
+     "disagreement. Same known Jan-Mar CAPE/IVT/PWAT data gap as flood_jan, so "
+     "the MISS may partly reflect that gap rather than a clean model error."),
+    ("flood_taif", "2025-08-14", "flash_flood", ["Taif"],
+     "Flood, 14 Aug (Taif)", "Model/real disagreement",
+     "14 Aug: real 0.15, model 0.51 -- model runs ahead of the real signal, "
+     "possibly picking up terrain-related signal in Taif's mountainous setting."),
+    ("flood_aug2728", "2025-08-26", "flash_flood", ["Abha", "Jizan"],
+     "Flood, 27-28 Aug (Asir/Jizan)", "Mixed result",
+     "Abha, 26 Aug: real 0.75/model 0.84 (hit); by 28-29 Aug model drops to "
+     "0.37-0.44 while real stays 0.75 (missed persistence). Jizan, 26-27 Aug: "
+     "real 0.60, model only 0.18-0.22 (miss)."),
+]
+
+
+def detect_verified_events():
+    """Attach real driver-indicator values (same EVENT_DRIVERS list used for
+    the 6 auto-detected events) to each of the 12 site-verified events, read
+    at that event's own fixed date and region coordinates -- not an argmax
+    search, since the date/location are already pinned by the site's own
+    published verification, but the indicator VALUES themselves are always
+    freshly read from mazu_dataset.nc, never copied from the caption text."""
+    if not os.path.exists(DATASET):
+        return {}
+    ds = xr.open_dataset(DATASET)
+    lat_full, lon_full = ds.latitude.values, ds.longitude.values
+    times = np.array([str(t)[:10] for t in ds.time.values])
+    out = {}
+    for key, date, hazard, regions, label, verdict, note in VERIFIED_EVENTS:
+        eid = f"EV_{key}"
+        entry = {"label": label, "date": date, "hazard": hazard, "regions": regions,
+                 "verdict": verdict, "note": note, "drivers": {}}
+        if date in times and regions:
+            ti = int(np.where(times == date)[0][0])
+            primary = regions[0]
+            plat, plon, _ = REGIONS[primary]
+            yi = int(np.argmin(np.abs(lat_full - plat)))
+            xi = int(np.argmin(np.abs(lon_full - plon)))
+            for d in EVENT_DRIVERS:
+                if d in ds.data_vars:
+                    v = float(ds[d].values[ti, yi, xi])
+                    if np.isfinite(v):
+                        entry["drivers"][d] = round(v, 1)
+        out[eid] = entry
+    ds.close()
+    return out
+
+
 # hazard -> mechanisms that drive it (domain knowledge)
 HAZARD_MECH = {
     "flash_flood": ["ARST", "moisture_transport", "orographic_lift"],
@@ -232,6 +353,7 @@ def compute_correlations(threshold=0.6):
 def build():
     G = nx.DiGraph()
     events = detect_events()
+    verified_events = detect_verified_events()
 
     # ── nodes ───────────────────────────────────────────────────────────
     for k, v in DATA_SOURCES.items():
@@ -239,7 +361,12 @@ def build():
     for k, (ln, unit, src) in INDICATORS.items():
         G.add_node(k, ntype="Indicator", label=k, desc=ln, unit=unit, source=src)
     for k, v in HAZARDS.items():
-        G.add_node(k, ntype="Hazard", label=v, desc=v)
+        # dust_storm keeps its own richer, previously-shipped desc (from the
+        # earlier dust/dust_storm rename work, agent/02_test_tools.py's
+        # cap_alert_tool check depends on the exact "Dust Storm" label);
+        # every other hazard's desc mirrors its label as before.
+        desc = HAZARD_DESC_OVERRIDE.get(k, v)
+        G.add_node(k, ntype="Hazard", label=v, desc=desc)
     for k, (lat, lon, kind) in REGIONS.items():
         G.add_node(k, ntype="Region", label=k, lat=lat, lon=lon, kind=kind)
     for k, v in MECHANISMS.items():
@@ -248,6 +375,29 @@ def build():
         G.add_node(k, ntype="Event", label=e["label"], date=e["date"], hazard=e["hazard"],
                    value=f"{e['peak_var']} {e['peak_val']} {e['unit']}",
                    location=f"{e['region']} ({e['lat']}N,{e['lon']}E)")
+    for k, e in verified_events.items():
+        # location format must match the auto-detected events' "Name (LATN,LONE)"
+        # pattern -- agent/tools.py's similar_events_tool parses this exact
+        # shape for every Event node under a queried hazard, with no fallback.
+        # haboob_dust has no city-level coordinates (a genuinely national
+        # event, disclosed as such); giving it a real point here would
+        # misstate the finding, so its location deliberately does NOT match
+        # that pattern -- similar_events_tool is made robust to that instead
+        # of forcing a fake coordinate (see the try/except added there).
+        # location string must be ONLY "Name (LATN,LONE)" -- no trailing text --
+        # since _parse_event_location splits strictly on that pattern. Extra
+        # locations for multi-city events (e.g. flood_mar's Hail + Buraidah)
+        # go in the note/desc field instead, not appended here.
+        if e["regions"]:
+            primary = e["regions"][0]
+            plat, plon, _ = REGIONS[primary]
+            loc = f"{primary} ({plat}N,{plon}E)"
+        else:
+            loc = "outside 8-city coverage (national event, no fixed coordinates)"
+        verdict_str = e["verdict"] or "no verdict badge published"
+        G.add_node(k, ntype="Event", label=e["label"], date=e["date"], hazard=e["hazard"],
+                   location=loc, verdict=verdict_str, value=f"verdict: {verdict_str}",
+                   desc=e["note"], source="site-verified (deploy/index.html)")
 
     # ── sourced_from : indicator -> datasource ──────────────────────────
     for ind, (_, _, src) in INDICATORS.items():
@@ -291,6 +441,17 @@ def build():
         if e["region"] in REGIONS:
             G.add_edge(k, e["region"], etype="occurs_at")
         # attach the strongest real drivers as valued edges
+        for ind, val in sorted(e["drivers"].items(), key=lambda x: -x[1])[:4]:
+            if ind in INDICATORS:
+                G.add_edge(k, ind, etype="observed_value", value=val)
+
+    # ── verified-event edges (same pattern as the 6 auto-detected events,
+    #    plus multiple occurs_at edges where a caption names >1 location) ──
+    for k, e in verified_events.items():
+        G.add_edge(k, e["hazard"], etype="manifests_as")
+        for reg in e["regions"]:
+            if reg in REGIONS:
+                G.add_edge(k, reg, etype="occurs_at")
         for ind, val in sorted(e["drivers"].items(), key=lambda x: -x[1])[:4]:
             if ind in INDICATORS:
                 G.add_edge(k, ind, etype="observed_value", value=val)

@@ -480,10 +480,16 @@ def _feature_stats(var):
 
 
 def _parse_event_location(loc_str):
-    # "Jizan (17.5N,42.9E)" -> (17.5, 42.9)
-    coords = loc_str.split("(")[1].rstrip(")").replace("N", "").replace("E", "")
-    la, lo = coords.split(",")
-    return float(la), float(lo)
+    # "Jizan (17.5N,42.9E)" -> (17.5, 42.9); returns None for events with no
+    # single point location (e.g. a genuinely national event -- disclosed as
+    # such rather than given a fabricated coordinate), so callers can exclude
+    # them with a clear reason instead of the tool crashing.
+    try:
+        coords = loc_str.split("(")[1].rstrip(")").replace("N", "").replace("E", "")
+        la, lo = coords.split(",")
+        return float(la), float(lo)
+    except (IndexError, ValueError):
+        return None
 
 
 def _get_vector(date, lat, lon, features):
@@ -533,7 +539,13 @@ def similar_events_tool(city: str, date: str, hazard: str) -> dict:
     results = []
     excluded = []
     for e in events:
-        e_lat, e_lon = _parse_event_location(e["location"])
+        parsed = _parse_event_location(e["location"])
+        if parsed is None:
+            excluded.append({"event": e["label"],
+                             "reason": "no single point location for this event "
+                                       f"(location: '{e['location']}')"})
+            continue
+        e_lat, e_lon = parsed
         event_vec = _get_vector(e["date"], e_lat, e_lon, features)
         if event_vec is None:
             excluded.append({"event": e["label"], "reason": "event date not in dataset"})
@@ -571,7 +583,7 @@ def similar_events_tool(city: str, date: str, hazard: str) -> dict:
         km = round(((city_lat - e_lat) ** 2 + (city_lon - e_lon) ** 2) ** 0.5 * 111)
         results.append({
             "event": e["label"], "event_date": e["date"], "event_location": e["location"],
-            "event_headline_value": e["value"], "similarity_pct": similarity_pct,
+            "event_headline_value": e.get("value", "(no headline value recorded)"), "similarity_pct": similarity_pct,
             "features_compared": len(sq_dists),
             "event_distance_from_city_km": km,
         })

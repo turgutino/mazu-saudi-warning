@@ -406,11 +406,13 @@ check("Mecca results are sorted descending by similarity_pct",
 # Structural / disclosure checks.
 check("note field explicitly disclaims this is NOT a probability",
      "NOT a probability" in s_mecca["note"], s_mecca["note"])
-check("flash_flood query only compares against flash_flood events (3 of them), not heatwave events",
-     len(s_city["ranked_similar_events"]) + len(s_city["excluded_events"]) == 3,
+check("flash_flood query only compares against flash_flood events (8 of them: 3 "
+     "auto-detected annual extremes + 5 site-verified events), not heatwave events",
+     len(s_city["ranked_similar_events"]) + len(s_city["excluded_events"]) == 8,
      (s_city["ranked_similar_events"], s_city["excluded_events"]))
-check("heatwave query only compares against heatwave events (2 of them)",
-     len(s_mecca["ranked_similar_events"]) + len(s_mecca["excluded_events"]) == 2,
+check("heatwave query only compares against heatwave events (6 of them: 2 "
+     "auto-detected annual extremes + 4 site-verified events)",
+     len(s_mecca["ranked_similar_events"]) + len(s_mecca["excluded_events"]) == 6,
      (s_mecca["ranked_similar_events"], s_mecca["excluded_events"]))
 
 # Bypass test: independently re-derive the Mecca/07-25 similarity score using
@@ -501,13 +503,16 @@ check("dust_storm: contributing_indicators includes the 2 newly-added raw variab
      "wind10_speed" in k_dust["contributing_indicators"] and "dewpoint_depression_c" in k_dust["contributing_indicators"],
      k_dust["contributing_indicators"])
 
-# --- similar_events_tool: 1 real dust_storm event exists in the KG (auto-
-# detected the same way as the other 5: annual grid-max of the headline
-# variable, wind10_speed, on 2025-07-26 near the Arabian Sea).
+# --- similar_events_tool: 4 real dust_storm events exist in the KG (1
+# auto-detected annual grid-max of wind10_speed on 2025-07-26 near the
+# Arabian Sea, plus 3 site-verified events added when the KG was extended
+# with all 12 deploy/index.html verification events: dammam_dust,
+# haboob_dust, junjul_dust).
 s_dust = tools.similar_events_tool("Dammam", "2025-07-06", "dust_storm")
 check("dust_storm similar_events: no error", "error" not in s_dust, s_dust)
-check("dust_storm similar_events: exactly 1 event compared against (only 1 dust_storm event in KG)",
-     len(s_dust["ranked_similar_events"]) + len(s_dust["excluded_events"]) == 1,
+check("dust_storm similar_events: exactly 4 events compared against (1 "
+     "auto-detected + 3 site-verified dust_storm events in KG)",
+     len(s_dust["ranked_similar_events"]) + len(s_dust["excluded_events"]) == 4,
      (s_dust["ranked_similar_events"], s_dust["excluded_events"]))
 
 # Error handling for the new hazard value across all 3 hazard-taking tools.

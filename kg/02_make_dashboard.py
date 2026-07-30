@@ -2,7 +2,7 @@
 # MAZU KG Dashboard generator
 # Reads kg_data.json and writes a self-contained interactive HTML page
 # (data embedded inline so it works by double-click, no server needed).
-# Output: dashboard/kg_view.html
+# Output: ../kg_view.html (site root, linked directly from index.html)
 # =============================================================================
 
 import os
@@ -10,7 +10,7 @@ import json
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 KG_JSON = os.path.join(HERE, "kg_data.json")
-OUT_HTML = os.path.join(HERE, "..", "dashboard", "kg_view.html")
+OUT_HTML = os.path.join(HERE, "..", "kg_view.html")
 
 with open(KG_JSON, encoding="utf-8") as f:
     kg = json.load(f)
@@ -23,6 +23,7 @@ NODE_COLORS = {
     "Event":      "#FFD166",
     "Region":     "#1DDBA0",
     "DataSource": "#8AA0B4",
+    "Citation":   "#F2A65A",
 }
 NODE_SHAPES = {
     "Indicator":  "dot",
@@ -31,6 +32,7 @@ NODE_SHAPES = {
     "Event":      "star",
     "Region":     "triangle",
     "DataSource": "square",
+    "Citation":   "hexagon",
 }
 EDGE_COLORS = {
     "contributes_to":  "#FF7D45",
@@ -43,6 +45,7 @@ EDGE_COLORS = {
     "occurs_at":       "#1DDBA0",
     "manifests_as":    "#FF5A5A",
     "observed_value":  "#FFD166",
+    "grounded_by":     "#F2A65A",
 }
 
 # degree (for node sizing)
@@ -57,7 +60,7 @@ vis_nodes = []
 for n in kg["nodes"]:
     nt = n.get("ntype", "Indicator")
     tip = [f"<b>{n.get('label', n['id'])}</b>", f"type: {nt}"]
-    for key in ("desc", "unit", "source", "date", "value", "hazard", "location", "kind"):
+    for key in ("desc", "unit", "source", "date", "value", "hazard", "location", "kind", "verdict", "url"):
         if n.get(key):
             tip.append(f"{key}: {n[key]}")
     base = {"Hazard": 6, "Mechanism": 4, "Event": 3}.get(nt, 1)

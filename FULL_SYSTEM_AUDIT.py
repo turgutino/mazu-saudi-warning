@@ -103,9 +103,18 @@ print("=" * 74)
 
 with open(KG_JSON, encoding="utf-8") as f:
     kg = json.load(f)
-events = [n for n in kg["nodes"] if n.get("ntype") == "Event"]
-check("C", "6 event nodes present in KG (5 original + 1 dust_storm added later)",
-     len(events) == 6, f"found {len(events)}")
+all_events = [n for n in kg["nodes"] if n.get("ntype") == "Event"]
+# "E_..." = the 6 auto-detected annual-extreme events (argmax-derived, "peak_var
+# value unit" value format, checked against RAW per-day files below);
+# "EV_..." = the 12 site-verified events added from deploy/index.html's
+# map-verification section (fixed date/location, "verdict: ..." value format,
+# checked separately further down).
+events = [n for n in all_events if n["id"].startswith("E_")]
+verified_events = [n for n in all_events if n["id"].startswith("EV_")]
+check("C", "18 event nodes present in KG (6 auto-detected annual extremes: "
+     "5 original + 1 dust_storm added later, + 12 site-verified events)",
+     len(events) == 6 and len(verified_events) == 12 and len(all_events) == 18,
+     f"auto-detected={len(events)} site-verified={len(verified_events)} total={len(all_events)}")
 
 lat_full, lon_full = cons.latitude.values, cons.longitude.values
 for ev in events:
@@ -133,6 +142,43 @@ for ev in events:
     raw_max = float(arr[ti, yi, xi]) if arr.ndim == 3 else float(arr[yi, xi])
     check("C", f"{ev['label']}: claimed value ({claimed_val}) matches raw grid MAX for {var_name} on {date} ({round(raw_max,1)})",
          abs(claimed_val - round(raw_max, 1)) < 0.2, f"claimed={claimed_val} raw_max={raw_max:.2f}")
+    raw_ds.close()
+
+# ── C2: the 12 site-verified events' observed_value edges (fixed date/region,
+# not argmax) re-checked directly against the RAW per-day source files, same
+# independence standard as the 6 auto-detected events above. ──
+value_edges_by_event = {}
+for l in kg["links"]:
+    if l.get("etype") == "observed_value":
+        value_edges_by_event.setdefault(l["source"], []).append((l["target"], l["value"]))
+
+for ev in verified_events:
+    date = ev["date"]
+    loc_str = ev["location"]
+    try:
+        coords = loc_str.split("(")[1].split(")")[0].replace("N", "").replace("E", "")
+        claim_lat, claim_lon = [float(x) for x in coords.split(",")]
+    except (IndexError, ValueError):
+        # no single point location (e.g. haboob_dust, a genuinely national
+        # event with no fixed coordinates) -- nothing to grid-check, and
+        # correctly so, not a bug.
+        continue
+
+    raw_path = os.path.join(RAW_DIR, f"saudi_indicators_{date.replace('-','')}.nc")
+    if not os.path.exists(raw_path):
+        check("C", f"{ev['label']}: raw file exists for observed_value re-check", False, "missing")
+        continue
+    raw_ds = xr.open_dataset(raw_path)
+    ryi = int(np.argmin(np.abs(raw_ds.latitude.values - claim_lat)))
+    rxi = int(np.argmin(np.abs(raw_ds.longitude.values - claim_lon)))
+    for var_name, claimed_val in value_edges_by_event.get(ev["id"], []):
+        if var_name not in raw_ds:
+            continue
+        raw_val = float(raw_ds[var_name].values[ryi, rxi])
+        check("C", f"{ev['label']}: observed_value {var_name}={claimed_val} matches RAW "
+             f"source at ({claim_lat}N,{claim_lon}E) on {date} ({round(raw_val,1)})",
+             np.isfinite(raw_val) and abs(claimed_val - round(raw_val, 1)) < 0.2,
+             f"claimed={claimed_val} raw={raw_val:.2f}")
     raw_ds.close()
 
 # =============================================================================
@@ -472,9 +518,11 @@ check("J", "no duplicate KG node ids", len(kg["nodes"]) == len(node_ids_j),
      f"{len(kg['nodes'])} nodes, {len(node_ids_j)} unique ids")
 check("J", "old 'dust' id fully removed (renamed, not duplicated)", "dust" not in node_ids_j)
 check("J", "'dust_storm' hazard node present", "dust_storm" in node_ids_j)
-check("J", "KG now has 60 nodes / 183 edges (57/176 + 2 indicator nodes + 1 event node + "
-     "renamed dust_storm hazard + new edges)",
-     len(kg["nodes"]) == 60 and len(kg["links"]) == 183,
+check("J", "KG now has 74 nodes / 264 edges (60/183 dust_storm-extension baseline "
+     "+ 2 new Region nodes [Hail, Buraidah] + 12 site-verified Event nodes from "
+     "deploy/index.html's map-verification section + their manifests_as/occurs_at/"
+     "observed_value edges)",
+     len(kg["nodes"]) == 74 and len(kg["links"]) == 264,
      f"{len(kg['nodes'])} nodes, {len(kg['links'])} edges")
 
 # J4 -- dust_storm's thermal_low mechanism is grounded by the PRE-EXISTING
