@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MAZU — Risk + Exposure Layer Explorer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<style>
+  :root { color-scheme: dark; }
+  html, body { margin:0; padding:0; height:100%; background:#0E1B2A; font-family: -apple-system, Segoe UI, Roboto, sans-serif; }
+  #map { position:absolute; top:0; left:0; right:0; bottom:0; }
+  .panel {
+    position:absolute; top:14px; right:14px; z-index:1000;
+    background:rgba(14,27,42,0.92); border:1px solid #2a3f5c; border-radius:10px;
+    padding:14px 16px; color:#e8eef7; width:280px; box-shadow:0 6px 20px rgba(0,0,0,0.4);
+  }
+  .panel h1 { font-size:15px; margin:0 0 4px; color:#fff; }
+  .panel .sub { font-size:11px; color:#9fb3cc; margin-bottom:10px; }
+  .layer-row { display:flex; align-items:center; gap:8px; padding:5px 0; border-top:1px solid #1e2f45; }
+  .layer-row:first-of-type { border-top:none; }
+  .layer-row label { font-size:13px; flex:1; cursor:pointer; }
+  .layer-row .swatch { width:12px; height:12px; border-radius:3px; flex-shrink:0; }
+  .note { font-size:10.5px; color:#7d90a8; margin-top:10px; line-height:1.4; border-top:1px solid #1e2f45; padding-top:8px; }
+  .note b { color:#a8bcd4; }
+  a.back { display:inline-block; margin-top:10px; font-size:11px; color:#6bb6ff; text-decoration:none; }
+  a.back:hover { text-decoration:underline; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div class="panel">
+  <h1>Risk + Exposure Layers</h1>
+  <div class="sub">Priority-3 item 3 — one-click toggle, base risk = flash_flood, 23 Aug 2025 (Jizan 254.9mm event)</div>
+
+  <div class="layer-row">
+    <span class="swatch" style="background:#c92a2a"></span>
+    <label for="chk-risk">Flash-flood risk (base)</label>
+    <input type="checkbox" id="chk-risk" checked>
+  </div>
+  <div class="layer-row">
+    <span class="swatch" style="background:#5A2E0A"></span>
+    <label for="chk-slope">Terrain slope</label>
+    <input type="checkbox" id="chk-slope">
+  </div>
+  <div class="layer-row">
+    <span class="swatch" style="background:#1c7ed6"></span>
+    <label for="chk-wadi">Wadi / watershed network</label>
+    <input type="checkbox" id="chk-wadi">
+  </div>
+  <div class="layer-row">
+    <span class="swatch" style="background:#e64980"></span>
+    <label for="chk-pop">Town population (2022)</label>
+    <input type="checkbox" id="chk-pop">
+  </div>
+
+  <div class="note">
+    <b>Data honesty:</b> slope is computed from this project's own 10km-resolution elevation
+    data (real, but coarse). Wadi network is real HydroRIVERS v1.0 hydrography (Lehner &amp; Grill
+    2013), Strahler order ≥4. Population circles are real GASTAT 2022 city totals — point data,
+    <i>not</i> a gridded density surface (none exists for this project).
+  </div>
+  <a class="back" href="index.html">&larr; Back to MAZU-FENGYUN</a>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+  var map = L.map('map', { zoomControl: true }).setView([24, 45], 6);
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+    subdomains: 'abcd', maxZoom: 10
+  }).addTo(map);
+
+  // Bounds shared by every layer PNG -- must match render_map.DATA_EXTENT
+  // exactly (see model/09_interactive_layers.py), so all overlays align.
+  var bounds = [[16.0, 34.0], [31.9, 55.9]]; // [[south, west], [north, east]]
+
+  var riskLayer = L.imageOverlay('img/layers/base_risk_flash_flood.png', bounds, { opacity: 0.85 }).addTo(map);
+  var slopeLayer = L.imageOverlay('img/layers/slope.png', bounds, { opacity: 0.9 });
+  var wadiLayer = L.imageOverlay('img/layers/wadi.png', bounds, { opacity: 0.9 });
+  var popLayer = L.imageOverlay('img/layers/population.png', bounds, { opacity: 0.9 });
+
+  document.getElementById('chk-risk').addEventListener('change', function(e) {
+    if (e.target.checked) riskLayer.addTo(map); else map.removeLayer(riskLayer);
+  });
+  document.getElementById('chk-slope').addEventListener('change', function(e) {
+    if (e.target.checked) slopeLayer.addTo(map); else map.removeLayer(slopeLayer);
+  });
+  document.getElementById('chk-wadi').addEventListener('change', function(e) {
+    if (e.target.checked) wadiLayer.addTo(map); else map.removeLayer(wadiLayer);
+  });
+  document.getElementById('chk-pop').addEventListener('change', function(e) {
+    if (e.target.checked) popLayer.addTo(map); else map.removeLayer(popLayer);
+  });
+</script>
+</body>
+</html>

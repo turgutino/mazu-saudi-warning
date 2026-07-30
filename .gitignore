@@ -4,3 +4,9 @@ __pycache__/
 data/
 .DS_Store
 .deepseek_key
+model/hydro_data/
+model/gif_frames/
+model/regenerated/
+model/timeline_frames/
+outputs/
+model/regen_p2_all.log

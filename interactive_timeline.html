@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MAZU — Interactive Timeline</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root { color-scheme: dark; }
+  html, body { margin:0; padding:0; background:#0E1B2A; font-family: -apple-system, Segoe UI, Roboto, sans-serif; color:#e8eef7; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 24px 20px 60px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { font-size: 12.5px; color:#9fb3cc; margin-bottom: 18px; line-height:1.5; }
+  .controls-row { display:flex; gap: 14px; align-items:center; flex-wrap: wrap; margin-bottom: 12px; }
+  select {
+    background:#152640; color:#e8eef7; border:1px solid #2a3f5c; border-radius:6px;
+    padding: 7px 10px; font-size: 13px;
+  }
+  .scale-btns { display:flex; gap:6px; }
+  .scale-btns button {
+    background:#152640; color:#9fb3cc; border:1px solid #2a3f5c; border-radius:6px;
+    padding: 6px 12px; font-size: 12.5px; cursor:pointer;
+  }
+  .scale-btns button.active { background:#2244ee; color:#fff; border-color:#2244ee; }
+  .scale-btns button:disabled { opacity: 0.35; cursor: not-allowed; }
+  #playBtn {
+    background:#2b8a3e; color:#fff; border:none; border-radius:6px;
+    padding: 7px 16px; font-size: 13px; cursor:pointer; font-weight:600;
+  }
+  #playBtn.playing { background:#c92a2a; }
+  .frame-box { position:relative; border:1px solid #2a3f5c; border-radius:8px; overflow:hidden; background:#000; }
+  .frame-box img { width:100%; display:block; }
+  .date-label {
+    position:absolute; top:10px; left:12px; background:rgba(14,27,42,0.85);
+    padding: 5px 10px; border-radius:6px; font-size: 13px; font-weight:700;
+  }
+  .event-flag {
+    position:absolute; top:10px; right:12px; background:#c92a2a; color:#fff;
+    padding: 5px 10px; border-radius:6px; font-size: 12px; font-weight:700; display:none;
+  }
+  .event-flag.show { display:block; }
+  #slider { width: 100%; margin: 14px 0 4px; }
+  .strip { display:flex; gap: 3px; margin-top: 4px; overflow-x:auto; padding-bottom: 6px; }
+  .dot {
+    flex: 1 0 auto; min-width: 8px; height: 22px; border-radius:3px; cursor:pointer;
+    background:#2a3f5c; border: 1px solid #1a2740; position:relative;
+  }
+  .dot.real { background:#c92a2a; }
+  .dot.current { outline: 2px solid #fff; outline-offset: 1px; }
+  .strip-note { font-size:10.5px; color:#7d90a8; margin-top:6px; }
+  .scope-note {
+    font-size: 11px; color:#7d90a8; background:#101f33; border:1px solid #223753;
+    border-radius:8px; padding:10px 12px; margin-top: 18px; line-height:1.5;
+  }
+  a.back { display:inline-block; margin-top:16px; font-size:12px; color:#6bb6ff; text-decoration:none; }
+  a.back:hover { text-decoration:underline; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Interactive Timeline</h1>
+  <div class="sub">Priority-4 item 2 — drag the date, play/pause, jump via the bottom strip. Red strip cells = a real detected hazard event on that day (rule-based DetectionEngine, same ground truth as every other map on the site).</div>
+
+  <div class="controls-row">
+    <select id="eventSelect"></select>
+    <button id="playBtn">▶ Play</button>
+    <div class="scale-btns">
+      <button id="scaleDay" class="active">Daily</button>
+      <button id="scaleWeek">Weekly</button>
+      <button id="scalePentad">Pentad (5-day)</button>
+    </div>
+  </div>
+
+  <div class="frame-box">
+    <img id="frameImg" src="" alt="Map frame">
+    <div class="date-label" id="dateLabel"></div>
+    <div class="event-flag" id="eventFlag">● Real event detected</div>
+  </div>
+
+  <input type="range" id="slider" min="0" max="0" value="0" step="1">
+  <div class="strip" id="strip"></div>
+  <div class="strip-note" id="scaleNote"></div>
+
+  <div class="scope-note">
+    <b>Scope note:</b> "Dammam dust storm" has an extended 28-day window (5 May&ndash;1 Jun 2025)
+    specifically so Daily/Weekly/Pentad scale-switching has enough real data to be meaningful.
+    The other 11 events keep their original 4&ndash;6 day window (the same range as their GIF
+    version) at daily granularity only — each frame here costs ~87s to render (the bias-panel
+    ensemble computation), so extending all 12 to a multi-week window wasn't feasible in one
+    session. Every frame shown, in every event, is a real render — nothing here is a mockup.
+  </div>
+  <a class="back" href="index.html">&larr; Back to MAZU-FENGYUN</a>
+</div>
+
+<script>
+let manifest = null;
+let currentEvent = null;
+let currentIdx = 0;
+let stepIndices = [];  // indices into currentEvent.frames, respecting the active scale
+let playing = false;
+let playTimer = null;
+
+async function loadManifest() {
+  const res = await fetch('timeline_manifest.json');
+  manifest = await res.json();
+  const sel = document.getElementById('eventSelect');
+  manifest.events.forEach((ev, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = ev.label + (ev.extended ? ' (extended, multi-scale)' : '');
+    sel.appendChild(opt);
+  });
+  sel.addEventListener('change', () => selectEvent(parseInt(sel.value)));
+  selectEvent(0);
+}
+
+function computeStepIndices(ev, scale) {
+  const n = ev.frames.length;
+  if (!ev.extended || scale === 'day') {
+    return Array.from({length: n}, (_, i) => i);
+  }
+  const step = scale === 'week' ? 7 : 5;
+  const idxs = [];
+  for (let i = 0; i < n; i += step) idxs.push(i);
+  if (idxs[idxs.length - 1] !== n - 1) idxs.push(n - 1);
+  return idxs;
+}
+
+function selectEvent(i) {
+  currentEvent = manifest.events[i];
+  document.getElementById('eventSelect').value = i;
+  const scaleButtons = [document.getElementById('scaleWeek'), document.getElementById('scalePentad')];
+  scaleButtons.forEach(b => b.disabled = !currentEvent.extended);
+  setScale('day');
+  renderStrip();
+}
+
+function setScale(scale) {
+  ['scaleDay', 'scaleWeek', 'scalePentad'].forEach(id => document.getElementById(id).classList.remove('active'));
+  document.getElementById({day: 'scaleDay', week: 'scaleWeek', pentad: 'scalePentad'}[scale]).classList.add('active');
+  stepIndices = computeStepIndices(currentEvent, scale);
+  const slider = document.getElementById('slider');
+  slider.max = stepIndices.length - 1;
+  slider.value = 0;
+  currentIdx = 0;
+  document.getElementById('scaleNote').textContent =
+    scale === 'day' ? `${stepIndices.length} daily steps` :
+    scale === 'week' ? `${stepIndices.length} weekly steps (7-day stride)` :
+    `${stepIndices.length} pentad steps (5-day stride)`;
+  showFrame();
+}
+
+function renderStrip() {
+  const strip = document.getElementById('strip');
+  strip.innerHTML = '';
+  currentEvent.frames.forEach((f, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (f.real_event ? ' real' : '');
+    d.title = f.date + (f.real_event ? ' — real detected event' : '');
+    d.addEventListener('click', () => {
+      const stepPos = stepIndices.indexOf(i);
+      if (stepPos >= 0) {
+        document.getElementById('slider').value = stepPos;
+        currentIdx = stepPos;
+      } else {
+        // jump to nearest available step
+        let nearest = 0, best = Infinity;
+        stepIndices.forEach((si, pos) => { if (Math.abs(si - i) < best) { best = Math.abs(si - i); nearest = pos; } });
+        document.getElementById('slider').value = nearest;
+        currentIdx = nearest;
+      }
+      showFrame();
+    });
+    strip.appendChild(d);
+  });
+}
+
+function showFrame() {
+  const frameIdx = stepIndices[currentIdx];
+  const f = currentEvent.frames[frameIdx];
+  document.getElementById('frameImg').src = f.img;
+  document.getElementById('dateLabel').textContent = f.date;
+  document.getElementById('eventFlag').classList.toggle('show', f.real_event);
+  document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('current', i === frameIdx));
+}
+
+document.getElementById('slider').addEventListener('input', (e) => {
+  currentIdx = parseInt(e.target.value);
+  showFrame();
+});
+
+document.getElementById('scaleDay').addEventListener('click', () => setScale('day'));
+document.getElementById('scaleWeek').addEventListener('click', () => setScale('week'));
+document.getElementById('scalePentad').addEventListener('click', () => setScale('pentad'));
+
+document.getElementById('playBtn').addEventListener('click', () => {
+  playing = !playing;
+  const btn = document.getElementById('playBtn');
+  btn.textContent = playing ? '⏸ Pause' : '▶ Play';
+  btn.classList.toggle('playing', playing);
+  if (playing) advance(); else clearTimeout(playTimer);
+});
+
+function advance() {
+  if (!playing) return;
+  const slider = document.getElementById('slider');
+  let next = currentIdx + 1;
+  if (next > parseInt(slider.max)) next = 0;
+  slider.value = next;
+  currentIdx = next;
+  showFrame();
+  // "定格灾害事件" -- freeze longer on frames with a real detected event
+  const frameIdx = stepIndices[currentIdx];
+  const isReal = currentEvent.frames[frameIdx].real_event;
+  playTimer = setTimeout(advance, isReal ? 1800 : 700);
+}
+
+loadManifest();
+</script>
+</body>
+</html>

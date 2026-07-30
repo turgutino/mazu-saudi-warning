@@ -1,0 +1,570 @@
+{
+  "events": [
+    {
+      "key": "dammam_dust",
+      "label": "Dammam dust storm",
+      "hazard": "dust_storm",
+      "extended": true,
+      "frames": [
+        {
+          "date": "2025-05-05",
+          "img": "img/timeline/dammam_dust/2025-05-05.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-05-06",
+          "img": "img/timeline/dammam_dust/2025-05-06.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-05-07",
+          "img": "img/timeline/dammam_dust/2025-05-07.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-05-08",
+          "img": "img/timeline/dammam_dust/2025-05-08.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-05-09",
+          "img": "img/timeline/dammam_dust/2025-05-09.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-05-10",
+          "img": "img/timeline/dammam_dust/2025-05-10.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-05-11",
+          "img": "img/timeline/dammam_dust/2025-05-11.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-05-12",
+          "img": "img/timeline/dammam_dust/2025-05-12.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-05-13",
+          "img": "img/timeline/dammam_dust/2025-05-13.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-05-14",
+          "img": "img/timeline/dammam_dust/2025-05-14.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-05-15",
+          "img": "img/timeline/dammam_dust/2025-05-15.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-05-16",
+          "img": "img/timeline/dammam_dust/2025-05-16.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-05-17",
+          "img": "img/timeline/dammam_dust/2025-05-17.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-05-18",
+          "img": "img/timeline/dammam_dust/2025-05-18.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-05-19",
+          "img": "img/timeline/dammam_dust/2025-05-19.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-05-20",
+          "img": "img/timeline/dammam_dust/2025-05-20.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-05-21",
+          "img": "img/timeline/dammam_dust/2025-05-21.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-05-22",
+          "img": "img/timeline/dammam_dust/2025-05-22.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-05-23",
+          "img": "img/timeline/dammam_dust/2025-05-23.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-05-24",
+          "img": "img/timeline/dammam_dust/2025-05-24.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-05-25",
+          "img": "img/timeline/dammam_dust/2025-05-25.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-05-26",
+          "img": "img/timeline/dammam_dust/2025-05-26.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-05-27",
+          "img": "img/timeline/dammam_dust/2025-05-27.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-05-28",
+          "img": "img/timeline/dammam_dust/2025-05-28.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-05-29",
+          "img": "img/timeline/dammam_dust/2025-05-29.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-05-30",
+          "img": "img/timeline/dammam_dust/2025-05-30.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-05-31",
+          "img": "img/timeline/dammam_dust/2025-05-31.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-06-01",
+          "img": "img/timeline/dammam_dust/2025-06-01.png",
+          "real_event": true
+        }
+      ]
+    },
+    {
+      "key": "dammam_heat",
+      "label": "Dammam heatwave",
+      "hazard": "heatwave",
+      "extended": false,
+      "frames": [
+        {
+          "date": "2025-06-10",
+          "img": "img/timeline/dammam_heat/2025-06-10.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-06-11",
+          "img": "img/timeline/dammam_heat/2025-06-11.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-06-12",
+          "img": "img/timeline/dammam_heat/2025-06-12.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-06-13",
+          "img": "img/timeline/dammam_heat/2025-06-13.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-06-14",
+          "img": "img/timeline/dammam_heat/2025-06-14.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-06-15",
+          "img": "img/timeline/dammam_heat/2025-06-15.png",
+          "real_event": false
+        }
+      ]
+    },
+    {
+      "key": "jeddah_flood",
+      "label": "Jeddah flood",
+      "hazard": "flash_flood",
+      "extended": false,
+      "frames": [
+        {
+          "date": "2025-12-07",
+          "img": "img/timeline/jeddah_flood/2025-12-07.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-12-08",
+          "img": "img/timeline/jeddah_flood/2025-12-08.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-12-09",
+          "img": "img/timeline/jeddah_flood/2025-12-09.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-12-10",
+          "img": "img/timeline/jeddah_flood/2025-12-10.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-12-11",
+          "img": "img/timeline/jeddah_flood/2025-12-11.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-12-12",
+          "img": "img/timeline/jeddah_flood/2025-12-12.png",
+          "real_event": false
+        }
+      ]
+    },
+    {
+      "key": "haboob_dust",
+      "label": "Haboob dust storm",
+      "hazard": "dust_storm",
+      "extended": false,
+      "frames": [
+        {
+          "date": "2025-05-02",
+          "img": "img/timeline/haboob_dust/2025-05-02.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-05-03",
+          "img": "img/timeline/haboob_dust/2025-05-03.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-05-04",
+          "img": "img/timeline/haboob_dust/2025-05-04.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-05-05",
+          "img": "img/timeline/haboob_dust/2025-05-05.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-05-06",
+          "img": "img/timeline/haboob_dust/2025-05-06.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-05-07",
+          "img": "img/timeline/haboob_dust/2025-05-07.png",
+          "real_event": true
+        }
+      ]
+    },
+    {
+      "key": "junjul_dust",
+      "label": "Dust storm (Riyadh/Dammam)",
+      "hazard": "dust_storm",
+      "extended": false,
+      "frames": [
+        {
+          "date": "2025-06-30",
+          "img": "img/timeline/junjul_dust/2025-06-30.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-07-01",
+          "img": "img/timeline/junjul_dust/2025-07-01.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-07-02",
+          "img": "img/timeline/junjul_dust/2025-07-02.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-07-03",
+          "img": "img/timeline/junjul_dust/2025-07-03.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-07-04",
+          "img": "img/timeline/junjul_dust/2025-07-04.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-07-05",
+          "img": "img/timeline/junjul_dust/2025-07-05.png",
+          "real_event": false
+        }
+      ]
+    },
+    {
+      "key": "heatwave2_miss",
+      "label": "Heatwave 2nd wave",
+      "hazard": "heatwave",
+      "extended": false,
+      "frames": [
+        {
+          "date": "2025-06-28",
+          "img": "img/timeline/heatwave2_miss/2025-06-28.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-06-29",
+          "img": "img/timeline/heatwave2_miss/2025-06-29.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-06-30",
+          "img": "img/timeline/heatwave2_miss/2025-06-30.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-07-01",
+          "img": "img/timeline/heatwave2_miss/2025-07-01.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-07-02",
+          "img": "img/timeline/heatwave2_miss/2025-07-02.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-07-03",
+          "img": "img/timeline/heatwave2_miss/2025-07-03.png",
+          "real_event": false
+        }
+      ]
+    },
+    {
+      "key": "heatwave3",
+      "label": "Heatwave 3rd wave",
+      "hazard": "heatwave",
+      "extended": false,
+      "frames": [
+        {
+          "date": "2025-07-20",
+          "img": "img/timeline/heatwave3/2025-07-20.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-07-21",
+          "img": "img/timeline/heatwave3/2025-07-21.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-07-22",
+          "img": "img/timeline/heatwave3/2025-07-22.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-07-23",
+          "img": "img/timeline/heatwave3/2025-07-23.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-07-24",
+          "img": "img/timeline/heatwave3/2025-07-24.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-07-25",
+          "img": "img/timeline/heatwave3/2025-07-25.png",
+          "real_event": false
+        }
+      ]
+    },
+    {
+      "key": "heatwave4",
+      "label": "Heatwave 4th wave",
+      "hazard": "heatwave",
+      "extended": false,
+      "frames": [
+        {
+          "date": "2025-08-01",
+          "img": "img/timeline/heatwave4/2025-08-01.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-08-02",
+          "img": "img/timeline/heatwave4/2025-08-02.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-08-03",
+          "img": "img/timeline/heatwave4/2025-08-03.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-08-04",
+          "img": "img/timeline/heatwave4/2025-08-04.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-08-05",
+          "img": "img/timeline/heatwave4/2025-08-05.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-08-06",
+          "img": "img/timeline/heatwave4/2025-08-06.png",
+          "real_event": true
+        }
+      ]
+    },
+    {
+      "key": "flood_jan",
+      "label": "Flood (Mecca)",
+      "hazard": "flash_flood",
+      "extended": false,
+      "frames": [
+        {
+          "date": "2025-01-04",
+          "img": "img/timeline/flood_jan/2025-01-04.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-01-05",
+          "img": "img/timeline/flood_jan/2025-01-05.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-01-06",
+          "img": "img/timeline/flood_jan/2025-01-06.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-01-07",
+          "img": "img/timeline/flood_jan/2025-01-07.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-01-08",
+          "img": "img/timeline/flood_jan/2025-01-08.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-01-09",
+          "img": "img/timeline/flood_jan/2025-01-09.png",
+          "real_event": false
+        }
+      ]
+    },
+    {
+      "key": "flood_mar",
+      "label": "Flood (Hail/Buraidah)",
+      "hazard": "flash_flood",
+      "extended": false,
+      "frames": [
+        {
+          "date": "2025-03-04",
+          "img": "img/timeline/flood_mar/2025-03-04.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-03-05",
+          "img": "img/timeline/flood_mar/2025-03-05.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-03-06",
+          "img": "img/timeline/flood_mar/2025-03-06.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-03-07",
+          "img": "img/timeline/flood_mar/2025-03-07.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-03-08",
+          "img": "img/timeline/flood_mar/2025-03-08.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-03-09",
+          "img": "img/timeline/flood_mar/2025-03-09.png",
+          "real_event": false
+        }
+      ]
+    },
+    {
+      "key": "flood_taif",
+      "label": "Flood (Taif)",
+      "hazard": "flash_flood",
+      "extended": false,
+      "frames": [
+        {
+          "date": "2025-08-11",
+          "img": "img/timeline/flood_taif/2025-08-11.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-08-12",
+          "img": "img/timeline/flood_taif/2025-08-12.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-08-13",
+          "img": "img/timeline/flood_taif/2025-08-13.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-08-14",
+          "img": "img/timeline/flood_taif/2025-08-14.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-08-15",
+          "img": "img/timeline/flood_taif/2025-08-15.png",
+          "real_event": false
+        },
+        {
+          "date": "2025-08-16",
+          "img": "img/timeline/flood_taif/2025-08-16.png",
+          "real_event": false
+        }
+      ]
+    },
+    {
+      "key": "flood_aug2728",
+      "label": "Flood (Asir/Jizan)",
+      "hazard": "flash_flood",
+      "extended": false,
+      "frames": [
+        {
+          "date": "2025-08-25",
+          "img": "img/timeline/flood_aug2728/2025-08-25.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-08-26",
+          "img": "img/timeline/flood_aug2728/2025-08-26.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-08-27",
+          "img": "img/timeline/flood_aug2728/2025-08-27.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-08-28",
+          "img": "img/timeline/flood_aug2728/2025-08-28.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-08-29",
+          "img": "img/timeline/flood_aug2728/2025-08-29.png",
+          "real_event": true
+        },
+        {
+          "date": "2025-08-30",
+          "img": "img/timeline/flood_aug2728/2025-08-30.png",
+          "real_event": true
+        }
+      ]
+    }
+  ]
+}
