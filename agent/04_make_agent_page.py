@@ -15,7 +15,7 @@ import html as htmllib
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TRANSCRIPTS = os.path.join(HERE, "example_transcripts.json")
-OUT_HTML = os.path.join(HERE, "..", "dashboard", "agent_view.html")
+OUT_HTML = os.path.join(HERE, "..", "agent_view.html")
 
 with open(TRANSCRIPTS, encoding="utf-8") as f:
     examples = json.load(f)
@@ -123,9 +123,9 @@ html_out = f"""<!doctype html>
   <a class="back" href="index.html">&larr; back</a>
   <div class="kicker">Layer 4 &middot; Agent</div>
   <h1>MAZU Agent — worked examples</h1>
-  <p>Real transcripts from the DeepSeek function-calling agent (<code>agent/03_agent.py</code>), now with <b>6 tools</b> (forecast, causal-KG, conditions, similar-events, region-risk, CAP alert) across <b>3 hazards</b> (flash flood, heatwave, dust storm). Every number and citation below came from an actual tool call — click a tool-call line to see its exact input and output.</p>
+  <p>Real transcripts from the DeepSeek function-calling agent (<code>agent/03_agent.py</code>), now with <b>7 tools</b> (forecast, causal-KG, conditions, similar-events, region-risk, CAP alert, literature-evidence) across <b>3 hazards</b> (flash flood, heatwave, dust storm). Every number and citation below came from an actual tool call — click a tool-call line to see its exact input and output.</p>
 </header>
-<div class="note">Static page, not a live chat: GitHub Pages cannot run the agent's Python backend, and embedding the API key in client-side JavaScript would let anyone steal and abuse it. These are real, verified runs of the agent shown as evidence it works — see <code>agent/LAYER4_REPORT.md</code> for the full test suite (143 tool tests + 4 end-to-end scenarios, all passing), <code>agent/ABLATION_REPORT.md</code> for a live A/B test proving the causal-KG tool is what grounds the agent's explanations (removing it: 4/4 answers lost mechanism/citation grounding, but 0/4 hallucinated a replacement), <code>agent/REFLEXIVE_CHECK_REPORT.md</code> for a self-check against an independent rule-based engine that caught a real, disclosed model limitation, <code>agent/DUST_STORM_REPORT.md</code> for the 3rd hazard added with full depth, <code>agent/REGION_RISK_REPORT.md</code> for the 5th tool that closed a self-found knowledge-graph utilization gap, <code>agent/CAP_REPORT.md</code> for the 6th tool (CAP 1.2 standards-compliant alert generation), and <code>agent/METEOROLOGICAL_METRICS_REPORT.md</code> for WMO-standard POD/FAR/CSI/HSS verification metrics.</div>
+<div class="note">Static page, not a live chat: GitHub Pages cannot run the agent's Python backend, and embedding the API key in client-side JavaScript would let anyone steal and abuse it. These are real, verified runs of the agent shown as evidence it works — see <code>agent/LAYER4_REPORT.md</code> for the full test suite (169 tool tests + 4 end-to-end scenarios, all passing), <code>agent/ABLATION_REPORT.md</code> for a live A/B test proving the causal-KG tool is what grounds the agent's explanations (removing it: 4/4 answers lost mechanism/citation grounding, but 0/4 hallucinated a replacement), <code>agent/REFLEXIVE_CHECK_REPORT.md</code> for a self-check against an independent rule-based engine that caught a real, disclosed model limitation, <code>agent/DUST_STORM_REPORT.md</code> for the 3rd hazard added with full depth, <code>agent/REGION_RISK_REPORT.md</code> for the 5th tool that closed a self-found knowledge-graph utilization gap, <code>agent/CAP_REPORT.md</code> for the 6th tool (CAP 1.2 standards-compliant alert generation), <code>agent/METEOROLOGICAL_METRICS_REPORT.md</code> for WMO-standard POD/FAR/CSI/HSS verification metrics, <code>agent/UNCERTAINTY_REPORT.md</code> for the ensemble-uncertainty field (5-model disagreement as an honest confidence signal, added without changing any existing verified number), and <code>agent/LITERATURE_EVIDENCE_REPORT.md</code> for the 7th tool (literature-search candidates for KG citation gaps, always labeled unverified).</div>
 {''.join(cards)}
 </div></body></html>"""
 

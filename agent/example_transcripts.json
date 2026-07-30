@@ -1,7 +1,7 @@
 [
   {
     "question": "What is the flash-flood risk in Jizan for 2025-08-23, and why?",
-    "answer": "Here are the results:\n\n## Flash-Flood Risk for Jizan — 2025-08-23\n\n**Probability:** **12.53%** (low risk)\n- Model verified ROC-AUC: **0.873** (highly reliable model)\n\n### Why this risk exists\n\nThe physical mechanisms driving flash-flood risk in Jizan are:\n\n1. **Active Red Sea Trough (ARST)** — A low-pressure trough over the Red Sea that draws in moist air. When it interacts with eastward-moving Mediterranean cyclones and the Arabian Anticyclone, it can produce intense rainfall. *(de Vries et al., 2013)*\n\n2. **Moisture Transport** — Surface fluxes over the Red Sea supply low-level moist air, contributing ~30–40% of regional rainfall. Stronger winds can enhance latent heat fluxes, fueling convection. *(ResearchGate case study; MDPI Atmosphere, 2019)*\n\n3. **Orographic Lift** — The Hejaz/Asir mountains force moist air upward, enhancing rainfall on the windward side (where Jizan is located).\n\n### Recommendation\n\nThe risk on August 23 is **low (~12.5%)**, so no major concern. However, Jizan is climatologically prone to flash floods during the summer monsoon season (July–September) due to the Red Sea Trough and orographic effects. Keep an eye on short-term forecasts if you're planning activities in wadi (valley) areas.",
+    "answer": "Here's the full picture for **Jizan on 2025-08-23**:\n\n---\n\n## Flash-Flood Risk: **12.5% probability**\n\n### Why this risk exists\n\nThe model assigns a **12.5%** chance of flash flooding (ROC-AUC = **0.873**, indicating strong overall model skill). However, there's an important caveat to discuss.\n\n**Physical drivers at play** — On 22 August (the day feeding the forecast), Jizan's atmosphere showed classic flash-flood ingredients:\n\n| Indicator | Value | What it means |\n|-----------|-------|---------------|\n| **CAPE** | 2,292 J/kg | Strong convective instability |\n| **Precipitable Water (PWAT)** | 61.1 mm | Very high atmospheric moisture |\n| **Integrated Vapor Transport (IVT)** | 227.7 kg/m/s | Significant moisture flux |\n| **Flash Flood Risk index** | 2.0 | Elevated risk flag from the physical detection engine |\n\nThese are driven by the **Active Red Sea Trough (ARST)** — a low-level convergence zone over the Red Sea that, when joined by eastward-migrating Mediterranean cyclones, funnels deep moisture toward the southwestern coast (de Vries et al., 2013). Moisture transport from the Red Sea and Arabian Sea further fuels convective development (ResearchGate case study; MDPI Atmosphere, 2019).\n\n### ⚠️ Important caveat: Model vs. Detection mismatch\n\nThe **reflexive cross-check** flagged a **disagreement**: the physical detection engine scored the conditions at **0.6** (above its 0.3 threshold), while the trained model gave only **0.125**. The note says this is the *riskier mismatch direction* — the physical drivers *were* present, but the model assigned low probability. This warrants caution.\n\n### Model agreement & performance\n\n- **Ensemble spread**: 5 models gave probabilities ranging from **4.3% to 18.5%** (std = 0.049), showing moderate disagreement — some members see essentially no risk, others see a non-trivial chance.\n- **Meteorological metrics** (at the 0.5 threshold): POD = 0.10, FAR = 0.80, CSI = 0.07. These are low, but that's expected for flash floods — true flash-flood days are extremely rare, so the model's detection rate at a fixed threshold is inherently low.\n\n### Bottom line\n\n**Low probability (12.5%), but the atmospheric ingredients (high CAPE, moisture, IVT) were present on the preceding day.** The physical detection engine saw a signal the model didn't fully capture. Jizan (pop. ~174k) sits at just 8m elevation on the Red Sea coast, making it vulnerable to runoff from the nearby Asir mountains. **Recommendation:** Monitor conditions closely — the model says low risk, but the raw indicators suggest staying alert for convective development.",
     "trace": [
       {
         "tool": "forecast_tool",
@@ -20,7 +20,43 @@
             "lat": 16.9,
             "lon": 42.6
           },
-          "model_verified_roc_auc": 0.8731742776960718
+          "elevation_m": 7.7,
+          "terrain_note": null,
+          "impact_context": {
+            "city_population_2022_census": 173919,
+            "source": "Saudi Census 2022, GASTAT",
+            "note": "Reference population only, NOT a model output and NOT an estimate of how many people would actually be exposed to this hazard -- this system does not perform exposure/vulnerability modeling. Provided so risk can be discussed in human terms, per WMO impact-based warning guidance, not to imply a precise affected-population count."
+          },
+          "reflexive_check": {
+            "model_probability": 0.1253,
+            "detection_engine_risk_score": 0.6,
+            "detection_engine_conditions_fired": [
+              "flash_flood_risk=2.0",
+              "cape=2292.0",
+              "ivt=227.7",
+              "pwat=61.1"
+            ],
+            "threshold_used": 0.3,
+            "consistency": "detection_higher_than_model",
+            "note": "The classic physical drivers for this hazard WERE present that day, but the model assigned low probability -- also worth caution, this is the riskier mismatch direction for a genuine miss."
+          },
+          "model_verified_roc_auc": 0.8731742776960718,
+          "meteorological_metrics": {
+            "threshold": 0.5,
+            "pod": 0.1004,
+            "far": 0.8026,
+            "csi": 0.0713,
+            "hss": 0.1301
+          },
+          "uncertainty": {
+            "mean": 0.1143,
+            "std": 0.0486,
+            "range": [
+              0.0433,
+              0.185
+            ],
+            "n_members": 5
+          }
         }
       },
       {
@@ -111,12 +147,45 @@
             }
           ]
         }
+      },
+      {
+        "tool": "conditions_tool",
+        "args": {
+          "city": "Jizan",
+          "date": "2025-08-22"
+        },
+        "result": {
+          "city": "Jizan",
+          "date": "2025-08-22",
+          "grid_cell": {
+            "lat": 16.9,
+            "lon": 42.6
+          },
+          "indicators": {
+            "daily_precip_total": 0.5,
+            "daily_convective_precip": 0.5,
+            "daily_large_scale_precip": 0.0,
+            "t2m_c": 31.0,
+            "tmax_c": 33.25,
+            "tmin_c": 29.5,
+            "heat_index_c": 37.35,
+            "vpd_kpa": 1.38,
+            "cape": 2292.0,
+            "pwat": 61.1,
+            "ivt": 227.67,
+            "wind850_speed": 7.23,
+            "wind_shear_850_200": 24.72,
+            "daily_precip_anomaly": 0.5,
+            "t2m_anomaly_c": -2.7,
+            "tmax_anomaly_c": -4.85
+          }
+        }
       }
     ]
   },
   {
     "question": "How hot will it be in Mecca on 2025-07-25? Is there a heatwave risk?",
-    "answer": "Here's the full picture for **Mecca on 2025-07-25**:\n\n---\n\n## 🌡️ Heatwave Risk: **62.8% probability**\n\n**Model confidence:** Very high (ROC-AUC = **0.971**)\n\n### Observed conditions on 2025-07-24 (the day before)\n| Indicator | Value |\n|---|---|\n| Max temperature (tmax) | **42.98°C** |\n| Mean temperature (t2m) | **37.03°C** |\n| Min temperature | 31.59°C |\n| Heat index | 37.03°C |\n| Vapor Pressure Deficit | **5.45 kPa** (very dry air) |\n| Tmax anomaly | **+3.68°C** above normal |\n\n### Why the risk is elevated\nTwo key mechanisms are driving this:\n\n1. **Subtropical High (Heat Dome)** – A persistent high-pressure system over the Arabian Peninsula traps intense solar radiation, causing extreme surface heating. *(ScienceDirect, Atmospheric Research)*\n2. **Arabian Thermal Low** – A desert heat low contributes to the summer Shamal winds and reinforces the extreme temperature regime. *(Yu et al., 2016, J. Geophys. Res. Atmos.)*\n\n### Recommendation\nWith max temps already near **43°C** and a 63% chance of heatwave conditions on July 25, take precautions: stay hydrated, avoid outdoor activity during peak hours (12–4 PM), and check on vulnerable individuals.",
+    "answer": "Here's the full picture for **Mecca on 2025-07-25**:\n\n---\n\n## 🌡️ Heatwave Risk: **62.8% probability**\n\n**Mecca** (pop. ~2.52M, elevation 308 m) faces a **moderate-to-high** heatwave risk on July 25.\n\n### Model Performance\n- **ROC-AUC**: 0.971 — the model is highly skilled at distinguishing heatwave vs. non-heatwave days overall.\n- **At the operational threshold (0.55)**: POD = 84.9% (catches most heatwaves), FAR = 38.8% (some false alarms), CSI = 55.2%, HSS = 69.3%.\n\n### What's Driving It\nTwo key mechanisms, both literature-grounded:\n\n1. **Subtropical High (Heat Dome)** — A persistent high-pressure system over the Arabian Peninsula traps intense solar radiation, causing extreme surface heating. *(ScienceDirect, Atmospheric Research)*\n2. **Arabian Thermal Low** — A desert heat low over Iran/Pakistan creates a steep pressure gradient, driving hot, dry conditions. *(Yu et al., 2016, J. Geophys. Res.)*\n\n### Conditions on the Ground (July 24)\n- **Max temperature**: **43.0°C** (anomaly of +3.7°C above normal)\n- **Mean temperature**: 37.0°C\n- **Vapor Pressure Deficit**: 5.45 kPa (very dry air)\n- **No precipitation**, clear skies\n\n### ⚠️ Caveat — Reflexive Check\nThe model's 62.8% probability is **higher than what the rule-based physical detection engine** found (which scored 0.0, meaning the classic threshold-based heatwave indicators weren't triggered on July 24). This means the model may be picking up a subtler signal the simple rules miss — or it could be over-confident. Treat this forecast with **moderate caution**.\n\n### Ensemble Agreement\nThe 5-model ensemble shows a mean of 59.5% with a std of 0.07 (range 48.8%–68.6%), indicating **fairly good agreement** among models.\n\n---\n\n**Recommendation**: Be prepared for extreme heat (likely 43°C+). Stay hydrated, limit outdoor exposure during peak hours, and monitor official warnings. The reflexive check suggests some uncertainty, but the underlying conditions (43°C max, +3.7°C anomaly) are genuinely hot.",
     "trace": [
       {
         "tool": "forecast_tool",
@@ -135,7 +204,38 @@
             "lat": 21.3,
             "lon": 39.8
           },
-          "model_verified_roc_auc": 0.9705939220629891
+          "elevation_m": 308.2,
+          "terrain_note": null,
+          "impact_context": {
+            "city_population_2022_census": 2520000,
+            "source": "Saudi Census 2022, GASTAT",
+            "note": "Reference population only, NOT a model output and NOT an estimate of how many people would actually be exposed to this hazard -- this system does not perform exposure/vulnerability modeling. Provided so risk can be discussed in human terms, per WMO impact-based warning guidance, not to imply a precise affected-population count."
+          },
+          "reflexive_check": {
+            "model_probability": 0.628,
+            "detection_engine_risk_score": 0.0,
+            "detection_engine_conditions_fired": [],
+            "threshold_used": 0.3,
+            "consistency": "model_higher_than_detection",
+            "note": "Model flags elevated risk, but the classic physical drivers for this hazard (per Layer 1's data-grounded thresholds) were NOT present in that day's indicators at this location -- treat with added caution, the model may be picking up a signal the rule-based check doesn't capture, or may be over-confident."
+          },
+          "model_verified_roc_auc": 0.9705939220629891,
+          "meteorological_metrics": {
+            "threshold": 0.55,
+            "pod": 0.8488,
+            "far": 0.3879,
+            "csi": 0.5519,
+            "hss": 0.6928
+          },
+          "uncertainty": {
+            "mean": 0.5948,
+            "std": 0.0699,
+            "range": [
+              0.4879,
+              0.6861
+            ],
+            "n_members": 5
+          }
         }
       },
       {
@@ -258,7 +358,7 @@
   },
   {
     "question": "What is the heatwave risk in Riyadh on 2025-11-06?",
-    "answer": "## Heatwave Risk for Riyadh on 2025-11-06\n\n**Probability:** **0.06%** (extremely low)\n\n**Model Reliability:** The forecast model has a verified ROC-AUC of **0.971**, indicating excellent predictive performance.\n\n### Why So Low?\n\nNovember is late autumn in Riyadh, well outside the peak heat season. The key physical mechanisms behind Saudi heatwaves are:\n\n1. **Subtropical High (Heat Dome)** – A persistent high-pressure system over the Arabian Peninsula traps intense solar radiation, causing extreme surface heating. This is most active in summer months.\n2. **Arabian Thermal Low** – A desert heat low that drives hot, dry conditions, particularly during the May–August period.\n\nBy November 6th, these mechanisms are far less active, and the interior (like Riyadh) is already cooling significantly.\n\n### Recommendation\n\nNo heatwave precautions are needed for this date. Enjoy the mild late-autumn conditions in Riyadh!",
+    "answer": "Here's the heatwave risk assessment for **Riyadh on 2025-11-06**:\n\n---\n\n### 📊 Forecast Probability\n**0.06%** — extremely low risk. The model and the independent rule-based detection engine both agree this is a low-risk situation (consistency: *consistent_low*).\n\n**Model performance:** The heatwave model is highly skillful, with a verified **ROC-AUC of 0.971**. At its operational threshold (0.55), it achieves:\n- **POD (Probability of Detection):** 84.9%\n- **FAR (False Alarm Rate):** 38.8%\n- **CSI (Critical Success Index):** 55.2%\n- **HSS (Heidke Skill Score):** 69.3%\n\n**Ensemble agreement:** Very tight — 5 models gave probabilities between 0.02% and 0.07% (std = 0.02%), indicating strong model consensus.\n\n---\n\n### 🌡️ Why So Low?\nNovember is late autumn in Riyadh. The key mechanisms that drive Saudi heatwaves — **subtropical high-pressure systems (heat domes)** and the **Arabian thermal low** — are at their weakest during this period. The interior location of Riyadh (elevation ~631 m) means it's not moderated by coastal sea breezes, but in November, solar radiation is much weaker and persistent high-pressure systems are not typically anchored over the peninsula.\n\n---\n\n### 🏙️ Context\nRiyadh is Saudi Arabia's capital, with a population of ~9.06 million (2022 census). Even a low-probability event in such a large city warrants monitoring, but the current outlook is very calm.\n\n---\n\n### ✅ Recommendation\nNo heatwave preparations are warranted for this date based on current data. Standard seasonal awareness is sufficient.",
     "trace": [
       {
         "tool": "forecast_tool",
@@ -277,7 +377,38 @@
             "lat": 24.7,
             "lon": 46.6
           },
-          "model_verified_roc_auc": 0.9705939220629891
+          "elevation_m": 630.7,
+          "terrain_note": null,
+          "impact_context": {
+            "city_population_2022_census": 9060000,
+            "source": "Saudi Census 2022, GASTAT",
+            "note": "Reference population only, NOT a model output and NOT an estimate of how many people would actually be exposed to this hazard -- this system does not perform exposure/vulnerability modeling. Provided so risk can be discussed in human terms, per WMO impact-based warning guidance, not to imply a precise affected-population count."
+          },
+          "reflexive_check": {
+            "model_probability": 0.0006,
+            "detection_engine_risk_score": 0.0,
+            "detection_engine_conditions_fired": [],
+            "threshold_used": 0.3,
+            "consistency": "consistent_low",
+            "note": "Model risk and independent rule-based physical indicators AGREE this is a low-risk situation."
+          },
+          "model_verified_roc_auc": 0.9705939220629891,
+          "meteorological_metrics": {
+            "threshold": 0.55,
+            "pod": 0.8488,
+            "far": 0.3879,
+            "csi": 0.5519,
+            "hss": 0.6928
+          },
+          "uncertainty": {
+            "mean": 0.0005,
+            "std": 0.0002,
+            "range": [
+              0.0002,
+              0.0007
+            ],
+            "n_members": 5
+          }
         }
       },
       {
@@ -367,7 +498,7 @@
   },
   {
     "question": "I'm planning a trip to Abha on 2025-08-31. What weather risks should I know about?",
-    "answer": "Here's your full weather risk briefing for **Abha on 2025-08-31**:\n\n---\n\n## 🌧️ Flash Flood / Wadi Flooding — Moderate Risk (59.6%)\n\n**Model confidence:** The forecast model has a verified ROC-AUC of **0.87** (strong discriminative ability).\n\n### ⚠️ Important Caveats\n\n1. **Mountain terrain:** Abha sits at **~2,082 m elevation** in the Asir mountain range. The model's grid is coarser than the local relief, so **treat this probability with added caution** — conditions can vary sharply within short distances.\n\n2. **Model vs. physical detection mismatch:** The model predicts elevated risk (59.6%), but the rule-based physical detection engine found **no classic flash-flood triggers** active on Aug 30 (the day used for prediction). This means the model may be picking up a subtle signal the simpler check misses, **or** it could be over-confident.\n\n### 🔬 Driving Mechanisms\n\nThe main mechanism affecting Abha specifically is **orographic lift** — moist air forced upward by the Asir mountains, triggering convective storms. This is supported by:\n- **CAPE: 264 J/kg** (moderate instability)\n- **PWAT: 15 mm** (moderate moisture)\n- **IVT: 202.5 kg/m/s** (moisture transport from the Red Sea)\n\nThe broader flash-flood mechanisms (literature-grounded) include the **Active Red Sea Trough (ARST)** — where a Mediterranean cyclone joins the Sudan low-pressure zone, drawing moisture from the Red Sea and Arabian Sea (de Vries et al., 2013).\n\n### 📊 Actual Conditions on Aug 31\n\nInterestingly, **no precipitation was recorded** on the day itself (0 mm). The risk is based on the *previous day's* indicators — so conditions may have been building but didn't materialize into rain at this exact grid cell.\n\n### 🏙️ Context\n\nAbha's population is ~422,000 (2022 census). The indicators on this date show **low similarity** to known 2025 extreme events — the closest match is a convective instability event near Abha (10% similarity, 118 km away), meaning this isn't a repeat of a major historical pattern.\n\n---\n\n### ✅ Recommendation\n\n**Moderate flash-flood risk.** If you're traveling to Abha on Aug 31, keep an eye on local weather updates, especially if you plan to drive through wadi (valley) areas or hike in the mountains. The risk isn't extreme, but the mountain terrain means storms can develop quickly and cause localized flash flooding even if the city center stays dry.",
+    "answer": "Here's a full picture of the weather risks for your trip to **Abha on 2025-08-31**.\n\n---\n\n## 🌤️ Abha Weather Risk Summary\n\n**Abha** (pop. ~422,000, elevation 2,082 m in the Asir Mountains) is exposed to **flash flood / wadi flooding** risk. No heatwave or dust-storm risk is identified for this city.\n\n---\n\n### ⚠️ Flash Flood Risk: Moderate (59.6% probability)\n\nThe model gives a **59.6% probability** of flash-flood conditions on August 31, with a strong verified **ROC-AUC of 0.87** (good overall discrimination). However, there are several important caveats:\n\n**1. Mountain terrain caveat** 🏔️\nAbha sits at over 2,000 m elevation in steep mountain terrain. The model's feature grid is coarser than the local relief, and training data is sparser here than in low-elevation areas. **Treat this probability with added caution.**\n\n**2. Model vs. physical detection disagreement**\nThe model flags elevated risk, but the independent rule-based physical detection engine found **no classic flash-flood triggers** in the preceding day's indicators. This means the model may be picking up a subtle signal — or may be over-confident. The ensemble of 5 models also shows **high disagreement** (std = 0.23, range 13.7%–75.6%), so confidence in the exact number is low.\n\n**3. Meteorological performance at threshold**\nAt the operational threshold (0.5), the model has:\n- **POD (Probability of Detection):** 10% — it catches only 1 in 10 true flash-flood days\n- **FAR (False Alarm Rate):** 80% — most alerts are false alarms\n- **CSI (Critical Success Index):** 7.1%\n\nThese are weak scores, but that's typical for rare hazards like flash floods — true events are very infrequent, making detection inherently difficult.\n\n**4. Driving mechanism: Orographic lift**\nThe key mechanism for Abha is **orographic lift** — moist air from the Red Sea rises over the Asir Mountains, cooling and condensing into heavy convective rainfall. The preceding day (Aug 30) showed **CAPE of 552 J/kg** and **precipitable water of 18.2 mm**, with some convective precipitation already occurring (1.38 mm). This suggests instability was building.\n\n**5. Historical context**\nThe indicators on Aug 31 don't closely resemble any of the known 2025 extreme events (highest similarity is 39.9% to the Taif flood on Aug 14, ~416 km away). Notably, the Aug 27-28 Asir/Jizan flood event — which occurred very close to Abha — scores only **4.6% similarity**, meaning the conditions on your date look quite different from that major event.\n\n---\n\n### ✅ Recommendation\n\n- **Stay weather-aware** on Aug 31 — the probability is moderate, but the mountain terrain and model caveats mean conditions could change quickly.\n- **Avoid wadi beds and low-lying areas** if rain develops. Flash floods in the Asir mountains can be sudden.\n- **Check local forecasts** closer to the date, as the ensemble spread (13–76%) shows significant uncertainty.\n- **August is late summer** — Abha's climate is milder than the lowlands, but convective storms are common in this season.\n\nEnjoy your trip to the beautiful Asir region! 🌄",
     "trace": [
       {
         "tool": "region_risk_tool",
@@ -399,6 +530,57 @@
             }
           ],
           "date": "2025-08-31"
+        }
+      },
+      {
+        "tool": "forecast_tool",
+        "args": {
+          "city": "Abha",
+          "target_date": "2025-08-31",
+          "hazard": "flash_flood"
+        },
+        "result": {
+          "city": "Abha",
+          "target_date": "2025-08-31",
+          "features_from_date": "2025-08-30",
+          "hazard": "flash_flood",
+          "probability": 0.5962,
+          "grid_cell": {
+            "lat": 18.1,
+            "lon": 42.4
+          },
+          "elevation_m": 2082.2,
+          "terrain_note": "This city is at 2082 m elevation (mountain terrain, e.g. Asir range). Meteorological indicators and model training data are sparser here than in the low-elevation interior/coast, and the model's feature grid is coarser than local terrain relief, so treat this probability with added caution.",
+          "impact_context": {
+            "city_population_2022_census": 422243,
+            "source": "Saudi Census 2022, GASTAT",
+            "note": "Reference population only, NOT a model output and NOT an estimate of how many people would actually be exposed to this hazard -- this system does not perform exposure/vulnerability modeling. Provided so risk can be discussed in human terms, per WMO impact-based warning guidance, not to imply a precise affected-population count."
+          },
+          "reflexive_check": {
+            "model_probability": 0.5962,
+            "detection_engine_risk_score": 0.0,
+            "detection_engine_conditions_fired": [],
+            "threshold_used": 0.3,
+            "consistency": "model_higher_than_detection",
+            "note": "Model flags elevated risk, but the classic physical drivers for this hazard (per Layer 1's data-grounded thresholds) were NOT present in that day's indicators at this location -- treat with added caution, the model may be picking up a signal the rule-based check doesn't capture, or may be over-confident."
+          },
+          "model_verified_roc_auc": 0.8731742776960718,
+          "meteorological_metrics": {
+            "threshold": 0.5,
+            "pod": 0.1004,
+            "far": 0.8026,
+            "csi": 0.0713,
+            "hss": 0.1301
+          },
+          "uncertainty": {
+            "mean": 0.4111,
+            "std": 0.2294,
+            "range": [
+              0.137,
+              0.7564
+            ],
+            "n_members": 5
+          }
         }
       },
       {
@@ -494,32 +676,32 @@
         "tool": "conditions_tool",
         "args": {
           "city": "Abha",
-          "date": "2025-08-31"
+          "date": "2025-08-30"
         },
         "result": {
           "city": "Abha",
-          "date": "2025-08-31",
+          "date": "2025-08-30",
           "grid_cell": {
             "lat": 18.2,
             "lon": 42.5
           },
           "indicators": {
-            "daily_precip_total": 0.0,
-            "daily_convective_precip": 0.0,
+            "daily_precip_total": 1.38,
+            "daily_convective_precip": 1.38,
             "daily_large_scale_precip": 0.0,
-            "t2m_c": 24.89,
-            "tmax_c": 28.96,
-            "tmin_c": 20.76,
-            "heat_index_c": 24.89,
-            "vpd_kpa": 2.0,
-            "cape": 264.0,
-            "pwat": 15.0,
-            "ivt": 202.5,
-            "wind850_speed": 3.1,
-            "wind_shear_850_200": 11.78,
-            "daily_precip_anomaly": 0.0,
-            "t2m_anomaly_c": 1.39,
-            "tmax_anomaly_c": -3.14
+            "t2m_c": 24.26,
+            "tmax_c": 28.06,
+            "tmin_c": 20.27,
+            "heat_index_c": 24.26,
+            "vpd_kpa": 1.83,
+            "cape": 552.0,
+            "pwat": 18.18,
+            "ivt": 190.88,
+            "wind850_speed": 1.84,
+            "wind_shear_850_200": 14.03,
+            "daily_precip_anomaly": 1.38,
+            "t2m_anomaly_c": 0.86,
+            "tmax_anomaly_c": -3.94
           }
         }
       },
@@ -543,6 +725,24 @@
           },
           "ranked_similar_events": [
             {
+              "event": "Flood, 14 Aug (Taif)",
+              "event_date": "2025-08-14",
+              "event_location": "Taif (21.3N,40.4E)",
+              "event_headline_value": "verdict: Model/real disagreement",
+              "similarity_pct": 39.9,
+              "features_compared": 5,
+              "event_distance_from_city_km": 416
+            },
+            {
+              "event": "Flash flood (Jeddah), 8-11 Dec",
+              "event_date": "2025-12-09",
+              "event_location": "Jeddah (21.5N,39.2E)",
+              "event_headline_value": "verdict: no verdict badge published",
+              "similarity_pct": 13.2,
+              "features_compared": 5,
+              "event_distance_from_city_km": 518
+            },
+            {
               "event": "08-31 convective instability",
               "event_date": "2025-08-31",
               "event_location": "Abha (18.9N,41.7E)",
@@ -561,6 +761,15 @@
               "event_distance_from_city_km": 1507
             },
             {
+              "event": "Flood, 27-28 Aug (Asir/Jizan)",
+              "event_date": "2025-08-26",
+              "event_location": "Abha (18.2N,42.5E)",
+              "event_headline_value": "verdict: Mixed result",
+              "similarity_pct": 4.6,
+              "features_compared": 5,
+              "event_distance_from_city_km": 0
+            },
+            {
               "event": "08-23 extreme rain",
               "event_date": "2025-08-23",
               "event_location": "Jizan (17.5N,42.9E)",
@@ -570,50 +779,24 @@
               "event_distance_from_city_km": 89
             }
           ],
-          "excluded_events": [],
+          "excluded_events": [
+            {
+              "event": "Flood, 6-7 Jan",
+              "reason": "only 1/5 features available, below the half-coverage minimum"
+            },
+            {
+              "event": "Flood, 6-7 Mar (Hail/Buraidah)",
+              "reason": "only 1/5 features available, below the half-coverage minimum"
+            }
+          ],
           "note": "similarity_pct is a descriptive, z-scored-distance-based measure (100/(1+normalized_distance)), NOT a probability or a claim that this event WILL repeat -- it only says how physically similar the raw indicators are to a known past event. Each event's coordinates are its own grid-cell MAXIMUM (the storm/heat centroid), often tens of km from a same-named city's center -- a same-city, same-day comparison can still score LOW if the extreme was hyperlocal (see event_distance_from_city_km on each result); that is correct behavior, not an error."
-        }
-      },
-      {
-        "tool": "forecast_tool",
-        "args": {
-          "city": "Abha",
-          "target_date": "2025-08-31",
-          "hazard": "flash_flood"
-        },
-        "result": {
-          "city": "Abha",
-          "target_date": "2025-08-31",
-          "features_from_date": "2025-08-30",
-          "hazard": "flash_flood",
-          "probability": 0.5962,
-          "grid_cell": {
-            "lat": 18.1,
-            "lon": 42.4
-          },
-          "elevation_m": 2082.2,
-          "terrain_note": "This city is at 2082 m elevation (mountain terrain, e.g. Asir range). Meteorological indicators and model training data are sparser here than in the low-elevation interior/coast, and the model's feature grid is coarser than local terrain relief, so treat this probability with added caution.",
-          "impact_context": {
-            "city_population_2022_census": 422243,
-            "source": "Saudi Census 2022, GASTAT",
-            "note": "Reference population only, NOT a model output and NOT an estimate of how many people would actually be exposed to this hazard -- this system does not perform exposure/vulnerability modeling. Provided so risk can be discussed in human terms, per WMO impact-based warning guidance, not to imply a precise affected-population count."
-          },
-          "reflexive_check": {
-            "model_probability": 0.5962,
-            "detection_engine_risk_score": 0.0,
-            "detection_engine_conditions_fired": [],
-            "threshold_used": 0.3,
-            "consistency": "model_higher_than_detection",
-            "note": "Model flags elevated risk, but the classic physical drivers for this hazard (per Layer 1's data-grounded thresholds) were NOT present in that day's indicators at this location -- treat with added caution, the model may be picking up a signal the rule-based check doesn't capture, or may be over-confident."
-          },
-          "model_verified_roc_auc": 0.8731742776960718
         }
       }
     ]
   },
   {
     "question": "Tell me about the extreme rain event in Jizan on 2025-08-23 - how much rain fell?",
-    "answer": "Here's the full picture for **Jizan on 2025-08-23**:\n\n---\n\n## 🌧️ Jizan — 23 August 2025\n\n### Rainfall Observed\n- **Daily precipitation total:** **0.62 mm** (mostly convective: 0.5 mm)\n- **Precip anomaly:** +0.62 mm (slightly above the daily norm)\n- **CAPE:** 2,582 J/kg (strong convective instability)\n- **Precipitable water:** 63.1 mm\n- **Integrated Vapour Transport:** 143.3 kg/m/s\n\nSo **0.62 mm** fell — a modest amount, not an extreme downpour.\n\n### Flash Flood Risk (Model)\n- **Forecast probability:** **12.5%** (low)\n- **Model ROC-AUC:** 0.873 (well-verified model)\n\n### ⚠️ Important Caveat — Detection vs. Model Mismatch\nThe **rule-based physical detection engine** flagged a **risk score of 0.6** (above the 0.3 threshold), noting that classic flash-flood drivers **were present** that day (CAPE ~2,292, IVT ~228, PWAT ~61). The model gave only 12.5% — this is the **riskier mismatch direction** (detection higher than model), meaning a genuine miss is possible. Worth monitoring.\n\n### Why Jizan is Flood-Prone\nJizan sits at just **7.7 m elevation** on the Red Sea coast, and the key mechanism is the **Active Red Sea Trough (ARST)** — a low-pressure convergence zone that draws moisture from the Red Sea and Arabian Sea. When a Mediterranean cyclone joins the Sudan low, it can produce extreme convective rainfall (de Vries et al., 2013). Orographic lift over the nearby Asir mountains can further enhance rainfall.\n\n### Historical Context\nInterestingly, there **was** a known extreme rain event on **2025-08-23** near Jizan (17.5°N, 42.9°E) that recorded **254.9 mm** — but that was **74 km away** from Jizan city center, a hyperlocal extreme that didn't hit the city itself. That's why the similarity score to that event is only 0.8% for the city's grid cell.\n\n**Bottom line:** Jizan itself saw only 0.62 mm of rain on this date — a light shower, not a flood event. But the physical ingredients for convection were present, so the detection engine's higher alert is worth noting for situational awareness.",
+    "answer": "Here's a detailed breakdown of the **Jizan extreme rain event on 2025-08-23**:\n\n---\n\n## 🌧️ Observed Rainfall in Jizan on 2025-08-23\n\nThe **grid cell** covering Jizan (16.9°N, 42.6°E) recorded:\n\n| Indicator | Value |\n|---|---|\n| **Daily precipitation total** | **0.62 mm** |\n| Daily convective precipitation | 0.5 mm |\n| Daily large-scale precipitation | 0.0 mm |\n| Daily precipitation anomaly | 0.62 mm |\n\n**However**, this is a critical nuance: the similar-events tool reveals that the **actual extreme rain event** labelled \"08-23 extreme rain\" occurred at coordinates **17.5°N, 42.9°E** — about **74 km away** from Jizan's city-center grid cell — where it recorded a staggering **254.9 mm** of daily precipitation. So the extreme rain was **hyperlocal** — it hit the broader Jizan/Asir region but not the exact grid cell covering Jizan city itself.\n\n---\n\n## ⚡ Flash Flood Risk Forecast\n\n- **Model probability**: **12.5%** (ROC-AUC: **0.873** — strong discrimination)\n- **Reflexive cross-check**: The independent physical detection engine flagged that classic flash-flood drivers **were present** (CAPE ~2,292 J/kg, IVT ~228 kg/m/s, PWAT ~61 mm), but the model assigned low probability. This is the **riskier mismatch direction** — a potential miss.\n- **Uncertainty**: Ensemble std = 0.049 (moderate agreement among the 5 models)\n- **Meteorological metrics** (at 0.5 threshold): POD = 0.10, FAR = 0.80 — reflects how rare true flash-flood days are.\n\n---\n\n## 🔬 Physical Mechanisms\n\nThe causal knowledge graph identifies these drivers for flash flooding in the region:\n\n1. **Active Red Sea Trough (ARST)** — Low-level convergence over the Red Sea, often joined by an eastward-migrating Mediterranean cyclone and the Arabian Anticyclone, which supplies moisture from the Arabian Sea and Red Sea *(de Vries et al., 2013)*.\n2. **Moisture transport** — Surface fluxes over the Red Sea regulate low-level moist-air convergence before convection; Red Sea water is estimated to affect regional rainfall by about **30–40%** *(ResearchGate case study)*.\n3. **Orographic lift** — The nearby Asir mountains enhance rainfall (not formally literature-grounded in the KG).\n\n---\n\n## 📊 Similarity to Known Events\n\nThe Jizan city grid cell's indicators on Aug 23 had **low similarity** (0.8%) to the \"08-23 extreme rain\" event itself — because that event's **254.9 mm** fell at a different grid cell ~74 km away. This is **not an error**; it's a correct reflection of how hyperlocal these convective storms can be.\n\n---\n\n## 💡 Bottom Line\n\n**Jizan city itself received only ~0.6 mm of rain on Aug 23**, but a severe convective storm dumped **~255 mm** just 74 km away in the same region. The atmospheric setup (high CAPE, strong moisture transport) was primed for flash flooding, but the city center was spared the worst. If you're asking about the broader Jizan/Asir region, that was a significant extreme rain event.",
     "trace": [
       {
         "tool": "conditions_tool",
@@ -685,7 +868,23 @@
             "consistency": "detection_higher_than_model",
             "note": "The classic physical drivers for this hazard WERE present that day, but the model assigned low probability -- also worth caution, this is the riskier mismatch direction for a genuine miss."
           },
-          "model_verified_roc_auc": 0.8731742776960718
+          "model_verified_roc_auc": 0.8731742776960718,
+          "meteorological_metrics": {
+            "threshold": 0.5,
+            "pod": 0.1004,
+            "far": 0.8026,
+            "csi": 0.0713,
+            "hss": 0.1301
+          },
+          "uncertainty": {
+            "mean": 0.1143,
+            "std": 0.0486,
+            "range": [
+              0.0433,
+              0.185
+            ],
+            "n_members": 5
+          }
         }
       },
       {
@@ -806,6 +1005,24 @@
               "event_distance_from_city_km": 243
             },
             {
+              "event": "Flood, 14 Aug (Taif)",
+              "event_date": "2025-08-14",
+              "event_location": "Taif (21.3N,40.4E)",
+              "event_headline_value": "verdict: Model/real disagreement",
+              "similarity_pct": 16.1,
+              "features_compared": 5,
+              "event_distance_from_city_km": 546
+            },
+            {
+              "event": "Flash flood (Jeddah), 8-11 Dec",
+              "event_date": "2025-12-09",
+              "event_location": "Jeddah (21.5N,39.2E)",
+              "event_headline_value": "verdict: no verdict badge published",
+              "similarity_pct": 14.7,
+              "features_compared": 5,
+              "event_distance_from_city_km": 635
+            },
+            {
               "event": "08-19 vapour surge",
               "event_date": "2025-08-19",
               "event_location": "Arabian Sea (16.0N,55.9E)",
@@ -813,6 +1030,15 @@
               "similarity_pct": 7.6,
               "features_compared": 5,
               "event_distance_from_city_km": 1480
+            },
+            {
+              "event": "Flood, 27-28 Aug (Asir/Jizan)",
+              "event_date": "2025-08-26",
+              "event_location": "Abha (18.2N,42.5E)",
+              "event_headline_value": "verdict: Mixed result",
+              "similarity_pct": 4.6,
+              "features_compared": 5,
+              "event_distance_from_city_km": 145
             },
             {
               "event": "08-23 extreme rain",
@@ -824,7 +1050,16 @@
               "event_distance_from_city_km": 74
             }
           ],
-          "excluded_events": [],
+          "excluded_events": [
+            {
+              "event": "Flood, 6-7 Jan",
+              "reason": "only 1/5 features available, below the half-coverage minimum"
+            },
+            {
+              "event": "Flood, 6-7 Mar (Hail/Buraidah)",
+              "reason": "only 1/5 features available, below the half-coverage minimum"
+            }
+          ],
           "note": "similarity_pct is a descriptive, z-scored-distance-based measure (100/(1+normalized_distance)), NOT a probability or a claim that this event WILL repeat -- it only says how physically similar the raw indicators are to a known past event. Each event's coordinates are its own grid-cell MAXIMUM (the storm/heat centroid), often tens of km from a same-named city's center -- a same-city, same-day comparison can still score LOW if the extreme was hyperlocal (see event_distance_from_city_km on each result); that is correct behavior, not an error."
         }
       }
@@ -832,7 +1067,7 @@
   },
   {
     "question": "What is the dust storm risk in Dammam for 2025-07-06, and what physically causes dust storms in Saudi Arabia?",
-    "answer": "Here's the full picture:\n\n---\n\n## 🌪️ Dust Storm Risk – Dammam, 2025-07-06\n\n**Probability: 90.3%** — Very High Risk\n\nThis is based on a verified model (ROC-AUC = **0.8866**), using indicators from 2025-07-05.\n\n### What the indicators showed on July 5th\n- **10m wind speed:** 9.0 m/s\n- **850 hPa wind speed:** 18.4 m/s (strong low-level winds)\n- **Wind shear (850–200 hPa):** 26.69 m/s\n- **Vapor Pressure Deficit (VPD):** 4.54 kPa (very dry air)\n- **Temperature max:** 39.3°C\n- **No precipitation** — dry surface conditions\n\nThe independent rule-based detection engine also flagged elevated risk (score 0.6), confirming **consistent elevated risk** between the model and physical indicators.\n\n### 🏙️ Context\nDammam has a population of ~1.57 million (2022 census), so this is a significant urban area at risk.\n\n### What Physically Causes Dust Storms in Saudi Arabia\n\nThe primary mechanism is the **Summer Shamal** — a persistent north-northwesterly wind regime that dominates from **May to August**. It is driven by:\n\n1. **Thermal low (desert heat low)** — Intense surface heating over the Arabian Peninsula creates a deep low-pressure system.\n2. **Steep pressure gradient** — Between the heat low over Pakistan/Afghanistan/Iran and high pressure over the eastern Mediterranean and northern Saudi Arabia.\n3. **Strong low-level winds** (especially at 850 hPa and 10 m) lift loose, dry desert dust into the atmosphere.\n4. **Low humidity / high VPD** — Dry conditions keep dust particles suspended longer.\n\n**Key citation:** *Yu et al. (2016), J. Geophys. Res. Atmos.* — \"The summer Shamal, occurring from May to August, is a persistent north-northwesterly wind regime driven by high pressure over eastern Africa and thermal low-pressure centres over Iran and Pakistan.\"\n\n### ✅ Recommendation\nGiven the **>90% probability**, strong winds, and very dry conditions, residents and authorities in Dammam should prepare for likely dust storm conditions on July 6th — reduced visibility, potential impacts on transportation (especially at King Fahd International Airport and on Gulf roads), and health precautions for those with respiratory conditions.",
+    "answer": "Here's the full picture:\n\n---\n\n## 🌪️ Dust Storm Risk in Dammam — 2025-07-06\n\n**Probability: 90.3%** — This is a **high risk** of dust storm conditions.\n\n**Model reliability:** The forecast model has a verified **ROC-AUC of 0.887**, indicating strong discriminative skill. However, at the operational threshold (0.55), the model's **POD (Probability of Detection) is 0.535** and **FAR (False Alarm Rate) is 0.865** — meaning dust storms are rare enough that false alarms are common at this threshold. The ensemble of 5 models shows good agreement (std = 0.078, range 0.71–0.91), lending confidence to the high probability.\n\n**Reflexive cross-check:** The independent rule-based detection engine also flags elevated risk (score 0.6), driven by surface wind speed (9.0 m/s) and 850 hPa wind speed (18.4 m/s). The model and detection engine are **consistent** — both agree this is an elevated-risk situation.\n\n**Dammam context:** Dammam has a population of ~1.57 million (2022 census), so a dust storm event would be a significant urban impact.\n\n---\n\n### 🧠 What Physically Causes Dust Storms in Saudi Arabia?\n\nThe primary mechanism is the **Arabian Thermal Low (desert heat low)**:\n\n- **Summer Shamal winds** (May–August) are persistent north-northwesterly winds that form due to a steep pressure gradient between:\n  - A **thermal low-pressure centre** over Pakistan, Afghanistan, and Iran (intense surface heating)\n  - A **high-pressure system** over the eastern Mediterranean and northern Saudi Arabia\n\n- This pressure gradient drives strong, sustained winds that lift loose desert dust and sand, creating dust storms that can travel hundreds of kilometres.\n\n**Key indicators** that contribute to dust storm risk include:\n- **Surface wind speed** (wind10_speed) — the direct lifting force\n- **850 hPa wind speed** (wind850_speed) — upper-level momentum transfer\n- **Wind shear** (850–200 hPa) — vertical mixing potential\n- **Vapour pressure deficit** (vpd_kpa) — dryness of the air\n- **Dewpoint depression** — how far the air is from saturation\n\n**Source:** Yu et al. (2016), *J. Geophys. Res. Atmos.* — describes the summer Shamal as \"a persistent north-northwesterly wind regime driven by high pressure over eastern Africa and thermal low-pressure centres over Iran and Pakistan.\"\n\n---\n\n### 📋 Recommendation\n\nWith a **~90% probability** of dust storm conditions on July 6 in Dammam, residents should prepare for reduced visibility, potential respiratory irritation, and travel disruptions. Secure loose outdoor items, avoid unnecessary driving, and keep masks or air purifiers ready.",
     "trace": [
       {
         "tool": "forecast_tool",
@@ -869,7 +1104,23 @@
             "consistency": "consistent_elevated",
             "note": "Model risk and independent rule-based physical indicators AGREE this is an elevated-risk situation."
           },
-          "model_verified_roc_auc": 0.8866
+          "model_verified_roc_auc": 0.8866,
+          "meteorological_metrics": {
+            "threshold": 0.55,
+            "pod": 0.5352,
+            "far": 0.865,
+            "csi": 0.1208,
+            "hss": 0.1899
+          },
+          "uncertainty": {
+            "mean": 0.8453,
+            "std": 0.0779,
+            "range": [
+              0.7066,
+              0.9093
+            ],
+            "n_members": 5
+          }
         }
       },
       {
@@ -916,44 +1167,43 @@
         }
       },
       {
-        "tool": "conditions_tool",
+        "tool": "region_risk_tool",
         "args": {
-          "city": "Dammam",
-          "date": "2025-07-05"
+          "city": "Dammam"
         },
         "result": {
           "city": "Dammam",
-          "date": "2025-07-05",
-          "grid_cell": {
-            "lat": 26.4,
-            "lon": 50.1
-          },
-          "indicators": {
-            "daily_precip_total": 0.0,
-            "daily_convective_precip": 0.0,
-            "daily_large_scale_precip": 0.0,
-            "t2m_c": 36.48,
-            "tmax_c": 39.3,
-            "tmin_c": 33.15,
-            "heat_index_c": 36.48,
-            "vpd_kpa": 4.54,
-            "cape": 0.0,
-            "pwat": 16.1,
-            "ivt": 165.4,
-            "wind850_speed": 18.4,
-            "wind_shear_850_200": 26.69,
-            "daily_precip_anomaly": -0.1,
-            "t2m_anomaly_c": -0.02,
-            "tmax_anomaly_c": -6.6,
-            "sst_celsius": 30.83
-          }
+          "hazard_count": 2,
+          "hazards": [
+            {
+              "hazard": "heatwave",
+              "hazard_label": "Extreme Heat / Heatwave",
+              "mechanisms_affecting_this_city": [],
+              "all_mechanisms_for_this_hazard": [
+                "subtropical_high",
+                "thermal_low"
+              ],
+              "has_forecast_model": true
+            },
+            {
+              "hazard": "coastal",
+              "hazard_label": "Coastal / Marine Risk",
+              "mechanisms_affecting_this_city": [
+                "moisture_transport"
+              ],
+              "all_mechanisms_for_this_hazard": [
+                "moisture_transport"
+              ],
+              "has_forecast_model": false
+            }
+          ]
         }
       }
     ]
   },
   {
     "question": "Compare the dust storm risk between Medina and Riyadh for 2025-06-20",
-    "answer": "Here's the comparison:\n\n---\n\n## Dust Storm Risk: Medina vs. Riyadh — 2025-06-20\n\n### Forecast Probabilities\n\n| City | Dust Storm Risk | Model ROC-AUC |\n|------|----------------|---------------|\n| **Medina** (pop. ~1.85M) | **19.2%** | 0.8866 |\n| **Riyadh** (pop. ~9.06M) | **9.3%** | 0.8866 |\n\nBoth are **low-risk** situations. However, Medina shows roughly **double** the probability of Riyadh.\n\n### Why the difference?\n\nThe key driver for dust storms in Saudi Arabia in June is the **summer Shamal** — a persistent north-northwesterly wind regime driven by the steep pressure gradient between a thermal low over Iran/Pakistan and high pressure over the eastern Mediterranean (Yu et al., 2016, *J. Geophys. Res. Atmos.*). Key indicators include **vapor pressure deficit (VPD)**, **wind speed at 10m and 850hPa**, and **dewpoint depression**.\n\nLooking at the June 19 conditions (the day feeding the forecast):\n\n| Indicator | Medina | Riyadh |\n|-----------|--------|--------|\n| VPD (kPA) | **5.33** | 5.21 |\n| Wind 850hPa (m/s) | 5.93 | **6.84** |\n| Wind shear 850-200 | **12.9** | 5.25 |\n| Tmax (°C) | **43.65** | 41.65 |\n\nMedina had a **higher max temperature** (43.65°C vs 41.65°C) and **much stronger vertical wind shear** (12.9 vs 5.25), which are both conducive to dust lofting and transport. The higher VPD also indicates drier air, favoring dust suspension.\n\n### Reflexive Check\n\nBoth cities' forecasts are flagged as **\"consistent_low\"** — the independent rule-based detection engine agrees these are low-risk situations.\n\n### Recommendation\n\nNeither city faces a significant dust storm threat on June 20. However, **Medina's risk is about 2× higher** than Riyadh's due to hotter, drier conditions and stronger upper-level wind shear. No special precautions are warranted, but if you're in Medina, be aware that conditions are marginally more favorable for brief dust events than in Riyadh.",
+    "answer": "Here's the comparison of **dust storm risk** between **Medina** and **Riyadh** for **June 20, 2025**:\n\n---\n\n## 📊 Forecast Comparison\n\n| City | Dust Storm Probability | Population (2022 Census) |\n|------|----------------------|------------------------|\n| **Medina** | **19.2%** | ~1.85M |\n| **Riyadh** | **9.3%** | ~9.06M |\n\n**Medina has about double the dust storm risk of Riyadh** on this date, though both are in the low-to-moderate range.\n\n---\n\n## 🔬 Model Performance & Confidence\n\n- **ROC-AUC**: **0.887** (verified) — the model discriminates well between dust-storm and non-dust-storm days overall.\n- **Reflexive Check**: Both cities show **\"consistent_low\"** — the model and an independent rule-based detection engine agree this is a low-risk situation. The detection engine flagged a large **dewpoint depression of 38.2°C** (very dry air) in both locations, which is a known dust-storm precursor, but not strong enough alone to trigger a high alert.\n- **Ensemble Uncertainty**: \n  - **Medina**: std = 0.046 (range 18.9%–28.7%) — moderate agreement among the 5 models.\n  - **Riyadh**: std = 0.027 (range 9.3%–16.9%) — tighter agreement, lower risk.\n\n---\n\n## 🌪️ Why Dust Storms Happen\n\nThe key mechanism is the **Arabian thermal low** — a desert heat low that drives the **summer Shamal** wind regime (May–August). As described by Yu et al. (2016):\n\n> *\"The summer Shamal... is a persistent north-northwesterly wind regime driven by high pressure over eastern Africa and thermal low-pressure centres over Iran and Pakistan.\"*\n\nThis creates strong surface winds that lift loose desert dust. Key indicators: **vapor pressure deficit (VPD)**, **wind speed at 10m and 850hPa**, **wind shear**, and **dewpoint depression**.\n\n---\n\n## 📋 Conditions on June 19 (the day used for the forecast)\n\n| Indicator | Medina | Riyadh |\n|-----------|--------|--------|\n| Max Temp | **43.7°C** | **41.7°C** |\n| VPD (dryness) | **5.33 kPa** | **5.21 kPa** |\n| 850hPa Wind | **5.9 m/s** | **6.8 m/s** |\n| Wind Shear (850–200) | **12.9 m/s** | **5.3 m/s** |\n\nBoth cities were very hot and dry. **Medina** had notably higher **wind shear** (12.9 vs 5.3 m/s), which likely contributes to its higher probability — stronger vertical wind shear can help lift dust higher into the atmosphere.\n\n---\n\n## 🎯 Bottom Line\n\n- **Medina** faces a **~19% dust storm probability** — low but not negligible, especially given the very dry conditions and elevated wind shear.\n- **Riyadh** faces a **~9% probability** — low risk.\n- Neither city reaches the model's operational alert threshold (55%), so no formal warning would be warranted for this date.\n- **Recommendation**: For Medina, keep an eye on conditions — the very high dewpoint depression and wind shear are worth monitoring, but no immediate action is needed.",
     "trace": [
       {
         "tool": "forecast_tool",
@@ -989,7 +1239,23 @@
             "consistency": "consistent_low",
             "note": "Model risk and independent rule-based physical indicators AGREE this is a low-risk situation."
           },
-          "model_verified_roc_auc": 0.8866
+          "model_verified_roc_auc": 0.8866,
+          "meteorological_metrics": {
+            "threshold": 0.55,
+            "pod": 0.5352,
+            "far": 0.865,
+            "csi": 0.1208,
+            "hss": 0.1899
+          },
+          "uncertainty": {
+            "mean": 0.2468,
+            "std": 0.0461,
+            "range": [
+              0.1888,
+              0.2871
+            ],
+            "n_members": 5
+          }
         }
       },
       {
@@ -1026,7 +1292,23 @@
             "consistency": "consistent_low",
             "note": "Model risk and independent rule-based physical indicators AGREE this is a low-risk situation."
           },
-          "model_verified_roc_auc": 0.8866
+          "model_verified_roc_auc": 0.8866,
+          "meteorological_metrics": {
+            "threshold": 0.55,
+            "pod": 0.5352,
+            "far": 0.865,
+            "csi": 0.1208,
+            "hss": 0.1899
+          },
+          "uncertainty": {
+            "mean": 0.125,
+            "std": 0.0267,
+            "range": [
+              0.0925,
+              0.1692
+            ],
+            "n_members": 5
+          }
         }
       },
       {
@@ -1142,26 +1424,8 @@
   },
   {
     "question": "Generate a formal CAP alert for the flash flood risk in Jizan on 2025-03-27, and explain the alert fields.",
-    "answer": "Here is the full CAP alert and explanation.\n\n---\n\n## ✅ CAP 1.2 Alert Generated — Flash Flood Risk, Jizan, 2025-03-27\n\n```xml\n<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<alert xmlns=\"urn:oasis:names:tc:emergency:cap:1.2\">\n  <identifier>MAZU-flash_flood-Jizan-2025-03-27</identifier>\n  <sender>mazu-demo@example.org</sender>\n  <sent>2025-03-26T18:00:00+03:00</sent>\n  <status>Exercise</status>\n  <msgType>Alert</msgType>\n  <scope>Public</scope>\n  <info>\n    <category>Met</category>\n    <event>Flash Flood / Wadi Flooding</event>\n    <urgency>Expected</urgency>\n    <severity>Extreme</severity>\n    <certainty>Possible</certainty>\n    <effective>2025-03-27T00:00:00+03:00</effective>\n    <expires>2025-03-27T23:59:59+03:00</expires>\n    <senderName>MAZU Saudi Multi-Hazard Early Warning (demo system)</senderName>\n    <headline>Flash Flood / Wadi Flooding risk for Jizan, Saudi Arabia on 2025-03-27</headline>\n    <description>MAZU multi-hazard early warning system forecasts a 94% probability of flash flood / wadi flooding affecting Jizan on 2025-03-27, based on indicators from 2025-03-26. Model verified ROC-AUC: 0.873. Independent rule-based cross-check: model_higher_than_detection.</description>\n    <instruction>Follow guidance from the Saudi National Center of Meteorology (NCM) and local authorities.</instruction>\n    <area>\n      <areaDesc>Jizan, Saudi Arabia</areaDesc>\n      <circle>16.9,42.6 0</circle>\n    </area>\n  </info>\n</alert>\n```\n\n---\n\n## 📋 Field-by-Field Explanation\n\n| CAP Field | Value | Meaning |\n|---|---|---|\n| **`<identifier>`** | `MAZU-flash_flood-Jizan-2025-03-27` | Unique ID for this alert message |\n| **`<sender>`** | `mazu-demo@example.org` | System originator |\n| **`<sent>`** | `2025-03-26T18:00:00+03:00` | When the alert was issued (evening before the event day) |\n| **`<status>`** | **`Exercise`** | ⚠️ **This is a demo/historical system** — not a live, real-time alert. In a real deployment this would be `Actual`. |\n| **`<msgType>`** | `Alert` | Initial notification of an event |\n| **`<scope>`** | `Public` | Intended for the general public |\n| **`<category>`** | `Met` | Meteorological hazard |\n| **`<event>`** | `Flash Flood / Wadi Flooding` | The specific hazard type |\n| **`<urgency>`** | `Expected` | The event is expected to occur (within the next 24h) |\n| **`<severity>`** | **`Extreme`** | Highest severity — significant threat to life/property |\n| **`<certainty>`** | **`Possible`** | Likely but not certain (~94% probability) |\n| **`<effective>`** | `2025-03-27T00:00:00+03:00` | Alert is active from midnight |\n| **`<expires>`** | `2025-03-27T23:59:59+03:00` | Alert expires at end of day |\n| **`<description>`** | *(see XML)* | Human-readable summary including the **94% probability**, model **ROC-AUC of 0.873** (verified skill), and the **reflexive cross-check note** that the model's signal was higher than the rule-based detection engine — a genuine caveat to treat with added caution |\n| **`<instruction>`** | Follow NCM/local authorities | Standard safety guidance |\n| **`<area>/<circle>`** | `16.9,42.6` | Geographic centroid of the Jizan grid cell |\n\n---\n\n## 🔬 What Drove This Forecast\n\n**Jizan** (pop. ~174,000, 2022 census) sits at just **7.7 m elevation** on the Red Sea coast, making it highly exposed to wadi flooding.\n\n**Key indicators from 2025-03-26** that fed the model:\n- **CAPE** (convective available potential energy): **1,336 J/kg** — strong instability\n- **PWAT** (precipitable water): **40.7 mm** — deep moisture column\n- **IVT** (integrated vapor transport): **54.4 kg/m/s** — moisture flux from the Red Sea\n\n**Physical mechanisms** (from the causal knowledge graph):\n1. **Active Red Sea Trough (ARST)** — low-level convergence over the Red Sea, drawing moisture northward (de Vries et al., 2013)\n2. **Moisture transport** from the Red Sea and Arabian Sea — surface fluxes regulate pre-convection convergence (ResearchGate case study; MDPI Atmosphere, 2019)\n3. **Orographic lift** over the nearby Asir mountains (though Jizan itself is coastal flatland)\n\n**⚠️ Caveat:** The independent rule-based detection engine did *not* flag the same elevated risk (score: 0.25 vs. model's 0.94), noting that classic physical thresholds weren't fully met. The model may be picking up a subtle signal the simpler check misses — treat with added caution.\n\n---\n\n## 🧭 Recommendation\n\nResidents and authorities in **Jizan** should **prepare for possible flash flooding and wadi overflow on March 27**. Monitor Saudi NCM bulletins, avoid low-lying areas and dry riverbeds (wadis), and be ready to move to higher ground if rain intensifies.",
+    "answer": "Here is the formal CAP 1.2 alert and a full explanation of its fields.\n\n---\n\n## ✅ CAP 1.2 Alert — Flash Flood Risk, Jizan, 2025-03-27\n\n```xml\n<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<alert xmlns=\"urn:oasis:names:tc:emergency:cap:1.2\">\n  <identifier>MAZU-flash_flood-Jizan-2025-03-27</identifier>\n  <sender>mazu-demo@example.org</sender>\n  <sent>2025-03-26T18:00:00+03:00</sent>\n  <status>Exercise</status>\n  <msgType>Alert</msgType>\n  <scope>Public</scope>\n  <info>\n    <category>Met</category>\n    <event>Flash Flood / Wadi Flooding</event>\n    <urgency>Expected</urgency>\n    <severity>Extreme</severity>\n    <certainty>Possible</certainty>\n    <effective>2025-03-27T00:00:00+03:00</effective>\n    <expires>2025-03-27T23:59:59+03:00</expires>\n    <senderName>MAZU Saudi Multi-Hazard Early Warning (demo system)</senderName>\n    <headline>Flash Flood / Wadi Flooding risk for Jizan, Saudi Arabia on 2025-03-27</headline>\n    <description>MAZU multi-hazard early warning system forecasts a 94% probability of flash flood / wadi flooding affecting Jizan on 2025-03-27, based on indicators from 2025-03-26. Model verified ROC-AUC: 0.873. Independent rule-based cross-check: model_higher_than_detection.</description>\n    <instruction>Follow guidance from the Saudi National Center of Meteorology (NCM) and local authorities.</instruction>\n    <area>\n      <areaDesc>Jizan, Saudi Arabia</areaDesc>\n      <circle>16.9,42.6 0</circle>\n    </area>\n  </info>\n</alert>\n```\n\n---\n\n## 🔍 Field-by-Field Explanation\n\n### `<alert>` block (message envelope)\n\n| Field | Value | Meaning |\n|---|---|---|\n| **`<identifier>`** | `MAZU-flash_flood-Jizan-2025-03-27` | Unique ID for this alert message |\n| **`<sender>`** | `mazu-demo@example.org` | Originator of the alert (demo system) |\n| **`<sent>`** | `2025-03-26T18:00:00+03:00` | Timestamp when the alert was issued (the day before the event) |\n| **`<status>`** | **`Exercise`** | ⚠️ **This is a demo/historical exercise**, not a live broadcast. In a real operational system this would be `Actual`. |\n| **`<msgType>`** | `Alert` | Initial information about a new event |\n| **`<scope>`** | `Public` | Intended for the general public |\n\n### `<info>` block (the actual warning content)\n\n| Field | Value | Meaning |\n|---|---|---|\n| **`<category>`** | `Met` | Meteorological hazard |\n| **`<event>`** | `Flash Flood / Wadi Flooding` | The specific hazard type |\n| **`<urgency>`** | `Expected` | The event is expected to occur within the next 24 hours |\n| **`<severity>`** | **`Extreme`** | Highest severity — significant threat to life/property. This was set because the model probability is **94.16%**, well above the operational threshold. |\n| **`<certainty>`** | **`Possible`** | Less than 100% certain — reflects the model's probabilistic nature and the **reflexive check disagreement** (see below) |\n| **`<effective>`** | `2025-03-27T00:00:00+03:00` | When the warning period starts |\n| **`<expires>`** | `2025-03-27T23:59:59+03:00` | When the warning period ends (full day) |\n| **`<headline>`** | Plain-text summary of the alert | |\n| **`<description>`** | Detailed risk information | See below for the science behind it |\n| **`<instruction>`** | Action guidance | Directs users to official NCM/local authority instructions |\n| **`<area>`** | Jizan (circle at grid cell 16.9°N, 42.6°E) | Geographic area of concern |\n\n---\n\n## 🌊 The Science Behind This Alert\n\n### Forecast Probability: **94.16%** (very high)\n\nThe model (verified **ROC-AUC = 0.873**, meaning it discriminates well between flood/no-flood days) flags a strong signal for Jizan on March 27, based on conditions observed on **March 26**.\n\n### Key Driving Mechanisms (from the Knowledge Graph)\n\n1. **Active Red Sea Trough (ARST)** — Low-level convergence over the Red Sea, often joined by a Mediterranean cyclone, funnelling moisture toward the southwest coast. *(de Vries et al., 2013)*\n2. **Moisture Transport** — Surface fluxes over the Red Sea supply moist air; Red Sea water is estimated to affect regional rainfall by ~30–40%. *(ResearchGate case study)*\n3. **Orographic Lift** — The Asir mountains (just east of Jizan) force moist air upward, enhancing convection and rainfall.\n\n### Observed Precursor Conditions (March 26)\n\n| Indicator | Value | What it means |\n|---|---|---|\n| **CAPE** | **1,336 J/kg** | Strong convective available potential energy — fuel for thunderstorms |\n| **Precipitable Water (PWAT)** | **40.7 mm** | High atmospheric moisture content |\n| **IVT** | 54.4 kg/m/s | Moderate integrated vapour transport |\n| **Convective precip** | 0.44 mm | Some convective activity already present |\n\n### ⚠️ Important Caveats (transparency)\n\n| Issue | Detail |\n|---|---|\n| **Reflexive cross-check** | The independent rule-based detection engine scored only **0.25** (below its 0.3 threshold), meaning the classic physical triggers (CAPE, PWAT) didn't meet that engine's stricter criteria. The model is **higher than detection** — treat with added caution. |\n| **Model ensemble spread** | 5 models gave probabilities from **0.80 to 0.947** (std = 0.055). Agreement is reasonably tight, but not unanimous. |\n| **Meteorological metrics** | At the operational threshold (0.5), the model has **POD = 0.10** (catches ~10% of true flash-flood days) and **FAR = 0.80** (80% false-alarm rate). This is typical for rare hazards — flash floods are extremely uncommon, so even a good model struggles with detection at a fixed threshold. |\n| **Historical similarity** | The March 27 indicators show only **4.6% similarity** to the Aug 27–28 Asir/Jizan flood event, and **0.8%** to the Aug 23 extreme rain event near Jizan — this is a different meteorological setup. |\n\n### Recommendation\n\nGiven the **Extreme severity** and **94% probability**, but with the **Possible certainty** (due to the reflexive-check disagreement), the prudent course is:\n\n- **Local authorities** should prepare drainage systems and wadi monitoring in Jizan (pop. ~174,000, 2022 census).\n- **Residents** should avoid wadi crossings and low-lying areas on March 27, and monitor NCM official bulletins.\n- **Emergency services** should be on standby for potential flash flooding, especially near wadi channels.",
     "trace": [
-      {
-        "tool": "cap_alert_tool",
-        "args": {
-          "city": "Jizan",
-          "target_date": "2025-03-27",
-          "hazard": "flash_flood"
-        },
-        "result": {
-          "alert_warranted": true,
-          "city": "Jizan",
-          "hazard": "flash_flood",
-          "target_date": "2025-03-27",
-          "probability": 0.9416,
-          "cap_severity": "Extreme",
-          "cap_certainty": "Possible",
-          "cap_xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<alert xmlns=\"urn:oasis:names:tc:emergency:cap:1.2\">\n  <identifier>MAZU-flash_flood-Jizan-2025-03-27</identifier>\n  <sender>mazu-demo@example.org</sender>\n  <sent>2025-03-26T18:00:00+03:00</sent>\n  <status>Exercise</status>\n  <msgType>Alert</msgType>\n  <scope>Public</scope>\n  <info>\n    <category>Met</category>\n    <event>Flash Flood / Wadi Flooding</event>\n    <urgency>Expected</urgency>\n    <severity>Extreme</severity>\n    <certainty>Possible</certainty>\n    <effective>2025-03-27T00:00:00+03:00</effective>\n    <expires>2025-03-27T23:59:59+03:00</expires>\n    <senderName>MAZU Saudi Multi-Hazard Early Warning (demo system)</senderName>\n    <headline>Flash Flood / Wadi Flooding risk for Jizan, Saudi Arabia on 2025-03-27</headline>\n    <description>MAZU multi-hazard early warning system forecasts a 94% probability of flash flood / wadi flooding affecting Jizan on 2025-03-27, based on indicators from 2025-03-26. Model verified ROC-AUC: 0.873. Independent rule-based cross-check: model_higher_than_detection.</description>\n    <instruction>Follow guidance from the Saudi National Center of Meteorology (NCM) and local authorities.</instruction>\n    <area>\n      <areaDesc>Jizan, Saudi Arabia</areaDesc>\n      <circle>16.9,42.6 0</circle>\n    </area>\n  </info>\n</alert>"
-        }
-      },
       {
         "tool": "forecast_tool",
         "args": {
@@ -1197,7 +1461,23 @@
             "consistency": "model_higher_than_detection",
             "note": "Model flags elevated risk, but the classic physical drivers for this hazard (per Layer 1's data-grounded thresholds) were NOT present in that day's indicators at this location -- treat with added caution, the model may be picking up a signal the rule-based check doesn't capture, or may be over-confident."
           },
-          "model_verified_roc_auc": 0.8731742776960718
+          "model_verified_roc_auc": 0.8731742776960718,
+          "meteorological_metrics": {
+            "threshold": 0.5,
+            "pod": 0.1004,
+            "far": 0.8026,
+            "csi": 0.0713,
+            "hss": 0.1301
+          },
+          "uncertainty": {
+            "mean": 0.9095,
+            "std": 0.0553,
+            "range": [
+              0.8,
+              0.947
+            ],
+            "n_members": 5
+          }
         }
       },
       {
@@ -1287,6 +1567,50 @@
               "citations": []
             }
           ]
+        }
+      },
+      {
+        "tool": "region_risk_tool",
+        "args": {
+          "city": "Jizan",
+          "date": "2025-03-27"
+        },
+        "result": {
+          "city": "Jizan",
+          "hazard_count": 2,
+          "hazards": [
+            {
+              "hazard": "flash_flood",
+              "hazard_label": "Flash Flood / Wadi Flooding",
+              "mechanisms_affecting_this_city": [
+                "moisture_transport",
+                "orographic_lift"
+              ],
+              "all_mechanisms_for_this_hazard": [
+                "ARST",
+                "moisture_transport",
+                "orographic_lift"
+              ],
+              "has_forecast_model": true,
+              "forecast": {
+                "target_date": "2025-03-27",
+                "probability": 0.9416,
+                "model_verified_roc_auc": 0.8731742776960718
+              }
+            },
+            {
+              "hazard": "coastal",
+              "hazard_label": "Coastal / Marine Risk",
+              "mechanisms_affecting_this_city": [
+                "moisture_transport"
+              ],
+              "all_mechanisms_for_this_hazard": [
+                "moisture_transport"
+              ],
+              "has_forecast_model": false
+            }
+          ],
+          "date": "2025-03-27"
         }
       },
       {
@@ -1321,102 +1645,118 @@
             "tmax_anomaly_c": -1.43
           }
         }
+      },
+      {
+        "tool": "similar_events_tool",
+        "args": {
+          "city": "Jizan",
+          "date": "2025-03-27",
+          "hazard": "flash_flood"
+        },
+        "result": {
+          "city": "Jizan",
+          "date": "2025-03-27",
+          "hazard": "flash_flood",
+          "query_indicators": {
+            "cape": 1590.0,
+            "ivt": 42.96965408325195,
+            "pwat": 38.149410247802734,
+            "daily_precip_total": 0.0,
+            "wind850_speed": 2.871026039123535
+          },
+          "ranked_similar_events": [
+            {
+              "event": "Flood, 14 Aug (Taif)",
+              "event_date": "2025-08-14",
+              "event_location": "Taif (21.3N,40.4E)",
+              "event_headline_value": "verdict: Model/real disagreement",
+              "similarity_pct": 23.0,
+              "features_compared": 5,
+              "event_distance_from_city_km": 546
+            },
+            {
+              "event": "08-31 convective instability",
+              "event_date": "2025-08-31",
+              "event_location": "Abha (18.9N,41.7E)",
+              "event_headline_value": "cape 5196.0 J/kg",
+              "similarity_pct": 14.2,
+              "features_compared": 5,
+              "event_distance_from_city_km": 243
+            },
+            {
+              "event": "Flash flood (Jeddah), 8-11 Dec",
+              "event_date": "2025-12-09",
+              "event_location": "Jeddah (21.5N,39.2E)",
+              "event_headline_value": "verdict: no verdict badge published",
+              "similarity_pct": 13.3,
+              "features_compared": 5,
+              "event_distance_from_city_km": 635
+            },
+            {
+              "event": "08-19 vapour surge",
+              "event_date": "2025-08-19",
+              "event_location": "Arabian Sea (16.0N,55.9E)",
+              "event_headline_value": "ivt 728.4 kg/m/s",
+              "similarity_pct": 7.1,
+              "features_compared": 5,
+              "event_distance_from_city_km": 1480
+            },
+            {
+              "event": "Flood, 27-28 Aug (Asir/Jizan)",
+              "event_date": "2025-08-26",
+              "event_location": "Abha (18.2N,42.5E)",
+              "event_headline_value": "verdict: Mixed result",
+              "similarity_pct": 4.6,
+              "features_compared": 5,
+              "event_distance_from_city_km": 145
+            },
+            {
+              "event": "08-23 extreme rain",
+              "event_date": "2025-08-23",
+              "event_location": "Jizan (17.5N,42.9E)",
+              "event_headline_value": "daily_precip_total 254.9 mm",
+              "similarity_pct": 0.8,
+              "features_compared": 5,
+              "event_distance_from_city_km": 74
+            }
+          ],
+          "excluded_events": [
+            {
+              "event": "Flood, 6-7 Jan",
+              "reason": "only 1/5 features available, below the half-coverage minimum"
+            },
+            {
+              "event": "Flood, 6-7 Mar (Hail/Buraidah)",
+              "reason": "only 1/5 features available, below the half-coverage minimum"
+            }
+          ],
+          "note": "similarity_pct is a descriptive, z-scored-distance-based measure (100/(1+normalized_distance)), NOT a probability or a claim that this event WILL repeat -- it only says how physically similar the raw indicators are to a known past event. Each event's coordinates are its own grid-cell MAXIMUM (the storm/heat centroid), often tens of km from a same-named city's center -- a same-city, same-day comparison can still score LOW if the extreme was hyperlocal (see event_distance_from_city_km on each result); that is correct behavior, not an error."
+        }
+      },
+      {
+        "tool": "cap_alert_tool",
+        "args": {
+          "city": "Jizan",
+          "target_date": "2025-03-27",
+          "hazard": "flash_flood"
+        },
+        "result": {
+          "alert_warranted": true,
+          "city": "Jizan",
+          "hazard": "flash_flood",
+          "target_date": "2025-03-27",
+          "probability": 0.9416,
+          "cap_severity": "Extreme",
+          "cap_certainty": "Possible",
+          "cap_xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<alert xmlns=\"urn:oasis:names:tc:emergency:cap:1.2\">\n  <identifier>MAZU-flash_flood-Jizan-2025-03-27</identifier>\n  <sender>mazu-demo@example.org</sender>\n  <sent>2025-03-26T18:00:00+03:00</sent>\n  <status>Exercise</status>\n  <msgType>Alert</msgType>\n  <scope>Public</scope>\n  <info>\n    <category>Met</category>\n    <event>Flash Flood / Wadi Flooding</event>\n    <urgency>Expected</urgency>\n    <severity>Extreme</severity>\n    <certainty>Possible</certainty>\n    <effective>2025-03-27T00:00:00+03:00</effective>\n    <expires>2025-03-27T23:59:59+03:00</expires>\n    <senderName>MAZU Saudi Multi-Hazard Early Warning (demo system)</senderName>\n    <headline>Flash Flood / Wadi Flooding risk for Jizan, Saudi Arabia on 2025-03-27</headline>\n    <description>MAZU multi-hazard early warning system forecasts a 94% probability of flash flood / wadi flooding affecting Jizan on 2025-03-27, based on indicators from 2025-03-26. Model verified ROC-AUC: 0.873. Independent rule-based cross-check: model_higher_than_detection.</description>\n    <instruction>Follow guidance from the Saudi National Center of Meteorology (NCM) and local authorities.</instruction>\n    <area>\n      <areaDesc>Jizan, Saudi Arabia</areaDesc>\n      <circle>16.9,42.6 0</circle>\n    </area>\n  </info>\n</alert>"
+        }
       }
     ]
   },
   {
     "question": "How reliable is the flash flood forecast model? Give me the detection rate and false alarm rate, not just ROC-AUC.",
-    "answer": "Here are the flash flood forecast model's reliability metrics:\n\n---\n\n## Flash Flood Forecast Model — Verification Scores\n\n### Threshold-Independent (Overall Skill)\n- **ROC-AUC**: **0.873** — This is strong. It means the model ranks risky days above non-risky days 87.3% of the time, regardless of where you set the decision threshold.\n\n### Threshold-Dependent Metrics (at operational threshold = 0.5)\nThese are the scores at the fixed threshold the system uses to decide whether to issue an alert:\n\n| Metric | Value | What it means |\n|---|---|---|\n| **POD** (Probability of Detection) | **0.1004** (≈10%) | Only ~10% of actual flash-flood days are correctly flagged. **The model misses ~90% of real events.** |\n| **FAR** (False Alarm Ratio) | **0.8026** (≈80%) | Of all alerts issued, ~80% are false alarms. Only ~20% of alerts correspond to an actual event. |\n| **CSI** (Critical Success Index) | **0.0713** (≈7%) | A combined measure — only 7% of \"flagged or observed\" days are correct hits. |\n| **HSS** (Heidke Skill Score) | **0.1301** (≈13%) | Modest improvement over random chance (0 = no skill, 1 = perfect). |\n\n### Why Are These Scores So Low?\n\nFlash floods are **extremely rare events** in Saudi Arabia. When a hazard is rare, even a well-calibrated model (ROC-AUC = 0.87) will have low POD and high FAR at a fixed threshold, because:\n\n- The model is conservative — it only raises the flag when it's very confident (threshold 0.5).\n- Most days are non-event days, so even a small false-alarm rate produces many false alarms in absolute terms.\n- The ROC-AUC (0.87) tells you the model *ranks* risk well, but the threshold-based scores reflect the inherent difficulty of predicting rare, high-impact convective events.\n\n### Bottom Line\n\nThe model is **good at distinguishing risky from non-risky conditions overall** (ROC-AUC 0.87), but at its operational threshold it **catches only ~1 in 10 real flash-flood events** and **~80% of its alerts are false alarms**. This is a known challenge for rare-hazard forecasting — not a broken model. If you want higher detection, the threshold could be lowered, but that would increase false alarms further.",
+    "answer": "Here's the full picture on the flash flood forecast model's reliability:\n\n---\n\n## Flash Flood Forecast Model — Reliability Metrics\n\n### Threshold-Independent (Overall Skill)\n- **ROC-AUC: 0.873** — This is the model's overall ability to discriminate flash-flood days from non-flash-flood days, across all thresholds. A score of 0.87 is considered **good** (1.0 = perfect, 0.5 = random).\n\n### Threshold-Dependent Metrics (at operational threshold of 0.5)\nThese are the scores at the fixed threshold the system uses to decide whether to issue an alert:\n\n| Metric | Value | What it means |\n|---|---|---|\n| **POD** (Probability of Detection) | **0.1004** | Only ~10% of actual flash-flood days are correctly flagged. **The model misses about 90% of real events.** |\n| **FAR** (False Alarm Ratio) | **0.8026** | ~80% of the alerts the model issues are false alarms — only ~20% of alerts correspond to an actual flash-flood day. |\n| **CSI** (Critical Success Index) | **0.0713** | A combined measure of hits vs. misses + false alarms. Very low — reflects the rarity of the event. |\n| **HSS** (Heidke Skill Score) | **0.1301** | Slight improvement over random chance (0 = no skill, 1 = perfect). |\n\n### Why Are These Scores So Low?\n\n**Flash floods are extremely rare events.** In meteorological verification, rare-event models almost always show low POD and high FAR at their operational threshold because:\n\n- The vast majority of days are non-event days, so even a small false-alarm rate produces many false alarms relative to the few true events.\n- The model is calibrated to be conservative — it only triggers at probability ≥ 0.5, which catches the clearest cases but misses many marginal ones.\n\nThe **ROC-AUC of 0.873** tells you the model *does* have genuine skill — it ranks risky days higher than safe days — but at the fixed 0.5 threshold, the trade-off between catching events and avoiding false alarms is heavily skewed.\n\n### Ensemble Uncertainty\n\nThe 5 independently-trained models show a **standard deviation of 0.018** around a mean probability of 0.038 — meaning the models generally agree with each other on low-risk days, which is good.\n\n### Bottom Line\n\nThe model is **moderately skillful overall (ROC-AUC 0.87)** but at its operational threshold it has **low detection rate (~10%) and high false-alarm rate (~80%)** — a common and honest limitation when forecasting rare hazards like flash floods. If you need higher detection, the threshold could be lowered, but that would increase false alarms further.",
     "trace": [
-      {
-        "tool": "causal_kg_tool",
-        "args": {
-          "hazard": "flash_flood"
-        },
-        "result": {
-          "hazard": "flash_flood",
-          "contributing_indicators": [
-            "daily_precip_total",
-            "daily_convective_precip",
-            "cape",
-            "pwat",
-            "ivt",
-            "wind850_speed",
-            "daily_precip_anomaly",
-            "flash_flood_risk"
-          ],
-          "mechanisms": [
-            {
-              "mechanism": "ARST",
-              "description": "Active Red Sea Trough - low-level convergence over the Red Sea",
-              "literature_grounded": true,
-              "citations": [
-                {
-                  "citation": "de Vries et al. (2013), J. Geophys. Res. Atmos.",
-                  "url": "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/jgrd.50569",
-                  "evidence": [
-                    {
-                      "subject": "eastward-migrating Mediterranean cyclone",
-                      "relation": "joins",
-                      "object": "extension of the Sudan low-pressure zone (the Red Sea Trough)",
-                      "quote": "an eastward-migrating Mediterranean cyclone joined an extension of the Sudan low-pressure zone (the Red Sea Trough)"
-                    },
-                    {
-                      "subject": "stationary anticyclone over the southeastern Arabian Peninsula (the Arabian Anticyclone)",
-                      "relation": "produces",
-                      "object": "clockwise flow that supplied moisture from the Arabian Sea and the Red Sea",
-                      "quote": "a stationary anticyclone over the southeastern Arabian Peninsula (the Arabian Anticyclone) produced a clockwise flow that supplied moisture from the Arabian Sea and the Red Sea"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "mechanism": "moisture_transport",
-              "description": "Red Sea / Arabian Sea moisture transport",
-              "literature_grounded": true,
-              "citations": [
-                {
-                  "citation": "ResearchGate case study",
-                  "url": "https://www.researchgate.net/publication/336928573",
-                  "evidence": [
-                    {
-                      "subject": "Surface fluxes over the Red Sea",
-                      "relation": "regulates",
-                      "object": "low-level moist-air convergence prior to convection initiation and development",
-                      "quote": "Surface fluxes over the Red Sea play an important role in regulating low-level moist-air convergence prior to convection initiation and development"
-                    },
-                    {
-                      "subject": "Red Sea water",
-                      "relation": "affects",
-                      "object": "regional rainfall",
-                      "quote": "Red Sea water is estimated to affect regional rainfall by about 30 to 40 percent"
-                    }
-                  ]
-                },
-                {
-                  "citation": "MDPI Atmosphere (2019)",
-                  "url": "https://www.mdpi.com/2073-4433/10/9/504",
-                  "evidence": [
-                    {
-                      "subject": "stronger winds combined with drier air",
-                      "relation": "produces",
-                      "object": "latent heat losses of up to 410 watts per square metre",
-                      "quote": "stronger winds combined with drier air produce latent heat losses of up to 410 watts per square metre"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "mechanism": "orographic_lift",
-              "description": "Orographic lifting over Hejaz / Asir mountains",
-              "literature_grounded": false,
-              "citations": []
-            }
-          ]
-        }
-      },
       {
         "tool": "forecast_tool",
         "args": {
@@ -1456,6 +1796,15 @@
             "far": 0.8026,
             "csi": 0.0713,
             "hss": 0.1301
+          },
+          "uncertainty": {
+            "mean": 0.0375,
+            "std": 0.0181,
+            "range": [
+              0.0155,
+              0.0685
+            ],
+            "n_members": 5
           }
         }
       }
