@@ -7,8 +7,8 @@ Manually excluded after quality review: 1
           not a genuine mechanistic claim, despite passing the quote check.
 Kept and merged: 20
 
-KG before: 68 nodes, 258 edges
-KG after:  74 nodes, 264 edges
+KG before: 68 nodes, 260 edges
+KG after:  74 nodes, 266 edges
 Added: 6 Citation nodes, 6 grounded_by edges
 
 Mechanisms now literature-grounded (4/5):

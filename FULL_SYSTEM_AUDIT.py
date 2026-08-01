@@ -518,11 +518,11 @@ check("J", "no duplicate KG node ids", len(kg["nodes"]) == len(node_ids_j),
      f"{len(kg['nodes'])} nodes, {len(node_ids_j)} unique ids")
 check("J", "old 'dust' id fully removed (renamed, not duplicated)", "dust" not in node_ids_j)
 check("J", "'dust_storm' hazard node present", "dust_storm" in node_ids_j)
-check("J", "KG now has 74 nodes / 264 edges (60/183 dust_storm-extension baseline "
+check("J", "KG now has 74 nodes / 266 edges (60/183 dust_storm-extension baseline "
      "+ 2 new Region nodes [Hail, Buraidah] + 12 site-verified Event nodes from "
      "deploy/index.html's map-verification section + their manifests_as/occurs_at/"
-     "observed_value edges)",
-     len(kg["nodes"]) == 74 and len(kg["links"]) == 264,
+     "observed_value edges + the Dammam/dust_storm at_risk_of+exposed_to fix)",
+     len(kg["nodes"]) == 74 and len(kg["links"]) == 266,
      f"{len(kg['nodes'])} nodes, {len(kg['links'])} edges")
 
 # J4 -- dust_storm's thermal_low mechanism is grounded by the PRE-EXISTING

@@ -1417,9 +1417,19 @@
    "target": "coastal"
   },
   {
+   "etype": "at_risk_of",
+   "source": "Dammam",
+   "target": "dust_storm"
+  },
+  {
    "etype": "exposed_to",
    "source": "Dammam",
    "target": "moisture_transport"
+  },
+  {
+   "etype": "exposed_to",
+   "source": "Dammam",
+   "target": "thermal_low"
   },
   {
    "etype": "at_risk_of",

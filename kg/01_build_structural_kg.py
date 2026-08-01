@@ -105,7 +105,7 @@ REGION_HAZARD = {
     "Jeddah": ["flash_flood", "coastal", "heatwave"], "Mecca": ["flash_flood", "heatwave"],
     "Taif": ["flash_flood"], "Jizan": ["flash_flood", "coastal"], "Abha": ["flash_flood"],
     "Riyadh": ["heatwave", "dust_storm"], "Medina": ["heatwave", "dust_storm"],
-    "Dammam": ["heatwave", "coastal"], "Empty Quarter": ["heatwave", "dust_storm"],
+    "Dammam": ["heatwave", "coastal", "dust_storm"], "Empty Quarter": ["heatwave", "dust_storm"],
     "Red Sea": ["coastal"], "Persian Gulf": ["coastal"], "Arabian Sea": ["coastal"],
 }
 # region -> mechanisms it is exposed to
@@ -113,7 +113,7 @@ REGION_MECH = {
     "Jeddah": ["moisture_transport", "ARST"], "Mecca": ["orographic_lift", "ARST"],
     "Taif": ["orographic_lift"], "Abha": ["orographic_lift"], "Jizan": ["moisture_transport", "orographic_lift"],
     "Riyadh": ["subtropical_high", "thermal_low"], "Medina": ["thermal_low"],
-    "Dammam": ["moisture_transport"], "Empty Quarter": ["subtropical_high", "thermal_low"],
+    "Dammam": ["moisture_transport", "thermal_low"], "Empty Quarter": ["subtropical_high", "thermal_low"],
     "Red Sea": ["moisture_transport"], "Persian Gulf": ["moisture_transport"], "Arabian Sea": ["moisture_transport"],
 }
 

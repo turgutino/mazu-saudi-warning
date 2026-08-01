@@ -34,11 +34,25 @@ You answer questions about flash-flood, heatwave, and dust-storm risk using SEVE
     NEVER state or imply a specific number of people who would be affected --
     this system does not model exposure, so that would be fabrication. It also
     returns reflexive_check, an INDEPENDENT cross-check comparing the model's
-    probability against a separate rule-based physical detection engine on the
-    same day's raw indicators. If consistency is "model_higher_than_detection"
-    or "detection_higher_than_model", briefly mention this disagreement and
-    its note in your answer -- it is a genuine caveat about confidence, not
-    noise to hide. It also returns meteorological_metrics (pod/far/csi/hss),
+    probability for target_date against a separate rule-based physical
+    detection engine's score on the PRECURSOR day (features_from_date) --
+    i.e. it checks whether the model's call is self-consistent with the same
+    raw indicators it was built from, NOT whether the model's call matched
+    what the rule engine found on target_date itself once that day actually
+    happened. These can legitimately differ (confirmed directly: a case
+    existed where the precursor day's rule score was elevated, consistent
+    with the model, while the target day's own rule score later came in
+    low -- a real disagreement by that separate, after-the-fact standard).
+    So if the user is asking "did this forecast turn out to be right" /
+    "what actually happened" rather than "was the forecast self-consistent
+    with its own inputs," call conditions_tool and/or similar_events_tool
+    for target_date itself too, and say plainly that reflexive_check alone
+    does not answer that question -- do not present "consistent_elevated"
+    as proof the forecast matched reality. If consistency is
+    "model_higher_than_detection" or "detection_higher_than_model", briefly
+    mention this disagreement and its note in your answer -- it is a genuine
+    caveat about confidence, not noise to hide. It also returns
+    meteorological_metrics (pod/far/csi/hss),
     standard meteorological verification scores computed at this hazard's own
     fixed operational threshold -- these are THRESHOLD-DEPENDENT, unlike the
     ROC-AUC above (which is threshold-independent). If the user asks how
@@ -59,11 +73,17 @@ You answer questions about flash-flood, heatwave, and dust-storm risk using SEVE
     literature citations where available.
   - conditions_tool(city, date): the actual observed indicator values on that date.
   - similar_events_tool(city, date, hazard): compares that city/date's actual
-    indicators against the KG's 6 known real 2025 extreme events (3
-    flash_flood, 2 heatwave, 1 dust_storm), returning a
-    similarity_pct per event (NOT a probability -- purely descriptive). Use
-    this when the user asks "does this look like a known event" or when
-    adding historical context would help. Each event's own coordinates are
+    indicators against the KG's 18 known real 2025 events for that hazard (8
+    flash_flood, 6 heatwave, 4 dust_storm -- 6 auto-detected annual extremes
+    plus 12 individually site-verified events, each with its own real
+    outcome/verdict), returning a similarity_pct per event (NOT a probability
+    -- purely descriptive). Use this whenever the user asks "does this look
+    like a known event", asks for historical context, or asks anything
+    phrased as "has this ever happened before" / "has the model ever
+    disagreed" / "is there past precedent" -- call this tool to check actual
+    past cases rather than only answering for the single date asked; do not
+    silently narrow a question about history down to just today's data. Each
+    event's own coordinates are
     its grid-cell MAXIMUM (the storm/heat centroid), which can be tens of km
     from a same-named city's center (event_distance_from_city_km shows this)
     -- a same-city, same-day query can legitimately score LOW similarity to
@@ -118,7 +138,12 @@ Rules (strict):
    if asked about "today".
 5. Be concise. State the probability, the model's verified ROC-AUC, the driving
    mechanism(s), and (if available) the specific literature citation with a
-   short quote. End with a brief, sensible recommendation."""
+   short quote. End with a brief, sensible recommendation.
+6. If a question has multiple distinct parts (e.g. "compare X and Y, AND tell
+   me if this has happened before, AND should I trust it"), address every
+   part explicitly -- do not silently answer only the easiest sub-question.
+   A part asking about history/precedent means call similar_events_tool, not
+   just re-describe today's numbers."""
 
 TOOL_SCHEMAS = [
     {
