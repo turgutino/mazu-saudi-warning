@@ -1,11 +1,11 @@
 ==========================================================================
-SECTION A â€” raw 5GB source files exist and are readable
+SECTION A — raw 5GB source files exist and are readable
 ==========================================================================
   [PASS] 365 raw daily files present
   [PASS] raw directory matches documented path
 
 ==========================================================================
-SECTION B â€” consolidated dataset (mazu_dataset.nc) matches RAW source
+SECTION B — consolidated dataset (mazu_dataset.nc) matches RAW source
 ==========================================================================
 (direct re-read of 3 random raw files, independent of the pipeline code)
   [PASS] 2025-08-23: all 16 indicators match raw source exactly
@@ -13,7 +13,7 @@ SECTION B â€” consolidated dataset (mazu_dataset.nc) matches RAW source
   [PASS] 2025-03-11: all 16 indicators match raw source exactly
 
 ==========================================================================
-SECTION C â€” KG event values trace back to the RAW source (not just consolidated)
+SECTION C — KG event values trace back to the RAW source (not just consolidated)
 ==========================================================================
   [PASS] 18 event nodes present in KG (6 auto-detected annual extremes: 5 original + 1 dust_storm added later, + 12 site-verified events)
   [PASS] 08-23 extreme rain: claimed value (254.9) matches raw grid MAX for daily_precip_total on 2025-08-23 (254.9)
@@ -68,7 +68,7 @@ SECTION C â€” KG event values trace back to the RAW source (not just consolidate
   [PASS] Flood, 27-28 Aug (Asir/Jizan): observed_value pwat=26.6 matches RAW source at (18.2N,42.5E) on 2025-08-26 (26.6)
 
 ==========================================================================
-SECTION D â€” causal KG citations: quotes still verbatim in corpus.py
+SECTION D — causal KG citations: quotes still verbatim in corpus.py
 ==========================================================================
   [PASS] 6 Citation nodes present
   [PASS] cite_ref_devries2013: quote verbatim in source (an eastward-migrating Mediterranean cycl...)
@@ -94,18 +94,18 @@ SECTION D â€” causal KG citations: quotes still verbatim in corpus.py
   [PASS] total evidence quotes checked: 20 (expect 20)
 
 ==========================================================================
-SECTION E â€” agent tools read the SAME data as the raw source (bypass test)
+SECTION E — agent tools read the SAME data as the raw source (bypass test)
 ==========================================================================
   [PASS] conditions_tool('Jizan','2025-08-23') matches independent raw-file read
 
 ==========================================================================
-SECTION F â€” deployed GitHub site matches local repo (no drift)
+SECTION F — deployed GitHub site matches local repo (no drift)
 ==========================================================================
   [PASS] remote kg_data.json node count matches local
   [PASS] remote kg_data.json edge count matches local
 
 ==========================================================================
-SECTION G â€” post-Layer-4 extensions (terrain, population, A/B ablation)
+SECTION G — post-Layer-4 extensions (terrain, population, A/B ablation)
 ==========================================================================
   [PASS] 'orography' variable present in consolidated dataset
   [PASS] orography at Jeddah/Abha/Riyadh matches raw source exactly
@@ -129,7 +129,7 @@ SECTION G â€” post-Layer-4 extensions (terrain, population, A/B ablation)
   [PASS] causal_kg_tool never appears in any 'without_kg' trace (ablation was real)
 
 ==========================================================================
-SECTION H â€” reflexive_check (model vs. independent rule-based detection)
+SECTION H — reflexive_check (model vs. independent rule-based detection)
 ==========================================================================
   [PASS] reflexive_check present on forecast_tool output
   [PASS] Jizan precursor-day (08-22) rain had NOT started yet, per raw source
@@ -140,14 +140,14 @@ SECTION H â€” reflexive_check (model vs. independent rule-based detection)
   [PASS] Mecca: consistency label correctly reflects model >= 0.3 > detection (independent re-check)
 
 ==========================================================================
-SECTION I â€” similar_events_tool (KG event similarity)
+SECTION I — similar_events_tool (KG event similarity)
 ==========================================================================
   [PASS] self-match at exact event coords/date scores exactly 100% (re-verified fresh)
   [PASS] Mecca 08-04 raw tmax_c matches value read directly from the RAW source file
   [PASS] Mecca/07-25-event similarity independently re-derived (RAW files + dataset-wide mean/std recomputed fresh, not reusing tools.py's cache) matches tool output
 
 ==========================================================================
-SECTION J â€” dust_storm: a 3rd hazard added across the whole stack
+SECTION J — dust_storm: a 3rd hazard added across the whole stack
 ==========================================================================
   [PASS] wind10_speed / dewpoint_depression_c in consolidated dataset match RAW source exactly
   [PASS] dust_storm event headline value (wind10_speed 20.7 m/s on 2025-07-26) matches RAW source grid max
@@ -155,14 +155,14 @@ SECTION J â€” dust_storm: a 3rd hazard added across the whole stack
   [PASS] no duplicate KG node ids
   [PASS] old 'dust' id fully removed (renamed, not duplicated)
   [PASS] 'dust_storm' hazard node present
-  [PASS] KG now has 74 nodes / 264 edges (60/183 dust_storm-extension baseline + 2 new Region nodes [Hail, Buraidah] + 12 site-verified Event nodes from deploy/index.html's map-verification section + their manifests_as/occurs_at/observed_value edges)
+  [PASS] KG now has 74 nodes / 266 edges (60/183 dust_storm-extension baseline + 2 new Region nodes [Hail, Buraidah] + 12 site-verified Event nodes from deploy/index.html's map-verification section + their manifests_as/occurs_at/observed_value edges + the Dammam/dust_storm at_risk_of+exposed_to fix)
   [PASS] thermal_low mechanism is grounded_by cite_ref_shamal_yu2016 (pre-existing, reused not invented)
   [PASS] the Shamal citation's own evidence quotes literally mention dust (grounding was appropriate, not a stretch)
   [PASS] Dammam dust_storm reflexive_check detection score matches RAW-source hand-computation (fresh call, independent of earlier test runs)
   [PASS] dust_storm model reports its own distinct ROC-AUC (0.8866), not copied from another hazard
 
 ==========================================================================
-SECTION K â€” region_risk_tool (5th agent tool, city-first KG query)
+SECTION K — region_risk_tool (5th agent tool, city-first KG query)
 ==========================================================================
   [PASS] Jizan hazard list matches KG JSON read directly (fresh, independent re-check)
   [PASS] 'coastal' hazard (no trained model) exists in the KG for >=1 city
@@ -172,7 +172,7 @@ SECTION K â€” region_risk_tool (5th agent tool, city-first KG query)
   [PASS] all 8 known cities have >=1 at_risk_of hazard in the KG (no coverage gap)
 
 ==========================================================================
-SECTION L â€” cap_alert_tool (6th agent tool, CAP 1.2 XML generation)
+SECTION L — cap_alert_tool (6th agent tool, CAP 1.2 XML generation)
 ==========================================================================
   [PASS] cap_alert_tool probability matches a fresh, independent forecast_tool call exactly
   [PASS] cap_severity independently re-derived from DetectionEngine's own RULES thresholds matches exactly
@@ -182,7 +182,7 @@ SECTION L â€” cap_alert_tool (6th agent tool, CAP 1.2 XML generation)
   [PASS] cap_alert_tool unknown-city error is byte-identical to forecast_tool's own error
 
 ==========================================================================
-SECTION M â€” meteorological_metrics (POD/FAR/CSI/HSS), independently re-derived
+SECTION M — meteorological_metrics (POD/FAR/CSI/HSS), independently re-derived
 ==========================================================================
   [PASS] flash_flood: independently re-derived POD matches model_meta.json's stored value (within float tolerance)
   [PASS] flash_flood: independently re-derived FAR matches model_meta.json's stored value
@@ -192,7 +192,7 @@ SECTION M â€” meteorological_metrics (POD/FAR/CSI/HSS), independently re-derived
   [PASS] all 3 hazards' meteorological_metrics are finite (no NaN from a degenerate confusion matrix)
 
 ==========================================================================
-SECTION N â€” calibration reliability diagram (ECE/Brier), independently re-derived
+SECTION N — calibration reliability diagram (ECE/Brier), independently re-derived
 ==========================================================================
   [PASS] flash_flood: independently re-derived ECE matches calibration_report.json's stored value
   [PASS] flash_flood: independently re-derived Brier score matches calibration_report.json's stored value
@@ -200,7 +200,7 @@ SECTION N â€” calibration reliability diagram (ECE/Brier), independently re-deri
   [PASS] all 3 hazards show genuine overconfidence in their top probability bin [0.9,1.0] -- a real, disclosed calibration limitation distinct from the low aggregate ECE
 
 ==========================================================================
-SECTION O â€” ensemble uncertainty field (5-model spread), independently re-derived
+SECTION O — ensemble uncertainty field (5-model spread), independently re-derived
 ==========================================================================
   [PASS] flash_flood seed42 ensemble member file exists on disk
   [PASS] flash_flood seed43 ensemble member file exists on disk
@@ -216,7 +216,7 @@ SECTION O â€” ensemble uncertainty field (5-model spread), independently re-deri
   [PASS] all 3 hazards have all 5 ensemble member files present on disk (15 total)
 
 ==========================================================================
-SECTION P â€” literature_evidence_tool (7th agent tool), independently re-derived
+SECTION P — literature_evidence_tool (7th agent tool), independently re-derived
 ==========================================================================
   [PASS] literature corpus has exactly 12 entries (7 original + 5 added for this tool)
   [PASS] every corpus entry has non-empty id/citation/title/url/mechanism/text fields
