@@ -41,6 +41,86 @@ check("target_date echoed correctly", r.get("target_date") == "2025-08-23")
 check("uses the PREVIOUS day's indicators", r.get("features_from_date") == "2025-08-22",
      f"got {r.get('features_from_date')}")
 check("probability in [0,1]", 0.0 <= r.get("probability", -1) <= 1.0)
+
+# data_completeness: the source archive has real gaps (independently verified
+# via direct xarray inspection this session: cape/pwat/ivt/wind850_speed/
+# wind_shear_850_200 are NaN on ~20% of 2025 dates at every one of the 8
+# cities, and sst_celsius is NaN at 7 of 8 cities for the entire year since
+# their nearest grid cell resolves to land). forecast_tool must disclose
+# this per-forecast rather than silently feeding NaN into the model.
+import xarray as xr
+import numpy as np
+_ds_bypass = xr.open_dataset(tools.DATASET)
+_features_from_date = r["features_from_date"]
+
+# forecast_tool samples the model's ACTUAL stride-2-subsampled grid, not the
+# full-resolution nearest cell -- confirmed by direct comparison this session
+# to sometimes land on a genuinely different pixel (e.g. Dammam's full-res
+# nearest cell is a valid sea pixel with real sst_celsius, but its stride-2
+# cell lands one step away on land). Replicate that exact subsampling here so
+# this bypass check is a true apples-to-apples independent re-derivation.
+_lat_full, _lon_full = _ds_bypass.latitude.values, _ds_bypass.longitude.values
+_stride = tools._META["stride"]
+_yi_s = np.arange(0, len(_lat_full), _stride)
+_xi_s = np.arange(0, len(_lon_full), _stride)
+_lat_s, _lon_s = _lat_full[_yi_s], _lon_full[_xi_s]
+
+def _independent_missing_features(city, features_from_date, hazard):
+    lat, lon = tools.CITIES[city]
+    syi = int(np.argmin(np.abs(_lat_s - lat)))
+    sxi = int(np.argmin(np.abs(_lon_s - lon)))
+    row = _ds_bypass.sel(time=features_from_date)
+    names = list(tools.FEATURE_VARS)
+    if hazard == "heatwave":
+        names = names + [f"neigh_{v}" for v in tools.NEIGHBOR_VARS]
+    elif hazard == "dust_storm":
+        names = names + list(tools.DUST_EXTRA_VARS)
+    missing = []
+    for n in names:
+        base = n.removeprefix("neigh_")
+        if base not in _ds_bypass.data_vars:
+            continue
+        val = float(row[base].values[_yi_s[syi], _xi_s[sxi]])
+        if not np.isfinite(val):
+            missing.append(n)
+    return sorted(missing)
+
+check("data_completeness field is present", "data_completeness" in r, r.get("data_completeness"))
+dc = r["data_completeness"]
+check("data_completeness has complete/missing_features/note keys",
+     {"complete", "missing_features", "note"} <= set(dc.keys()), dc)
+_indep_missing_aug = _independent_missing_features("Jizan", _features_from_date, "flash_flood")
+check("Aug 22 Jizan: only sst_celsius is missing (bypass, independently re-derived from raw dataset)",
+     sorted(dc["missing_features"]) == _indep_missing_aug,
+     f"tool={sorted(dc['missing_features'])} independent={_indep_missing_aug}")
+check("Aug 22 Jizan: complete flag is False (sst_celsius alone still counts as incomplete)",
+     dc["complete"] is False, dc)
+
+r_jan = tools.forecast_tool("Jeddah", "2025-01-06", "flash_flood")
+dc_jan = r_jan["data_completeness"]
+_indep_missing_jan = _independent_missing_features("Jeddah", r_jan["features_from_date"], "flash_flood")
+check("Jan 5 Jeddah: 6 features missing (cape/pwat/ivt/wind850_speed/wind_shear_850_200/sst_celsius), "
+     "matching this session's independent full-dataset re-check",
+     sorted(dc_jan["missing_features"]) == ["cape", "ivt", "pwat", "sst_celsius", "wind850_speed", "wind_shear_850_200"],
+     dc_jan["missing_features"])
+check("Jan 5 Jeddah: bypass-derived missing set matches the tool's own output exactly",
+     sorted(dc_jan["missing_features"]) == _indep_missing_jan,
+     f"tool={sorted(dc_jan['missing_features'])} independent={_indep_missing_jan}")
+
+# Dammam's FULL-RESOLUTION nearest cell happens to be a valid sea pixel (real
+# sst_celsius values), but forecast_tool actually samples the model's
+# stride-2-subsampled grid, whose nearest cell for Dammam lands one step away
+# on land -- so sst_celsius is NaN there too. Verified directly: at stride-2
+# resolution, all 8 cities are 100% NaN for sst_celsius, 365/365 days, no
+# exception. This assertion intentionally checks the less-obvious, corrected
+# finding rather than the naive full-resolution one.
+r_dammam = tools.forecast_tool("Dammam", "2025-08-23", "dust_storm")
+check("Dammam's stride-2 grid cell ALSO lands on land (sst_celsius still missing) even "
+     "though its full-resolution nearest cell would be a valid sea pixel -- the model's "
+     "coarser stride-2 sampling is why sst_celsius is 100% missing at ALL 8 cities, not 7",
+     "sst_celsius" in r_dammam["data_completeness"]["missing_features"],
+     r_dammam["data_completeness"])
+
 check("reports model ROC-AUC", r.get("model_verified_roc_auc") == tools._META["flash_flood"]["roc_auc"])
 check("reports meteorological_metrics matching model_meta.json exactly (bypass, re-read from source dict)",
      r.get("meteorological_metrics") == tools._META["flash_flood"]["meteorological_metrics"], r.get("meteorological_metrics"))

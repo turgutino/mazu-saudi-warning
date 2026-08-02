@@ -273,18 +273,47 @@ def forecast_tool(city: str, target_date: str, hazard: str) -> dict:
         arr = ds[v].values[ti][yi_s][:, xi_s]   # stride-2 2D field for this day
         raw[v] = arr
     feat_row = [raw[v][cyi, cxi] for v in FEATURE_VARS]
+    feat_names = list(FEATURE_VARS)
 
     if hazard == "heatwave":
         for v in NEIGHBOR_VARS:
             nm = neighbor_mean(raw[v])
             feat_row.append(nm[cyi, cxi])
+            feat_names.append(f"neigh_{v}")
     elif hazard == "dust_storm":
         # matches model/07_dust_storm_forecast.py's FEATURE_VARS order exactly
         # (base 17 vars, then these 2 dust-specific vars, then lat/lon/doy)
         for v in DUST_EXTRA_VARS:
             arr = ds[v].values[ti][yi_s][:, xi_s]
             feat_row.append(arr[cyi, cxi])
+            feat_names.append(v)
     feat_row += [city_lat, city_lon, doy]
+    feat_names += ["lat", "lon", "day_of_year"]
+
+    # Data-completeness disclosure: the raw source archive has real gaps for
+    # some feature/date combinations (verified independently: cape/pwat/ivt/
+    # wind850_speed/wind_shear_850_200 are missing on ~20% of 2025 dates at
+    # every one of the 8 cities, and sst_celsius is NaN at ALL 8 cities for
+    # the entire year -- their model-grid [stride-2 subsampled] nearest cell
+    # always resolves to land, not sea; note this holds even for Dammam,
+    # whose FULL-resolution nearest cell would be a valid sea pixel, but
+    # forecast_tool samples the coarser stride-2 grid the model was actually
+    # trained on). HistGradientBoostingClassifier natively routes NaN inputs
+    # to their own tree branch instead of raising, so a forecast is still
+    # returned -- but silently. Surface which named features were actually
+    # missing for THIS forecast so that is never hidden from the caller.
+    missing_features = [name for name, val in zip(feat_names, feat_row) if not np.isfinite(val)]
+    data_completeness = {
+        "complete": len(missing_features) == 0,
+        "missing_features": missing_features,
+        "note": (
+            f"{len(missing_features)}/{len(feat_names)} model input features were "
+            "missing (NaN) in the source archive for features_from_date; the model "
+            "still returns a probability (missing values are routed to their own "
+            "decision-tree branch), but this forecast should be treated with added "
+            "caution."
+        ) if missing_features else "All model input features were available for this date.",
+    }
 
     X = np.array(feat_row, dtype="float64").reshape(1, -1)
     model = _get_model(hazard)
@@ -333,6 +362,7 @@ def forecast_tool(city: str, target_date: str, hazard: str) -> dict:
     return {
         "city": city, "target_date": date_predicted, "features_from_date": times[ti],
         "hazard": hazard, "probability": round(proba, 4),
+        "data_completeness": data_completeness,
         "grid_cell": {"lat": round(float(lat_s[cyi]), 2), "lon": round(float(lon_s[cxi]), 2)},
         "elevation_m": round(elevation_m, 1) if elevation_m is not None else None,
         "terrain_note": terrain_note,
